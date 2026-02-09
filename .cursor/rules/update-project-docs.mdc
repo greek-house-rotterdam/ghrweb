@@ -7,9 +7,9 @@ alwaysApply: true
 
 When making changes that affect project scope, requirements, decisions, or context, update the relevant documents:
 
-- `background.md` — project goals, constraints, and high-level context
-- `pre_interview_prd.md` — PRD before stakeholder interviews
-- `post_interview_prd.md` — detailed requirements from stakeholder interviews
+- `docs/background.md` — project goals, constraints, and high-level context
+- `docs/pre_interview_prd.md` — PRD before stakeholder interviews
+- `docs/post_interview_prd.md` — detailed requirements from stakeholder interviews
 
 ## When to update
 
