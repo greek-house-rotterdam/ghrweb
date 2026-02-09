@@ -107,8 +107,10 @@ Supported content types for admin uploads:
 
 ### 5.2 Admin Access
 
-- **Phase 1 (launch):** Single-tier admin access
-- **Phase 2 (post-launch):** Multi-tier privileges (admin, editor, etc.)
+Managed via a **GitHub Organization (free tier)**. Each admin/editor needs a personal GitHub account (free).
+
+- **Admins** (`Maintain` role): Board of Directors, developer — can push directly to `main`, manage repo settings, merge PRs
+- **Editors** (`Write` role): Cultural team, content writers — can create content via Decap CMS; with branch protection on `main`, their changes go through a PR that an admin approves before publishing
 
 **Publishing permissions (who can create/edit content):**
 
@@ -184,13 +186,13 @@ Even though the site is public, GDPR obligations apply:
 
 | Metric | How to Measure |
 |--------|---------------|
-| Website traffic increase (%) | Web analytics (e.g., Google Analytics) |
+| Website traffic increase (%) | Google Analytics (GA4) |
 | New members via website | Track enrollment form submissions |
 | Event participation via website | Track event page visits / registration clicks |
 | Reduction in repetitive emails | Compare email volume before/after launch |
 | User satisfaction | Two surveys — one at launch, one in 2027 |
 
-> **Open question:** Is Google Analytics the preferred analytics tool, or something lighter (e.g., Plausible, Umami)?
+**Decided:** Google Analytics (GA4) — free, full-featured. Requires a cookie consent banner (GDPR).
 
 ---
 
@@ -241,13 +243,7 @@ Even though the site is public, GDPR obligations apply:
 
 ## 15. Hosting & Platform
 
-> **Open question:** No platform decision has been made. Given the developer profile and admin requirements, options include:
->
-> - **Static site (e.g., Astro/Hugo) + Headless CMS (e.g., Decap CMS) + Firebase Hosting** — low cost, high control, but requires developer for structural changes
-> - **WordPress on managed hosting (e.g., Hostinger)** — rich plugin ecosystem, easy for non-technical admins, but higher maintenance and security surface
-> - **Website builder (e.g., Squarespace, Wix)** — easiest for non-technical people, but least developer control and potentially higher annual cost
->
-> Recommendation depends on the balance between admin simplicity and developer control.
+**Decided:** Astro (static site generator) + Decap CMS + Cloudflare Pages. See [Tech Stack](tech-stack.md) for full rationale and decisions log.
 
 ---
 
@@ -293,7 +289,7 @@ Since only admins upload content, the types are: text, images (JPEG/PNG/WebP, �
 | 1 | Is English included from launch, or added later? | Pending |
 | 2 | Is a domain name already purchased? Who owns it? | Pending |
 | 3 | Who provides initial content? Is any of it ready? | Pending |
-| 4 | Preferred analytics tool? (Google Analytics, Plausible, etc.) | Pending |
+| 4 | Preferred analytics tool? (Google Analytics, Plausible, etc.) | **Decided:** Google Analytics (GA4) |
 | 5 | Is there a plan for an external newsletter service? | Pending |
 | 6 | Is member enrollment a separate form or combined with contact? | Pending |
-| 7 | What hosting/platform approach is preferred? | Pending |
+| 7 | What hosting/platform approach is preferred? | **Decided:** Astro + Cloudflare Pages |

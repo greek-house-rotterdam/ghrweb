@@ -11,6 +11,7 @@ The website for the Greek House in Rotterdam (GHR): a sustainable, trilingual hu
 | [Tech Stack](docs/tech-stack.md) | Architecture and technology choices |
 | [Pre-Interview PRD](docs/pre_interview_prd.md) | Product requirements before stakeholder interviews |
 | [Post-Interview PRD](docs/post_interview_prd.md) | Detailed requirements from stakeholder interviews |
+| [FAQ & Knowledge Base](docs/faq.md) | Curated insights from development Q&A sessions |
 
 ## Commands
 

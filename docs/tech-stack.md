@@ -14,7 +14,8 @@
 | **Hosting** | Cloudflare Pages | Static hosting with global CDN — free tier, auto-deploy from GitHub |
 | **Translation** | GitHub Action + DeepL API | Auto-translates content on commit — trilingual (GR/NL/EN) |
 | **Forms** | Google Forms (embedded) | Contact and enrollment — built-in spam protection, responses in Google Sheets |
-| **Analytics** | Plausible or Google Analytics | Traffic and engagement tracking |
+| **Analytics** | Google Analytics (GA4) | Traffic and engagement tracking — requires cookie consent banner (GDPR) |
+| **Auth/Access** | GitHub Organization (free tier) | Team-based repo access — admin/editor permissions via GitHub roles |
 
 ---
 
@@ -99,7 +100,7 @@ Decap CMS commits Markdown file to GitHub repo
 | Images | `public/images/` in GitHub repo | No |
 | UI translations | JSON files in GitHub repo | No |
 | Form submissions | Google Sheets (via Google Forms) | No |
-| Analytics | Plausible / Google Analytics (external) | No |
+| Analytics | Google Analytics GA4 (external) | No |
 
 **No database. No server. GitHub is the single source of truth.**
 
@@ -121,6 +122,8 @@ Decap CMS commits Markdown file to GitHub repo
 - Log in via GitHub, write a post, hit "Publish" — done
 - No terminal, no Git knowledge, no code
 - Rich text editing, image upload, draft/publish workflow
+- GitHub Organization with teams enables admin/editor role separation
+- Branch protection allows editorial review: editors submit, admins approve
 
 ### For the project
 
@@ -163,6 +166,7 @@ Deployment is handled by Cloudflare Pages directly (built-in GitHub integration)
 - **Decap CMS** — runs in browser, authenticates via GitHub OAuth, commits directly to repo
 - **No user uploads** — eliminates file-based attack vectors
 - **Google Forms** — form processing happens on Google's infrastructure, not ours
+- **GitHub Organization** — team-based access control, individual accountability, supports enforcing 2FA for all members
 
 The only authentication surface is GitHub OAuth (supports 2FA).
 
@@ -183,11 +187,11 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 7 | Content storage | Markdown in GitHub repo | Version-controlled, portable, works with Decap CMS and Astro content collections | Database-backed CMS (unnecessary layer), Cloudflare KV/R2 (overkill for text content) |
 | 8 | Translation approach | GitHub Action + API | Fully automated, triggers on content commit, no manual step for admins | Manual translation (doesn't scale), i18n plugin (most only handle UI strings, not content) |
 | 9 | Deployment | Cloudflare auto-deploy | Push to `main` = live in ~30 sec, no CI/CD config needed | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
+| 10 | Analytics | Google Analytics (GA4) | Free, full-featured, already referenced in success metrics. Requires cookie consent banner (GDPR) | Plausible (~€9/mo, GDPR-friendly but paid), Firebase Analytics (designed for mobile apps/SPAs, not static sites) |
+| 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor roles, branch protection for editorial workflow, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
 
 ### Open Decisions
 
 | # | Decision | Options | Status |
 |---|----------|---------|--------|
-| 1 | Analytics tool | Plausible (lightweight, GDPR-friendly, ~€9/mo) vs Google Analytics (free, needs cookie consent) | Pending |
-| 2 | Translation API | DeepL API (high quality, free tier: 500k chars/mo) vs OpenAI API (flexible, pay-per-use) | Pending |
-| 3 | Decap CMS auth | GitHub OAuth (simplest) vs Netlify Identity (if admins shouldn't need GitHub accounts) | Pending |
+| 1 | Translation API | DeepL API (high quality, free tier: 500k chars/mo) vs OpenAI API (flexible, pay-per-use) | Pending |
