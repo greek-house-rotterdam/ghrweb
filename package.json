@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:cms": "npx decap-server & astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
@@ -12,5 +13,8 @@
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.17.1",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "decap-server": "^3.5.0"
   }
 }

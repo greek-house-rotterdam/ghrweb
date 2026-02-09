@@ -20,7 +20,16 @@ All commands are run from the root of the project:
 | :------------------------ | :----------------------------------------------- |
 | `npm install`             | Installs dependencies                            |
 | `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run dev:cms`         | Starts dev server + Decap CMS local backend      |
 | `npm run build`           | Build your production site to `./dist/`          |
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## CMS Admin
+
+The site uses [Decap CMS](https://decapcms.org/) for content management, accessible at `/admin`.
+
+**Local development:** Run `npm run dev:cms` and visit `http://localhost:4321/admin/`. This starts a local proxy server (`decap-server`) so you can create and edit content without GitHub authentication. Changes write directly to your local `src/content/` files.
+
+**Production:** The CMS authenticates via GitHub. The `local_backend` setting in `public/admin/config.yml` only activates on `localhost` — it is ignored on any other domain, so it is safe to leave on.
