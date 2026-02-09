@@ -1,0 +1,27 @@
+---
+description: Keep project documents up to date when changes affect scope, requirements, or context
+alwaysApply: true
+---
+
+# Update Project Documents
+
+When making changes that affect project scope, requirements, decisions, or context, update the relevant documents:
+
+- `background.md` — project goals, constraints, and high-level context
+- `pre_interview_prd.md` — PRD before stakeholder interviews
+- `post_interview_prd.md` — detailed requirements from stakeholder interviews
+
+## When to update
+
+- A new feature or requirement is introduced or removed
+- A design/architecture decision is made that changes scope
+- Stakeholder feedback changes priorities or constraints
+- A question from the PRD is answered or resolved
+
+## How to update
+
+- Be **clear** — use plain language, avoid jargon
+- Be **simple** — one idea per bullet or paragraph
+- Be **concise** — no filler, every sentence earns its place
+- Be **articulate** — precise wording, no ambiguity
+- Be **comprehensive** — capture the full picture without omitting relevant details

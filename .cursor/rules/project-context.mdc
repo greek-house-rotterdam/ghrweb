@@ -1,0 +1,27 @@
+---
+description: 
+alwaysApply: true
+---
+
+# Project Context
+
+Building the website for "Greek House in Rotterdam" (GHR) — a sustainable, low-maintenance hub for cultural history, community news, and event coordination.
+
+## Guiding Principles
+
+- Avoid feature creep; simplicity is perfection
+- Optimize for value, reliability, and ease-of-use (visitors & admins)
+- The site must not become a digital ghost town — keep it maintainable
+
+## Key Objectives
+
+- **Accessibility:** Bilingual (GR/NL) from launch
+- **Simplicity:** Managed by non-technical members of the cultural group
+- **Sustainability:** Minimal annual costs and high security
+
+## Developer Profile
+
+- Senior backend developer, expert in Python and AI engineering
+- Intermediate in GCP deployments, Firebase Cloud Functions/CLI, and GitHub Actions
+- Beginner-level frontend — relies heavily on AI coding assistants
+- Prefer code-first approaches with clear, simple patterns over complex frontend frameworks
