@@ -1,0 +1,36 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { LANGUAGES, type Lang } from "../../../i18n/utils";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const allEvents = await getCollection("events");
+  return allEvents.map((event) => {
+    const lang = event.id.split("/")[0];
+    const slug = event.id.split("/").slice(1).join("/");
+    return { params: { lang, slug }, props: { event } };
+  });
+}
+
+const { event } = Astro.props;
+const { lang } = Astro.params as { lang: Lang };
+const { Content } = await render(event);
+---
+
+<Layout title={event.data.title} description={event.data.description} lang={lang}>
+  <article class="py-12">
+    <div class="mx-auto max-w-3xl px-4">
+      <a href={`/${lang}/events`} class="text-sm text-blue-600 hover:underline">← Back</a>
+      <time class="mt-4 block text-sm text-gray-500">
+        {event.data.date.toLocaleDateString(lang)}
+      </time>
+      <h1 class="mt-2 text-3xl font-bold text-gray-900">{event.data.title}</h1>
+      {event.data.location && (
+        <p class="mt-2 text-sm text-gray-500">📍 {event.data.location}</p>
+      )}
+      <div class="prose mt-8 max-w-none">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Layout>

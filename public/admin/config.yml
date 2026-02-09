@@ -1,0 +1,93 @@
+# TODO: Update repo to your GitHub owner/repo before going live
+backend:
+  name: github
+  repo: owner/ghrweb
+  branch: main
+
+media_folder: public/images
+public_folder: /images
+
+collections:
+  - name: news-gr
+    label: "Νέα (Ελληνικά)"
+    folder: src/content/news/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: news-nl
+    label: "Nieuws (Nederlands)"
+    folder: src/content/news/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: news-en
+    label: "News (English)"
+    folder: src/content/news/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: events-gr
+    label: "Εκδηλώσεις (Ελληνικά)"
+    folder: src/content/events/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
+      - { label: "Location", name: "location", widget: "string", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: events-nl
+    label: "Evenementen (Nederlands)"
+    folder: src/content/events/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
+      - { label: "Location", name: "location", widget: "string", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: events-en
+    label: "Events (English)"
+    folder: src/content/events/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Date", name: "date", widget: "datetime" }
+      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
+      - { label: "Location", name: "location", widget: "string", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "markdown" }

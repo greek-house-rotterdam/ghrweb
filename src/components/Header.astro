@@ -1,0 +1,44 @@
+---
+import { t } from "../i18n/ui";
+import LanguagePicker from "./LanguagePicker.astro";
+import type { Lang } from "../i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const navItems = [
+  { href: `/${lang}`, label: t(lang, "nav.home") },
+  { href: `/${lang}/history`, label: t(lang, "nav.history") },
+  { href: `/${lang}/teams`, label: t(lang, "nav.teams") },
+  { href: `/${lang}/news`, label: t(lang, "nav.news") },
+  { href: `/${lang}/events`, label: t(lang, "nav.events") },
+  { href: `/${lang}/contact`, label: t(lang, "nav.contact") },
+  { href: `/${lang}/about`, label: t(lang, "nav.about") },
+  { href: `/${lang}/faq`, label: t(lang, "nav.faq") },
+] as const;
+---
+
+<header class="border-b border-gray-200 bg-white">
+  <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
+    <a href={`/${lang}`} class="text-xl font-bold">GHR</a>
+    <div class="hidden md:flex items-center gap-6">
+      {navItems.map((item) => (
+        <a href={item.href} class="text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          {item.label}
+        </a>
+      ))}
+    </div>
+    <div class="flex items-center gap-4">
+      <LanguagePicker lang={lang} />
+      <a
+        href={`/${lang}/become-a-member`}
+        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+      >
+        {t(lang, "nav.become-a-member")}
+      </a>
+    </div>
+  </nav>
+</header>

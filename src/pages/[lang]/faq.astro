@@ -1,0 +1,19 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { t } from "../../i18n/ui";
+import { getStaticLangPaths, type Lang } from "../../i18n/utils";
+
+export const getStaticPaths = getStaticLangPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+---
+
+<Layout title={t(lang, "nav.faq")} lang={lang}>
+  <section class="py-12">
+    <div class="mx-auto max-w-3xl px-4">
+      <h1 class="text-3xl font-bold text-gray-900">{t(lang, "nav.faq")}</h1>
+      <!-- TODO: Add FAQ items as an accordion -->
+      <p class="mt-4 text-gray-600">FAQ content coming soon.</p>
+    </div>
+  </section>
+</Layout>

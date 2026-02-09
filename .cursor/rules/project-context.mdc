@@ -15,9 +15,18 @@ Building the website for "Greek House in Rotterdam" (GHR) — a sustainable, low
 
 ## Key Objectives
 
-- **Accessibility:** Bilingual (GR/NL) from launch
+- **Accessibility:** Trilingual (GR/NL/EN) from launch
 - **Simplicity:** Managed by non-technical members of the cultural group
 - **Sustainability:** Minimal annual costs and high security
+
+## Tech Stack
+
+- **Framework:** Astro (static site generator) + Tailwind CSS
+- **CMS:** Decap CMS (Git-based, admin UI at `/admin`)
+- **Hosting:** Cloudflare Pages (free tier, auto-deploy from GitHub)
+- **Translation:** GitHub Action + DeepL API for content; JSON files for UI strings
+- **Forms:** Embedded Google Forms
+- **Content:** Markdown files in `src/content/` organized by language (`gr/`, `nl/`, `en/`)
 
 ## Developer Profile
 

@@ -1,0 +1,38 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { t } from "../../../i18n/ui";
+import { getStaticLangPaths, type Lang } from "../../../i18n/utils";
+import { getCollection } from "astro:content";
+
+export const getStaticPaths = getStaticLangPaths;
+
+const { lang } = Astro.params as { lang: Lang };
+
+const allEvents = await getCollection("events");
+const events = allEvents
+  .filter((event) => event.data.lang === lang)
+  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
+---
+
+<Layout title={t(lang, "nav.events")} lang={lang}>
+  <section class="py-12">
+    <div class="mx-auto max-w-7xl px-4">
+      <h1 class="text-3xl font-bold text-gray-900">{t(lang, "nav.events")}</h1>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {events.map((event) => (
+          <a
+            href={`/${lang}/events/${event.id.split("/").pop()}`}
+            class="block rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
+          >
+            <time class="text-sm text-gray-500">{event.data.date.toLocaleDateString(lang)}</time>
+            <h3 class="mt-2 text-lg font-semibold">{event.data.title}</h3>
+            <p class="mt-1 text-sm text-gray-600">{event.data.description}</p>
+            {event.data.location && (
+              <p class="mt-2 text-xs text-gray-400">📍 {event.data.location}</p>
+            )}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
