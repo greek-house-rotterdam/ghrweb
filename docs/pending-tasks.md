@@ -22,6 +22,25 @@
 | 9 | **Evaluate OpenAI for translation** | Content volume or complexity increases | Consider switching from DeepL to OpenAI API if translations feel "robotic" or if Markdown structure (frontmatter) is frequently broken. OpenAI offers better contextual control and structural integrity via system prompts. |
 | 8 | **Connect custom domain** | Domain DNS access available | Cloudflare Pages → Custom domains → Add domain → Update DNS records |
 
+## Security Hardening
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 10 | **Audit org-level security settings** | Org fully operational (all members joined, 2FA enforced) | Review what's not yet configured beyond current setup: rulesets, tag protection, Actions permissions, secret scanning, Dependabot alerts, deploy key policies. Free-tier limits apply — focus on what's available and meaningful. |
+| 11 | **Add CODEOWNERS with mandatory review for infrastructure paths** | Repo structure stabilized | Create a `CODEOWNERS` file requiring PanoEvJ approval for non-content paths: `.github/`, `src/layouts/`, `src/pages/`, `astro.config.*`, `tailwind.config.*`, `package.json`. Content paths (`src/content/`) remain unblocked so editors can self-serve via Decap CMS. |
+
+## Testing
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 12 | **Add site tests** | Core site structure and build pipeline working | Build smoke test (Astro compiles without errors), content schema validation (frontmatter structure), internal link checking, and basic integration tests (pages render expected content). Use Astro-compatible tooling (Vitest or similar). Keep lightweight — the site is static, not a SaaS app. |
+
+## Developer Tooling
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 13 | **Add Cursor AI skills for the project stack** | Active development begins | Find or create Cursor skills (`.cursor/skills/`) for: Astro (priority — primary framework, beginner frontend level), Tailwind CSS, GitHub Actions, Python scripting, and Decap CMS patterns. Better skills = more accurate AI assistance for this specific stack. |
+
 ---
 
-*Last updated: Feb 16, 2026*
+*Last updated: Feb 17, 2026*
