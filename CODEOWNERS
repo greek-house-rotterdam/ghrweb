@@ -29,3 +29,6 @@ src/pages/ @PanoEvJ
 # Dependencies
 package.json @PanoEvJ
 package-lock.json @PanoEvJ
+
+# This file itself — prevent anyone from weakening the protections
+CODEOWNERS @PanoEvJ

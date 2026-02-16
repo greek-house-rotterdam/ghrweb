@@ -28,6 +28,7 @@
 |---|------|-------------|---------|
 | 10 | **Audit org-level security settings** | Org fully operational (all members joined, 2FA enforced) | Review what's not yet configured beyond current setup: rulesets, tag protection, Actions permissions, secret scanning, Dependabot alerts, deploy key policies. Free-tier limits apply — focus on what's available and meaningful. |
 | 11 | **Add CODEOWNERS with mandatory review for infrastructure paths** | Repo structure stabilized | Create a `CODEOWNERS` file requiring PanoEvJ approval for non-content paths: `.github/`, `src/layouts/`, `src/pages/`, `astro.config.*`, `tailwind.config.*`, `package.json`. Content paths (`src/content/`) remain unblocked so editors can self-serve via Decap CMS. |
+| 15 | **Allow other Owners to modify CODEOWNERS** | Task #11 complete | Explicitly define ownership of the `CODEOWNERS` file itself (e.g. `@greek-house-rotterdam/owners` or specific users) to ensure other Owners can update governance rules without being blocked by a single person. |
 
 ## Testing
 
