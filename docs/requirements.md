@@ -107,10 +107,14 @@ Supported content types for admin uploads:
 
 ### 5.2 Admin Access
 
-Managed via a **GitHub Organization (free tier)**. Each admin/editor needs a personal GitHub account (free).
+Managed via a **GitHub Organization (free tier)** with a **public repository**. Each admin/editor needs a personal GitHub account (free).
 
 - **Admins** (`Maintain` role): Board of Directors, developer — can push directly to `main`, manage repo settings, merge PRs
 - **Editors** (`Write` role): Cultural team, content writers — can create content via Decap CMS; with branch protection on `main`, their changes go through a PR that an admin approves before publishing
+
+> **Note:** The editorial workflow (editors → PR → admin approval) depends on branch protection rules, which are only available for free on **public** repositories. A private repo would require GitHub Team ($4/user/month).
+
+**Owner redundancy:** The GitHub Organization must have at least 2 Owners (e.g., developer + board president) to prevent lockout if one person loses access to their account.
 
 **Publishing permissions (who can create/edit content):**
 

@@ -167,6 +167,7 @@ Deployment is handled by Cloudflare Pages directly (built-in GitHub integration)
 - **No user uploads** — eliminates file-based attack vectors
 - **Google Forms** — form processing happens on Google's infrastructure, not ours
 - **GitHub Organization** — team-based access control, individual accountability, supports enforcing 2FA for all members
+- **Owner redundancy** — at least 2 Organization Owners required (e.g., developer + board president) to prevent lockout if one loses access. Losing the sole Owner means losing control of the repo, CMS access, and deployment pipeline.
 
 The only authentication surface is GitHub OAuth (supports 2FA).
 
@@ -189,6 +190,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 9 | Deployment | Cloudflare auto-deploy | Push to `main` = live in ~30 sec, no CI/CD config needed | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
 | 10 | Analytics | Google Analytics (GA4) | Free, full-featured, already referenced in success metrics. Requires cookie consent banner (GDPR) | Plausible (~€9/mo, GDPR-friendly but paid), Firebase Analytics (designed for mobile apps/SPAs, not static sites) |
 | 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor roles, branch protection for editorial workflow, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
+| 12 | Repository visibility | Public | Enables branch protection rules, required PR reviews, and Code Owners on the free tier — all unavailable for private repos without a paid plan. Unlimited GitHub Actions minutes. No secrets to protect — site content is public by nature. | Private repo (would require GitHub Team at $4/user/month to get branch protection, which the editorial workflow depends on) |
 
 ### Open Decisions
 
