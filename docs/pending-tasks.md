@@ -41,6 +41,12 @@
 |---|------|-------------|---------|
 | 13 | **Add Cursor AI skills for the project stack** | Active development begins | Find or create Cursor skills (`.cursor/skills/`) for: Astro (priority — primary framework, beginner frontend level), Tailwind CSS, GitHub Actions, Python scripting, and Decap CMS patterns. Better skills = more accurate AI assistance for this specific stack. (e.g. [here](https://github.com/SpillwaveSolutions/publishing-astro-websites-agentic-skill)) |
 
+## Infrastructure & Limits
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 14 | **Investigate traffic spike capacity** | Site is live on Cloudflare Pages | Research Cloudflare Pages free tier limits (bandwidth, requests/day, concurrent connections). Determine failure mode during a viral event (e.g. major news): does it throttle, bill overages, or shut down? Document the "safe" traffic ceiling. |
+
 ---
 
 *Last updated: Feb 17, 2026*
