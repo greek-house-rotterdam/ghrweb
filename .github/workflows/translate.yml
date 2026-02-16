@@ -1,0 +1,61 @@
+name: Translate Content
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/content/**/*.md"
+
+permissions:
+  contents: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install deepl pyyaml
+
+      - name: Detect changed content files
+        id: changes
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            FILES=$(find src/content -name '*.md' -type f | tr '\n' ' ')
+          else
+            FILES=$(git diff --name-only --diff-filter=ACM "$BEFORE" "${{ github.sha }}" -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
+          fi
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+          if [ -z "$FILES" ]; then
+            echo "No content files changed."
+          else
+            echo "Changed files: $FILES"
+          fi
+
+      - name: Translate content
+        if: steps.changes.outputs.files != ''
+        env:
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+        run: python .github/scripts/translate.py ${{ steps.changes.outputs.files }}
+
+      - name: Commit translations
+        if: steps.changes.outputs.files != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add src/content/
+          if git diff --staged --quiet; then
+            echo "No translation changes to commit."
+          else
+            git commit -m "chore: auto-translate content"
+            git push
+          fi

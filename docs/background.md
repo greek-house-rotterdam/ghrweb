@@ -12,7 +12,7 @@ Primary Vision: A sustainable, low-maintenance hub for cultural history, communi
 
 Key Objectives:
 
-Accessibility: Bilingual (GR/NL) from launch.
+Accessibility: Trilingual (GR/NL/EN) from launch.
 
 Simplicity: Managed by non-technical members of the cultural group.
 

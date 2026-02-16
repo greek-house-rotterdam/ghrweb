@@ -146,6 +146,8 @@ Two layers:
 
 **Content flow:** Admin publishes in one language via Decap CMS → commit lands in repo → GitHub Action detects new/changed content → calls DeepL API → commits translated versions → Cloudflare rebuilds the site.
 
+**No infinite loops:** The translation workflow commits translated files back to `main`, which could re-trigger itself. This is prevented by GitHub's built-in rule: pushes made with `GITHUB_TOKEN` do not create new workflow runs. External integrations (Cloudflare Pages) still receive the push event and rebuild normally.
+
 ---
 
 ## GitHub Actions
@@ -196,4 +198,4 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 
 | # | Decision | Options | Status |
 |---|----------|---------|--------|
-| 1 | Translation API | DeepL API (high quality, free tier: 500k chars/mo) vs OpenAI API (flexible, pay-per-use) | Pending |
+| ~~1~~ | ~~Translation API~~ | ~~DeepL API vs OpenAI API~~ | **Decided: DeepL API** — higher translation quality for European languages, free tier (500k chars/mo) more than sufficient for this project's volume. Implemented in `.github/workflows/translate.yml`. |
