@@ -1,4 +1,4 @@
-name: Translate Content
+name: Sync Content
 
 on:
   push:
@@ -47,15 +47,39 @@ jobs:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: python .github/scripts/translate.py ${{ steps.changes.outputs.files }}
 
-      - name: Commit translations
-        if: steps.changes.outputs.files != ''
+      - name: Sync deletions across languages
+        id: deletions
+        run: |
+          BEFORE="${{ github.event.before }}"
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "Initial commit — skipping deletion sync."
+            exit 0
+          fi
+          DELETED=$(git diff --name-only --diff-filter=D "$BEFORE" "${{ github.sha }}" -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md')
+          if [ -z "$DELETED" ]; then
+            echo "No content files deleted."
+            exit 0
+          fi
+          echo "Deleted files:"
+          echo "$DELETED"
+          for file in $DELETED; do
+            for lang in gr nl en; do
+              target=$(echo "$file" | sed -E "s|/(gr|nl|en)/|/$lang/|")
+              if [ "$target" != "$file" ] && [ -f "$target" ]; then
+                echo "  Removing: $target"
+                rm "$target"
+              fi
+            done
+          done
+
+      - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/
           if git diff --staged --quiet; then
-            echo "No translation changes to commit."
+            echo "No changes to commit."
           else
-            git commit -m "chore: auto-translate content"
+            git commit -m "chore: auto-translate and sync content"
             git push
           fi

@@ -38,14 +38,14 @@
            │ on push to main       │ GitHub Action triggered
            ▼                       ▼
 ┌──────────────────┐    ┌─────────────────────┐
-│  CLOUDFLARE      │    │  TRANSLATION        │
+│  CLOUDFLARE      │    │  CONTENT SYNC       │
 │  PAGES           │    │  WORKFLOW            │
 │                  │    │                     │
 │  Auto-builds     │    │  Detects new/changed│
-│  Astro site      │    │  content in gr/     │
-│  Deploys to      │    │  Calls DeepL API    │
-│  global CDN      │    │  Commits nl/ + en/  │
-│                  │    │  versions to repo   │
+│  Astro site      │    │  content → translate│
+│  Deploys to      │    │  Detects deletions  │
+│  global CDN      │    │  → sync across langs│
+│                  │    │  Commits to repo    │
 └──────────────────┘    └─────────────────────┘
            │
            ▼
@@ -80,16 +80,16 @@ Edit locally in IDE  →  git push to main
 Visit yoursite.com/admin  →  Log in (GitHub OAuth)
   │
   ▼
-Write/edit post in visual editor  →  Click "Publish"
+Write/edit/delete post in visual editor  →  Click "Publish" or "Delete"
   │
   ▼
-Decap CMS commits Markdown file to GitHub repo
+Decap CMS commits change to GitHub repo
   │
   ├──→ Cloudflare rebuilds site (~30 sec)
-  └──→ GitHub Action translates to other languages
-         │
+  └──→ GitHub Action syncs content across languages
+         │  (translates new/changed, removes deleted)
          ▼
-       Cloudflare rebuilds again with translations
+       Cloudflare rebuilds again with synced content
 ```
 
 ### Data Storage
@@ -146,6 +146,8 @@ Two layers:
 
 **Content flow:** Admin publishes in one language via Decap CMS → commit lands in repo → GitHub Action detects new/changed content → calls DeepL API → commits translated versions → Cloudflare rebuilds the site.
 
+**Deletion flow:** Admin deletes a post in any language → GitHub Action detects deleted file → removes corresponding files in the other two language folders → commits the deletions → Cloudflare rebuilds. This prevents "ghost posts" (translations that outlive their source).
+
 **No infinite loops:** The translation workflow commits translated files back to `main`, which could re-trigger itself. This is prevented by GitHub's built-in rule: pushes made with `GITHUB_TOKEN` do not create new workflow runs. External integrations (Cloudflare Pages) still receive the push event and rebuild normally.
 
 ---
@@ -154,7 +156,7 @@ Two layers:
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Translation** | Content file added/changed on `main` | Auto-translate to other two languages |
+| **Content Sync** | Content file added/changed/deleted on `main` | Auto-translate new/changed content; sync deletions across languages |
 | **Dependency updates** | Scheduled (Renovate/Dependabot) | Keep npm packages current |
 
 Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed.
