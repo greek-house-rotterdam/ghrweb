@@ -12,7 +12,7 @@
 | **Styling** | Tailwind CSS | Utility-first CSS — fast to build, AI-friendly, responsive by default |
 | **CMS** | Decap CMS | Git-based admin UI at `/admin` — free, no backend, non-technical friendly |
 | **Hosting** | Cloudflare Pages | Static hosting with global CDN — free tier, auto-deploy from GitHub |
-| **Translation** | GitHub Action + DeepL API | Auto-translates content on commit — trilingual (GR/NL/EN) |
+| **Translation** | GitHub Action + DeepL API | Auto-translates content within PRs — trilingual (GR/NL/EN) |
 | **Forms** | Google Forms (embedded) | Contact and enrollment — built-in spam protection, responses in Google Sheets |
 | **Analytics** | Google Analytics (GA4) | Traffic and engagement tracking — requires cookie consent banner (GDPR) |
 | **Auth/Access** | GitHub Organization (free tier) | Team-based repo access — admin/editor permissions via GitHub roles |
@@ -33,19 +33,20 @@
 │  src/i18n/             ← Translation strings                        │
 │  public/images/        ← Uploaded images                            │
 │  public/admin/         ← Decap CMS admin panel                      │
+│  CODEOWNERS            ← Requires translators review on content     │
 └──────────┬───────────────────────┬──────────────────────────────────┘
            │                       │
-           │ on push to main       │ GitHub Action triggered
+           │ on pull request       │ GitHub Action triggered
            ▼                       ▼
 ┌──────────────────┐    ┌─────────────────────┐
-│  CLOUDFLARE      │    │  CONTENT SYNC       │
-│  PAGES           │    │  WORKFLOW            │
+│  CLOUDFLARE      │    │  TRANSLATE CONTENT  │
+│  PAGES           │    │  WORKFLOW           │
 │                  │    │                     │
-│  Auto-builds     │    │  Detects new/changed│
-│  Astro site      │    │  content → translate│
-│  Deploys to      │    │  Detects deletions  │
-│  global CDN      │    │  → sync across langs│
-│                  │    │  Commits to repo    │
+│  Builds preview  │    │  Detects new/changed│
+│  for each PR     │    │  content → translate│
+│  Deploys to CDN  │    │  Detects deletions  │
+│  on merge to     │    │  → sync across langs│
+│  main            │    │  Commits to PR      │
 └──────────────────┘    └─────────────────────┘
            │
            ▼
@@ -65,31 +66,42 @@
 Code change (pages, components, styles, config)
   │
   ▼
-Edit locally in IDE  →  git push to main
+Edit locally in IDE  →  Open PR to main
                               │
                               ▼
-                     Cloudflare auto-builds & deploys
+                     Cloudflare builds deploy preview
                               │
                               ▼
-                         Live in ~30 seconds
+                     Review preview → Merge PR
+                              │
+                              ▼
+                     Cloudflare deploys to production (~30 sec)
 ```
 
-### Admin Workflow (non-technical)
+### Content Workflow (editors & admins)
 
 ```
 Visit yoursite.com/admin  →  Log in (GitHub OAuth)
   │
   ▼
-Write/edit/delete post in visual editor  →  Click "Publish" or "Delete"
+Write/edit content in visual editor  →  Click "Publish"
   │
   ▼
-Decap CMS commits change to GitHub repo
+Decap CMS opens a PR (editorial workflow)
   │
-  ├──→ Cloudflare rebuilds site (~30 sec)
-  └──→ GitHub Action syncs content across languages
-         │  (translates new/changed, removes deleted)
+  ├──→ Translation workflow runs on PR
+  │      Detects new/changed content → translates via DeepL
+  │      Commits translations to the same PR
+  │
+  ├──→ Cloudflare builds deploy preview of the PR
+  │
+  └──→ Translators team auto-requested for review (CODEOWNERS)
+         │
          ▼
-       Cloudflare rebuilds again with synced content
+       Admin reviews deploy preview → Merges PR
+         │
+         ▼
+       Cloudflare deploys to production
 ```
 
 ### Data Storage
@@ -142,13 +154,13 @@ Two layers:
 | Layer | What | How |
 |-------|------|-----|
 | **UI strings** | Nav, buttons, footer, labels | JSON translation files — translated once, maintained manually |
-| **Content** | News, events, page text | GitHub Action auto-translates on commit using DeepL API |
+| **Content** | News, events, page text | GitHub Action auto-translates within PRs using DeepL API |
 
-**Content flow:** Admin publishes in one language via Decap CMS → commit lands in repo → GitHub Action detects new/changed content → calls DeepL API → commits translated versions → Cloudflare rebuilds the site.
+**Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files by comparing the PR branch to `main` → calls DeepL API → commits translations to the same PR → admin reviews the deploy preview and merges → Cloudflare deploys.
 
-**Deletion flow:** Admin deletes a post in any language → GitHub Action detects deleted file → removes corresponding files in the other two language folders → commits the deletions → Cloudflare rebuilds. This prevents "ghost posts" (translations that outlive their source).
+**Deletion flow:** Content is deleted in a PR → translation workflow detects deleted files → removes corresponding files in the other two language folders → commits deletions to the same PR. This prevents "ghost posts" (translations that outlive their source).
 
-**No infinite loops:** The translation workflow commits translated files back to `main`, which could re-trigger itself. This is prevented by GitHub's built-in rule: pushes made with `GITHUB_TOKEN` do not create new workflow runs. External integrations (Cloudflare Pages) still receive the push event and rebuild normally.
+**No infinite loops:** The translation workflow commits to the PR branch using `GITHUB_TOKEN`. GitHub's built-in rule ensures these pushes do not trigger new workflow runs.
 
 ---
 
@@ -156,10 +168,10 @@ Two layers:
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Content Sync** | Content file added/changed/deleted on `main` | Auto-translate new/changed content; sync deletions across languages |
+| **Translate Content** | PR opened/updated targeting `main` with content changes | Auto-translate new/changed content within the PR; sync deletions across languages |
 | **Dependency updates** | Scheduled (Renovate/Dependabot) | Keep npm packages current |
 
-Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed.
+Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed. Cloudflare also builds deploy previews for every PR, providing a rendered preview URL for admin review.
 
 ---
 
@@ -190,11 +202,15 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 5 | Forms | Google Forms (embedded) | Free, built-in spam protection, responses in Google Sheets, no backend needed | Custom form + API (unnecessary complexity, needs spam protection, needs a database) |
 | 6 | Database | None | No dynamic data — content is Markdown in Git, forms go to Google Sheets | Firebase Firestore, Supabase (no use case — would add cost and complexity for zero benefit) |
 | 7 | Content storage | Markdown in GitHub repo | Version-controlled, portable, works with Decap CMS and Astro content collections | Database-backed CMS (unnecessary layer), Cloudflare KV/R2 (overkill for text content) |
-| 8 | Translation approach | GitHub Action + API | Fully automated, triggers on content commit, no manual step for admins | Manual translation (doesn't scale), i18n plugin (most only handle UI strings, not content) |
+| 8 | Translation approach | GitHub Action + DeepL API (PR-based) | Triggers on PR, translates within the PR before merge. Admin reviews rendered preview. | Push-to-main approach (blocked by branch protection on free tier), manual translation (doesn't scale) |
 | 9 | Deployment | Cloudflare auto-deploy | Push to `main` = live in ~30 sec, no CI/CD config needed | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
 | 10 | Analytics | Google Analytics (GA4) | Free, full-featured, already referenced in success metrics. Requires cookie consent banner (GDPR) | Plausible (~€9/mo, GDPR-friendly but paid), Firebase Analytics (designed for mobile apps/SPAs, not static sites) |
-| 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor roles, branch protection for editorial workflow, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
-| 12 | Repository visibility | Public | Enables branch protection rules, required PR reviews, and Code Owners on the free tier — all unavailable for private repos without a paid plan. Unlimited GitHub Actions minutes. No secrets to protect — site content is public by nature. | Private repo (would require GitHub Team at $4/user/month to get branch protection, which the editorial workflow depends on) |
+| 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor/translator roles, repository rulesets for editorial workflow, CODEOWNERS for translation review, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
+| 12 | Repository visibility | Public | Enables rulesets, required PR reviews, and Code Owners on the free tier — all unavailable for private repos without a paid plan. Unlimited GitHub Actions minutes. No secrets to protect — site content is public by nature. | Private repo (would require GitHub Team at $4/user/month to get rulesets, which the editorial workflow depends on) |
+| 13 | Branch protection mechanism | Repository rulesets (not classic branch protection) | Supports bypass actors, squash-only merge, linear history, Code Owners review. Classic branch protection cannot add GitHub Actions as a bypass actor. Org-level rulesets require paid plan. | Classic branch protection (no granular bypass), org-level rulesets (requires GitHub Team plan at $4/user/month) |
+| 14 | Git merge strategy | Squash and merge only | Clean linear history. Simplifies the merge button for non-technical users — one predictable action. Each PR becomes exactly one commit on `main`. | Merge commits (messy history), rebase (confusing for non-technical users) |
+| 15 | Translation review | CODEOWNERS + translators team | Auto-requests translators team on content PRs. Enforced by "Require review from Code Owners" in the ruleset. | Manual reviewer assignment (easy to forget), no review (risks bad translations going live) |
+| 16 | Infrastructure protection | CODEOWNERS + developer review | Auto-requests developer (`@PanoEvJ`) for changes to `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json`. Editors can freely create content but cannot break the site's engine. | No protection (editors could accidentally break deployment), blanket admin review on everything (slows down content publishing unnecessarily) |
 
 ### Open Decisions
 

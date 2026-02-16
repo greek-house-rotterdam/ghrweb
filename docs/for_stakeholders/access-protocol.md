@@ -69,16 +69,22 @@ Everything Admins can do, **plus:**
 ## How Content Gets Published
 
 ```
-Editor writes/edits content in /admin
+Editor writes/edits content in /admin  →  Clicks "Publish"
         ↓
-  A review request is created automatically
+  Decap CMS opens a review request (pull request)
         ↓
-  An Admin reviews the changes
+  Translations are generated automatically (GitHub Action + DeepL)
         ↓
-  Admin approves → content goes live on the website
+  A preview of the website is built automatically (Cloudflare Pages)
+        ↓
+  Translators team is requested to review (automatic)
+        ↓
+  Admin reviews the preview website  →  Approves and merges
+        ↓
+  Content + translations go live on the website
 ```
 
-Nothing goes live without Admin approval. This protects the website from accidental or unreviewed changes.
+Nothing goes live without Admin approval. The admin reviews a **rendered preview** of the website — not raw files. This protects the website from accidental or unreviewed changes, and ensures translations are checked before publishing.
 
 ---
 
@@ -92,9 +98,10 @@ Nothing goes live without Admin approval. This protects the website from acciden
 
 ## Quick Reference
 
-| Action | Editor | Admin | Owner |
-|--------|:------:|:-----:|:-----:|
+| Action | Editor | Admin/Translator | Owner |
+|--------|:------:|:----------------:|:-----:|
 | Create/edit content | Yes | Yes | Yes |
+| Review translations | No | Yes | Yes |
 | Approve & publish content | No | Yes | Yes |
 | Manage website settings | No | Yes | Yes |
 | Add or remove members | No | No | Yes |

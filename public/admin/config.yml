@@ -1,11 +1,12 @@
-# TODO: Update repo to your GitHub owner/repo before going live
 # local_backend only activates on localhost — safe to leave on in production
 local_backend: true
 
 backend:
   name: github
-  repo: owner/ghrweb
+  repo: greek-house-rotterdam/ghrweb
   branch: main
+
+publish_mode: editorial_workflow
 
 media_folder: public/images
 public_folder: /images

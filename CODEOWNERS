@@ -1,0 +1,31 @@
+# CODEOWNERS — auto-request reviewers based on file paths
+# Combined with the ruleset's "Require review from Code Owners" rule,
+# PRs cannot be merged without approval from the specified reviewers.
+
+# -----------------------------------------------------------------------------
+# CONTENT — translators team reviews all content changes
+# The translation workflow adds auto-translated files to PRs, which
+# triggers this rule and auto-requests the translators team.
+# -----------------------------------------------------------------------------
+src/content/ @greek-house-rotterdam/translators
+
+# -----------------------------------------------------------------------------
+# INFRASTRUCTURE — developer (PanoEvJ) must review changes to critical paths
+# Editors can freely edit content, but cannot break the site's engine,
+# deployment pipeline, or dependencies without explicit developer approval.
+# -----------------------------------------------------------------------------
+
+# GitHub Actions workflows and scripts
+.github/ @PanoEvJ
+
+# Astro and Tailwind configuration
+astro.config.* @PanoEvJ
+tailwind.config.* @PanoEvJ
+
+# Site structure (layouts and pages)
+src/layouts/ @PanoEvJ
+src/pages/ @PanoEvJ
+
+# Dependencies
+package.json @PanoEvJ
+package-lock.json @PanoEvJ

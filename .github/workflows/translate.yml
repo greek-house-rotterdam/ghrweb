@@ -1,8 +1,9 @@
-name: Sync Content
+name: Translate Content
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [opened, synchronize]
     paths:
       - "src/content/**/*.md"
 
@@ -16,6 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v5
@@ -28,12 +30,8 @@ jobs:
       - name: Detect changed content files
         id: changes
         run: |
-          BEFORE="${{ github.event.before }}"
-          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            FILES=$(find src/content -name '*.md' -type f | tr '\n' ' ')
-          else
-            FILES=$(git diff --name-only --diff-filter=ACM "$BEFORE" "${{ github.sha }}" -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
-          fi
+          git fetch origin main
+          FILES=$(git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
           if [ -z "$FILES" ]; then
             echo "No content files changed."
@@ -48,14 +46,9 @@ jobs:
         run: python .github/scripts/translate.py ${{ steps.changes.outputs.files }}
 
       - name: Sync deletions across languages
-        id: deletions
         run: |
-          BEFORE="${{ github.event.before }}"
-          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            echo "Initial commit — skipping deletion sync."
-            exit 0
-          fi
-          DELETED=$(git diff --name-only --diff-filter=D "$BEFORE" "${{ github.sha }}" -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md')
+          git fetch origin main
+          DELETED=$(git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md')
           if [ -z "$DELETED" ]; then
             echo "No content files deleted."
             exit 0
@@ -72,7 +65,7 @@ jobs:
             done
           done
 
-      - name: Commit changes
+      - name: Commit and push translations
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
