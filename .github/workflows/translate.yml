@@ -27,22 +27,24 @@ jobs:
       - name: Install dependencies
         run: pip install deepl pyyaml
 
-      - name: Detect changed content files
-        id: changes
-        run: |
-          git fetch origin main
-          # Use -z for null-terminated strings to handle spaces/special chars safely
-          # We need to process this carefully for the python script arguments
-          FILES=$(git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
-          
-          echo "Detected files: $FILES"
-          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+      # Replaced manual git diff with robust action
+      - name: Get changed content files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            src/content/*/gr/*.md
+            src/content/*/nl/*.md
+            src/content/*/en/*.md
+          separator: " "
 
       - name: Translate content
-        if: steps.changes.outputs.files != ''
+        if: steps.changed-files.outputs.any_changed == 'true'
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-        run: python .github/scripts/translate.py ${{ steps.changes.outputs.files }}
+        run: |
+          echo "Translating files: ${{ steps.changed-files.outputs.all_changed_files }}"
+          python .github/scripts/translate.py ${{ steps.changed-files.outputs.all_changed_files }}
 
       - name: Sync deletions across languages
         run: |
@@ -62,9 +64,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/
           
-          # Debug: show what is being committed
-          git status
-          
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
@@ -82,10 +81,7 @@ jobs:
           fetch-depth: 0
 
       - name: Pull latest changes
-        run: |
-          git pull origin ${{ github.head_ref }}
-          git log -1 --oneline
-          ls -R src/content/
+        run: git pull origin ${{ github.head_ref }}
 
       - uses: actions/setup-python@v5
         with:
