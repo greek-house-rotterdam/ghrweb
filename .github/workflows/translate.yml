@@ -31,13 +31,12 @@ jobs:
         id: changes
         run: |
           git fetch origin main
+          # Use -z for null-terminated strings to handle spaces/special chars safely
+          # We need to process this carefully for the python script arguments
           FILES=$(git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
+          
+          echo "Detected files: $FILES"
           echo "files=$FILES" >> "$GITHUB_OUTPUT"
-          if [ -z "$FILES" ]; then
-            echo "No content files changed."
-          else
-            echo "Changed files: $FILES"
-          fi
 
       - name: Translate content
         if: steps.changes.outputs.files != ''
@@ -49,20 +48,23 @@ jobs:
         run: |
           git fetch origin main
           DELETED=$(git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
+          
           if [ -z "$DELETED" ]; then
             echo "No content files deleted."
-            exit 0
+          else
+            echo "Deleted files: $DELETED"
+            python .github/scripts/sync_deletions.py $DELETED
           fi
-          echo "Deleted files: $DELETED"
-          
-          # Pass the deleted files to the python script
-          python .github/scripts/sync_deletions.py $DELETED
 
       - name: Commit and push translations
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/
+          
+          # Debug: show what is being committed
+          git status
+          
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
@@ -80,7 +82,10 @@ jobs:
           fetch-depth: 0
 
       - name: Pull latest changes
-        run: git pull origin ${{ github.head_ref }}
+        run: |
+          git pull origin ${{ github.head_ref }}
+          git log -1 --oneline
+          ls -R src/content/
 
       - uses: actions/setup-python@v5
         with:
