@@ -156,7 +156,7 @@ Two layers:
 | **UI strings** | Nav, buttons, footer, labels | JSON translation files — translated once, maintained manually |
 | **Content** | News, events, page text | GitHub Action auto-translates within PRs using DeepL API |
 
-**Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files by comparing the PR branch to `main` → calls DeepL API → commits translations to the same PR → admin reviews the deploy preview and merges → Cloudflare deploys.
+**Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files → calls DeepL API → commits translations to the same PR → verification script checks for missing files → admin reviews the deploy preview and merges → Cloudflare deploys.
 
 **Deletion flow:** Content is deleted in a PR → translation workflow detects deleted files → removes corresponding files in the other two language folders → commits deletions to the same PR. This prevents "ghost posts" (translations that outlive their source).
 
@@ -168,7 +168,7 @@ Two layers:
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Translate Content** | PR opened/updated targeting `main` with content changes | Auto-translate new/changed content within the PR; sync deletions across languages |
+| **Translate Content** | PR opened/updated targeting `main` with content changes | Auto-translate new/changed content within the PR; sync deletions; verify content integrity |
 | **Dependency updates** | Scheduled (Renovate/Dependabot) | Keep npm packages current |
 
 Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed. Cloudflare also builds deploy previews for every PR, providing a rendered preview URL for admin review.

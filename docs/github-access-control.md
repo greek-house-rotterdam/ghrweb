@@ -93,6 +93,7 @@ Repository-level ruleset — replaces classic branch protection.
 
 - **Bypass actors:** Organization admin + admins team (Always allow)
 - **Require pull request before merging** — 1 approval, dismiss stale approvals, require conversation resolution
+- **Require status checks to pass** — `translate` (and `verify`), `Cloudflare Pages`
 - **Require review from Code Owners** — `CODEOWNERS` file requires `translators` team review on `src/content/` changes
 - **Allowed merge method:** Squash only — keeps history clean, simplifies the merge button for non-technical users
 - **Require linear history** — enforces squash-only at the Git level

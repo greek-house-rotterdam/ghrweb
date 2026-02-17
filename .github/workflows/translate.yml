@@ -76,3 +76,22 @@ jobs:
             git commit -m "chore: auto-translate and sync content"
             git push
           fi
+
+  verify:
+    needs: translate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin ${{ github.head_ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify content integrity
+        run: python .github/scripts/verify_content.py

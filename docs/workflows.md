@@ -93,6 +93,9 @@ For the developer making code or content changes locally.
 
 **No infinite loops.** The workflow commits using `GITHUB_TOKEN`, which does not trigger new workflow runs (GitHub's built-in safety rule).
 
+**Integrity Check:**
+After translation, a second job `verify` runs to ensure that every content file exists in all three languages (`gr`, `nl`, `en`). If any file is missing (e.g. if translation failed), this check fails, blocking the PR.
+
 **Files involved:**
 - Workflow: `.github/workflows/translate.yml`
 - Translation script: `.github/scripts/translate.py`
