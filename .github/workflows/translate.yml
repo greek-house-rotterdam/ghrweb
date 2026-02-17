@@ -48,22 +48,15 @@ jobs:
       - name: Sync deletions across languages
         run: |
           git fetch origin main
-          DELETED=$(git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md')
+          DELETED=$(git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
           if [ -z "$DELETED" ]; then
             echo "No content files deleted."
             exit 0
           fi
-          echo "Deleted files:"
-          echo "$DELETED"
-          for file in $DELETED; do
-            for lang in gr nl en; do
-              target=$(echo "$file" | sed -E "s|/(gr|nl|en)/|/$lang/|")
-              if [ "$target" != "$file" ] && [ -f "$target" ]; then
-                echo "  Removing: $target"
-                rm "$target"
-              fi
-            done
-          done
+          echo "Deleted files: $DELETED"
+          
+          # Pass the deleted files to the python script
+          python .github/scripts/sync_deletions.py $DELETED
 
       - name: Commit and push translations
         run: |
