@@ -27,49 +27,41 @@ jobs:
       - name: Install dependencies
         run: pip install deepl pyyaml
 
-      - name: Detect changed content files
-        id: changes
-        run: |
-          git fetch origin main
-          FILES=$(git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md' | tr '\n' ' ')
-          echo "files=$FILES" >> "$GITHUB_OUTPUT"
-          if [ -z "$FILES" ]; then
-            echo "No content files changed."
-          else
-            echo "Changed files: $FILES"
-          fi
-
-      - name: Translate content
-        if: steps.changes.outputs.files != ''
+      - name: Detect and translate changed content
         env:
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-        run: python .github/scripts/translate.py ${{ steps.changes.outputs.files }}
-
-      - name: Sync deletions across languages
         run: |
           git fetch origin main
-          DELETED=$(git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/*/gr/*.md' 'src/content/*/nl/*.md' 'src/content/*/en/*.md')
-          if [ -z "$DELETED" ]; then
-            echo "No content files deleted."
-            exit 0
+
+          echo "=== Added/Changed files ==="
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' > /tmp/changed.txt
+          cat /tmp/changed.txt
+
+          if [ -s /tmp/changed.txt ]; then
+            echo "Translating..."
+            python .github/scripts/translate.py $(cat /tmp/changed.txt)
+          else
+            echo "No content files to translate."
           fi
-          echo "Deleted files:"
-          echo "$DELETED"
-          for file in $DELETED; do
-            for lang in gr nl en; do
-              target=$(echo "$file" | sed -E "s|/(gr|nl|en)/|/$lang/|")
-              if [ "$target" != "$file" ] && [ -f "$target" ]; then
-                echo "  Removing: $target"
-                rm "$target"
-              fi
-            done
-          done
+
+          echo ""
+          echo "=== Deleted files ==="
+          git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/' > /tmp/deleted.txt
+          cat /tmp/deleted.txt
+
+          if [ -s /tmp/deleted.txt ]; then
+            echo "Syncing deletions..."
+            python .github/scripts/sync_deletions.py $(cat /tmp/deleted.txt)
+          else
+            echo "No content files deleted."
+          fi
 
       - name: Commit and push translations
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/
+
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
