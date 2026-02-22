@@ -32,3 +32,6 @@ scripts-dev/**
 **.python-version
 **__pycache__/
 **.python-version
+
+# data
+data/scrapes/vvgn/records/**/*.json

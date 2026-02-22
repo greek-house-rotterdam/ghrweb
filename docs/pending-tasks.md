@@ -16,7 +16,7 @@
 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
-| 4 | **[HIGH] Scrape and archive all content from `https://vvgn.eu/nl/`** | Confirm scope and permission to copy content | Crawl all public pages and posts, capture title/body/date/category/language/media URLs, and export to structured files for migration into `src/content/`. Include a repeatable script and a crawl report (total URLs, successes, failures). |
+| 4 | ~~**[HIGH] Scrape and archive all content from `https://vvgn.eu/nl/`**~~ | ~~Confirm scope and permission to copy content~~ | Done. Repeatable scraper at `.github/scripts/scrape_vvgn.py`. Outputs at `data/scrapes/vvgn/` (records, `manifest.json`, `crawl-report.md`, inventory CSV). Content-manager handoff: `docs/vvgn-content-manager-dossier.md`. |
 | 5 | **Connect Cloudflare Pages** to org repo | Repo transfer complete (done) | Cloudflare dashboard → Pages → Create project → Connect `greek-house-rotterdam/ghrweb` |
 | 6 | **Configure Decap CMS OAuth** | Cloudflare Pages connected, GitHub OAuth app created | Decap CMS needs a GitHub OAuth app registered under the org for admin login at `/admin` |
 | 7 | ~~**Set up DeepL / translation GitHub Action**~~ | ~~Translation API decision finalized~~ | Done. Workflow at `.github/workflows/translate.yml`, script at `.github/scripts/translate.py`. Requires `DEEPL_API_KEY` secret in GitHub repo settings. |
@@ -51,4 +51,4 @@
 
 ---
 
-*Last updated: Feb 17, 2026*
+*Last updated: Feb 21, 2026*

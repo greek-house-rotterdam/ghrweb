@@ -73,6 +73,22 @@ For the developer making code or content changes locally.
 
 ---
 
+## Legacy Content Ingestion (One-Time)
+
+For migration from the legacy VVGN site into this repo.
+
+1. Run `.github/scripts/scrape_vvgn.py` (start URL: `https://vvgn.eu/nl/`)
+2. Review output in `data/scrapes/vvgn/`:
+   - `records/` (per-page JSON)
+   - `manifest.json` and `crawl-report.md` (coverage and failures)
+   - `content-manager-post-inventory.csv` (spreadsheet-friendly post inventory)
+3. Use `docs/vvgn-content-manager-dossier.md` as the non-technical handoff to content managers
+4. Migrate content into `src/content/` after editorial review
+
+Note: many Dutch post URLs are placeholders that point to Greek/English content. Prioritize full-text posts first during migration.
+
+---
+
 ## Translation Workflow (GitHub Action)
 
 **Trigger:** PR opened or updated, targeting `main`, with changes in `src/content/**/*.md`
@@ -179,4 +195,4 @@ The ruleset on `main` also requires at least 1 approval to merge.
 
 ---
 
-_Last updated: February 2026_
+_Last updated: February 2026 (includes legacy scrape workflow)_
