@@ -69,4 +69,14 @@
 
 ---
 
+## Potential Future Improvements / Upgrades
+
+- Stay on Cloudflare free tier by default; upgrade only for a clear operational need.
+- Consider a paid plan when you need stricter/advanced WAF controls beyond free defaults.
+- Consider a paid plan when uptime risk requires stronger guarantees (e.g., stronger SLA/support expectations).
+- Consider a paid plan when you need deeper security analytics/logging for incident response.
+- Consider a paid plan when traffic growth or feature limits create repeated operational friction.
+
+---
+
 _Last updated: Feb 22, 2026_

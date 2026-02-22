@@ -12,6 +12,24 @@
 | 2 | **Elevate t.a.klouvas to Owner** | t.a.klouvas must accept the org invitation | People → find user → Change role → Owner. Currently invited as Owner but invitation is pending. |
 | 3 | **Assign members to teams** | All 3 invitees must accept their invitations | Add t.a.klouvas to **admins** team. Add jschistos and aretizoi to **editors** team. Create **translators** team and add relevant members (e.g. t.a.klouvas). (Teams → team name → Add a member) |
 
+### Pre-Onboarding Access Checklist (`/admin`)
+
+Use this checklist before onboarding editors to avoid the "login works, publish fails" scenario.
+
+- [ ] All invited users accepted the GitHub organization invitation.
+- [ ] All users enabled GitHub 2FA (verified in org members list).
+- [ ] Teams are finalized: `admins`, `editors`, `translators`.
+- [ ] Team repository permissions are correct on `ghrweb`: `admins` = Maintain, `editors` = Write, `translators` = Write.
+- [ ] Repository ruleset on `main` is active: PR required, status checks required, Code Owner review required.
+- [ ] `CODEOWNERS` is configured so `src/content/` requires `@greek-house-rotterdam/translators`.
+- [ ] Decap CMS GitHub OAuth is configured and `/admin` login succeeds with an editor account.
+- [ ] Smoke test passed with an editor account:
+  - create a small content edit in `/admin`
+  - click Publish and confirm a PR is created
+  - confirm translation workflow runs (`translate` / `verify`)
+  - confirm Cloudflare preview appears and updates
+  - confirm admin can approve and merge
+
 ## Content & Launch
 
 | # | Task | Prerequisite | Details |
