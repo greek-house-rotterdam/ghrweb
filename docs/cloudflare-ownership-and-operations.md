@@ -10,6 +10,7 @@
 2. **Use personal Cloudflare users for daily work** (developer/admin actions).
 3. **Keep the shared org login as break-glass only** (recovery/continuity), not daily operations.
 4. **Keep billing under the organization identity** (payment method and invoices tied to org ownership).
+5. **Developer role:** `@PanoEvJ` is assigned **Super Admin** on Cloudflare (personal user), while ownership remains with the organization account.
 
 ## Why (minimal rationale)
 

@@ -179,6 +179,7 @@ Deployment is handled by Cloudflare Pages directly (built-in GitHub integration)
 
 - **Static hosting** — no server, no runtime, no database to exploit
 - **Cloudflare** — DDoS protection, SSL, WAF included on free tier
+- **Cloudflare access model** — organization-owned account, with `@PanoEvJ` assigned Super Admin for setup/operations
 - **Decap CMS** — runs in browser, authenticates via GitHub OAuth, commits directly to repo
 - **No user uploads** — eliminates file-based attack vectors
 - **Google Forms** — form processing happens on Google's infrastructure, not ours
