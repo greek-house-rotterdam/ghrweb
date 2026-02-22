@@ -2,8 +2,8 @@
 """Scrape public content from vvgn.eu and export structured data.
 
 Usage:
-    python .github/scripts/scrape_vvgn.py
-    python .github/scripts/scrape_vvgn.py --start-url https://vvgn.eu/nl/ --max-pages 1200
+    python scripts/scrape_vvgn.py
+    python scripts/scrape_vvgn.py --start-url https://vvgn.eu/nl/ --max-pages 1200
 """
 
 from __future__ import annotations

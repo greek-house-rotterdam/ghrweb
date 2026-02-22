@@ -77,7 +77,7 @@ For the developer making code or content changes locally.
 
 For migration from the legacy VVGN site into this repo.
 
-1. Run `.github/scripts/scrape_vvgn.py` (start URL: `https://vvgn.eu/nl/`)
+1. Run `scripts/scrape_vvgn.py` (start URL: `https://vvgn.eu/nl/`)
 2. Review output in `data/scrapes/vvgn/`:
    - `records/` (per-page JSON)
    - `manifest.json` and `crawl-report.md` (coverage and failures)
