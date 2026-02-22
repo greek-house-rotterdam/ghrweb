@@ -28,6 +28,7 @@
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
 | 10 | **Audit org-level security settings** | Org fully operational (all members joined, 2FA enforced) | Review what's not yet configured beyond current setup: rulesets, tag protection, Actions permissions, secret scanning, Dependabot alerts, deploy key policies. Free-tier limits apply — focus on what's available and meaningful. |
+| 16 | **Define and document audit trail access/retention** | Cloudflare account created and org access model finalized | Verify where activity history is available and for how long across GitHub and Cloudflare. Ensure at least two Owners can access audit logs, and define a lightweight persistence process (e.g., monthly export/checkpoint if native retention is limited). Document the runbook and ownership. |
 | 11 | **Configure CODEOWNERS for content and infrastructure** | Repo structure stabilized & Teams created | Create a `CODEOWNERS` file enforcing review boundaries: 1) `src/content/` owned by `@greek-house-rotterdam/translators` (ensures translation QA). 2) Infrastructure paths (`.github/`, `src/layouts/`, `src/pages/`, configs) owned by `@greek-house-rotterdam/admins` (protects site engine). ![1771286916812](image/pending-tasks/1771286916812.png)![1771286920465](image/pending-tasks/1771286920465.png)![1771286927524](image/pending-tasks/1771286927524.png)|
 | 15 | **Allow other Owners to modify CODEOWNERS** | Task #11 complete | Explicitly define ownership of the `CODEOWNERS` file itself (e.g. `@greek-house-rotterdam/owners` or specific users) to ensure other Owners can update governance rules without being blocked by a single person. |
 
@@ -51,4 +52,4 @@
 
 ---
 
-*Last updated: Feb 21, 2026*
+*Last updated: Feb 22, 2026*
