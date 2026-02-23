@@ -118,6 +118,33 @@ Decap CMS opens a PR (editorial workflow)
 
 ---
 
+## UI Components
+
+**Strategy:** Individual components, not starter templates. The codebase already has i18n, content collections, Decap CMS integration, and deployment pipelines — a template would overwrite all of this for marginal design benefit.
+
+| Library | Role | How it's used |
+|---------|------|---------------|
+| **Starwind UI** | Interactive components | CLI-installed Astro-native components (accordion, dropdown, mobile nav, carousel). Code ownership — files live in the project. |
+| **HyperUI** | Static layout blocks | Copy-paste Tailwind HTML for one-off sections (hero, CTA, timeline, team cards, footer). No dependency. |
+
+Both are Tailwind CSS v4 compatible and ship zero JavaScript by default.
+
+**Component-to-page mapping:**
+
+| Page | Key components | Source |
+|------|---------------|--------|
+| Home | Hero, news cards, event cards, CTA | HyperUI + Starwind Card |
+| History | Timeline | HyperUI |
+| Teams | Team/activity cards | HyperUI + Starwind Card, Badge |
+| News / Events | Card grid, pagination | Starwind Card, Pagination |
+| FAQ | Accordion | Starwind Accordion |
+| Contact | Info layout, map embed | HyperUI |
+| About | Content section, board cards | HyperUI + Starwind Avatar |
+| Header | Responsive nav, mobile drawer | Starwind Sheet |
+| Footer | Multi-column, social icons | HyperUI |
+
+---
+
 ## Why This Stack
 
 ### For the developer
@@ -212,6 +239,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 14 | Git merge strategy | Squash and merge only | Clean linear history. Simplifies the merge button for non-technical users — one predictable action. Each PR becomes exactly one commit on `main`. | Merge commits (messy history), rebase (confusing for non-technical users) |
 | 15 | Translation review | CODEOWNERS + translators team | Auto-requests translators team on content PRs. Enforced by "Require review from Code Owners" in the ruleset. | Manual reviewer assignment (easy to forget), no review (risks bad translations going live) |
 | 16 | Infrastructure protection | CODEOWNERS + developer review | Auto-requests developer (`@PanoEvJ`) for changes to `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json`. Editors can freely create content but cannot break the site's engine. | No protection (editors could accidentally break deployment), blanket admin review on everything (slows down content publishing unnecessarily) |
+| 17 | UI component approach | Starwind UI + HyperUI (individual components) | Codebase already has i18n, content collections, CMS, workflows — components are additive, not destructive. Both are Astro-native / Tailwind v4 compatible, zero JS by default. | Astro starter templates (would overwrite existing infra), daisyUI (adds plugin layer and its own design system — unnecessary abstraction) |
 
 ### Open Decisions
 

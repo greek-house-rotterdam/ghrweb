@@ -52,9 +52,22 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 ## Testing
 
+**Tool:** [Vitest](https://vitest.dev/) — Vite-native, zero-config for TypeScript, Astro's recommended test runner. Single dependency (`vitest`).
+
+**Principle:** Only add tests where there is clear ROI. This is a static content site, not a SaaS app — don't force tests on templates or trivial code. Focus on logic that can actually break silently.
+
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
-| 12 | **Add site tests** | Core site structure and build pipeline working | Build smoke test (Astro compiles without errors), content schema validation (frontmatter structure), internal link checking, and basic integration tests (pages render expected content). Use Astro-compatible tooling (Vitest or similar). Keep lightweight — the site is static, not a SaaS app. |
+| 12 | **Add site-level tests** | Core site structure and build pipeline working | Build smoke test (Astro compiles without errors), content schema validation (frontmatter matches Zod schemas), internal link checking. Keep lightweight. |
+| 17 | **Unit test i18n utilities** | Utility logic is stable and non-trivial enough to warrant tests | Test `getLangFromSlug`, `getStaticLangPaths` (from `src/i18n/utils.ts`) and `t()` (from `src/i18n/ui.ts`). Good first candidates: pure functions with clear inputs/outputs. |
+
+## UI Components & Design
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 18 | **Install Starwind UI and add core interactive components** | None — ready now | `npx starwind-ui init` then `npx starwind-ui add accordion card badge button sheet pagination avatar`. These are needed for FAQ, news/event cards, mobile nav drawer, and listing pages. |
+| 19 | **Build page sections using HyperUI patterns** | Task #18 complete (Starwind provides the interactive primitives) | Copy-paste and adapt Tailwind HTML from HyperUI for: hero section (Home), timeline (History), team cards (Teams), CTA blocks (Home, Become a Member), footer layout, contact section. Customize colors/spacing to match GHR visual identity. |
+| 20 | **Define color palette and visual identity tokens** | None — ready now | Choose primary/accent/neutral colors (Greek blue + warm accent?) and define them as Tailwind CSS v4 theme variables. Ensures consistency across all components and pages. |
 
 ## Developer Tooling
 
@@ -70,4 +83,4 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 ---
 
-*Last updated: Feb 22, 2026*
+*Last updated: Feb 23, 2026 (added UI component tasks #18–#20)*
