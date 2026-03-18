@@ -20,8 +20,8 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 - [ ] All users enabled GitHub 2FA (verified in org members list).
 - [ ] Teams are finalized: `admins`, `editors`, `translators`.
 - [ ] Team repository permissions are correct on `ghrweb`: `admins` = Maintain, `editors` = Write, `translators` = Write.
-- [ ] Repository ruleset on `main` is active: PR required, status checks required, Code Owner review required.
-- [ ] `CODEOWNERS` is configured so `src/content/` requires `@greek-house-rotterdam/translators`.
+- [ ] Repository ruleset on `main` is active: PR required, status checks required, **Code Owner review required (blocks merge until CODEOWNER approves)**.
+- [ ] `CODEOWNERS` is configured: `src/content/` requires `@greek-house-rotterdam/translators`; infrastructure paths require `@PanoEvJ`.
 - [ ] Decap CMS GitHub OAuth is configured and `/admin` login succeeds with an editor account.
 - [ ] Smoke test passed with an editor account:
   - create a small content edit in `/admin`
@@ -36,9 +36,9 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 |---|------|-------------|---------|
 | 4 | ~~**[HIGH] Scrape and archive all content from `https://vvgn.eu/nl/`**~~ | ~~Confirm scope and permission to copy content~~ | Done. Repeatable scraper at `scripts/scrape_vvgn.py`. Outputs at `data/scrapes/vvgn/` (records, `manifest.json`, `crawl-report.md`, inventory CSV). Content-manager handoff: `docs/vvgn-content-manager-dossier.md`. |
 | 5 | ~~**Connect Cloudflare to org repo**~~ | ~~Repo transfer complete~~ | Done. Connected via Cloudflare Workers & Pages (Compute → Workers & Pages → Create → Connect to Git). Uses unified Workers flow with `wrangler.json` for static asset deployment. Build: `npm run build`, deploy: `npx wrangler deploy`. `NODE_VERSION=24` set in Cloudflare env vars. Production branch: `main`. Temporary URL on `*.pages.dev` — custom domain to be connected later (Task #8). `wrangler` added as devDependency to prevent CI scaffolding wizard. |
-| 6 | **Configure Decap CMS OAuth** | Cloudflare connected (done) | Decap CMS needs a GitHub OAuth app registered under the org for admin login at `/admin`. Prerequisite is now met — Cloudflare is live. |
+| 6 | **Configure Decap CMS OAuth** | Cloudflare connected (done) | **Code ready** — Worker OAuth proxy at `src/oauth.ts`, wrangler configured, admin UI dynamically sets `base_url`. **Remaining manual steps:** 1) Register GitHub OAuth App under the org (callback URL: `https://<site-url>/callback`). 2) Set Worker secrets: `npx wrangler secret put GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`. 3) Deploy and test `/admin` login. |
 | 7 | ~~**Set up DeepL / translation GitHub Action**~~ | ~~Translation API decision finalized~~ | Done. Workflow at `.github/workflows/translate.yml`, script at `.github/scripts/translate.py`. Requires `DEEPL_API_KEY` secret in GitHub repo settings. |
-| 9 | **Evaluate OpenAI for translation** | Content volume or complexity increases | Consider switching from DeepL to OpenAI API if translations feel "robotic" or if Markdown structure (frontmatter) is frequently broken. OpenAI offers better contextual control and structural integrity via system prompts. |
+| 9 | ~~**Evaluate OpenAI for translation**~~ | ~~Content volume or complexity increases~~ | Superseded by Future Feature F1 (AI Translation via Gemini 2.5 Flash). See "Future / Optional Enhancements" section below. |
 | 8 | **Connect custom domain** | Domain DNS access available | Cloudflare project settings → Custom domains → Add domain → Update DNS records. Site is live on `*.pages.dev` in the meantime. |
 
 ## Security Hardening
@@ -47,7 +47,7 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 |---|------|-------------|---------|
 | 10 | **Audit org-level security settings** | Org fully operational (all members joined, 2FA enforced) | Review what's not yet configured beyond current setup: rulesets, tag protection, Actions permissions, secret scanning, Dependabot alerts, deploy key policies. Free-tier limits apply — focus on what's available and meaningful. |
 | 16 | **Define and document audit trail access/retention** | Cloudflare account created and org access model finalized | Verify where activity history is available and for how long across GitHub and Cloudflare. Ensure at least two Owners can access audit logs, and define a lightweight persistence process (e.g., monthly export/checkpoint if native retention is limited). Document the runbook and ownership. |
-| 11 | **Configure CODEOWNERS for content and infrastructure** | Repo structure stabilized & Teams created | Create a `CODEOWNERS` file enforcing review boundaries: 1) `src/content/` owned by `@greek-house-rotterdam/translators` (ensures translation QA). 2) Infrastructure paths (`.github/`, `src/layouts/`, `src/pages/`, configs) owned by `@greek-house-rotterdam/admins` (protects site engine). ![1771286916812](image/pending-tasks/1771286916812.png)![1771286920465](image/pending-tasks/1771286920465.png)![1771286927524](image/pending-tasks/1771286927524.png)|
+| 11 | **Configure CODEOWNERS for content and infrastructure** | Repo structure stabilized & Teams created | Create a `CODEOWNERS` file enforcing review boundaries: 1) `src/content/` owned by `@greek-house-rotterdam/translators` (ensures translation QA). 2) Infrastructure paths (`.github/`, `src/layouts/`, `src/pages/`, configs) owned by `@greek-house-rotterdam/admins` (protects site engine). **Combined with the "Require review from Code Owners" ruleset setting, this blocks PR merges until the designated CODEOWNER approves.** The merge button is disabled until approval is given. |
 | 15 | **Allow other Owners to modify CODEOWNERS** | Task #11 complete | Explicitly define ownership of the `CODEOWNERS` file itself (e.g. `@greek-house-rotterdam/owners` or specific users) to ensure other Owners can update governance rules without being blocked by a single person. |
 
 ## Testing
@@ -81,6 +81,25 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 |---|------|-------------|---------|
 | 14 | **Investigate traffic spike capacity** | Site is live on Cloudflare (done) | Research Cloudflare Workers free tier limits (bandwidth, requests/day, concurrent connections). Determine failure mode during a viral event (e.g. major news): does it throttle, bill overages, or shut down? Document the "safe" traffic ceiling. Prerequisite now met — site is deployed. |
 
+## Content & Image Quality
+
+| # | Task | Prerequisite | Details |
+|---|------|-------------|---------|
+| 21 | **Image technical QA (GitHub Action)** | Translation workflow stable, content collections in use | Add a CI step that validates uploaded images before merge. Uses Pillow (no AI). Checks: max file size (≤2 MB), min resolution (800×600), max resolution (≤4096×4096), allowed formats (JPEG, PNG, WebP). Prefer **auto-optimization** (resize + compress + convert to WebP) over blocking, with a hard block only for files that exceed absolute limits (e.g. >5 MB). Runs before the translation step so bad assets are caught early. Add to `.github/workflows/translate.yml` as a preceding job, or as a separate workflow triggered on `public/images/` changes. |
+| 22 | **Content character limits** | Astro content collections defined (Zod schemas) | Enforce character limits: title ≤100 chars, description ≤200 chars, body ≤5000 chars (news) / ≤2000 chars (events). Enforce in three layers: Decap CMS `pattern` on string widgets, Zod `.max()` in Astro content collection schemas, and a CI validation step. |
+
 ---
 
-*Last updated: Mar 19, 2026 (Task #20 complete — color palette and visual identity tokens defined)*
+## Future / Optional Enhancements
+
+> Features evaluated and deferred. Not blocked by prerequisites — deferred by design until there's evidence of need. Each includes a trigger condition for when to revisit.
+
+| # | Feature | Trigger to revisit | Design notes |
+|---|---------|-------------------|--------------|
+| F1 | **AI Translation (Gemini 2.5 Flash)** | DeepL translations feel robotic, Markdown structure breaks frequently, or DeepL free tier (500K chars/mo) is exhausted | Replace DeepL as the primary translation backend. Use the same workflow architecture (GitHub Action, PR-based). AI models handle Markdown frontmatter more reliably via system prompts. Keep DeepL as a fallback. Requires a `GEMINI_API_KEY` secret. Supersedes Task #9. |
+| F2 | **AI-Assisted Content Alignment (opt-in)** | Editors request help with writing quality, or content tone/style becomes inconsistent | Add an `ai_assist` boolean checkbox to Decap CMS collections. When enabled, a GitHub Action step invokes an AI model (e.g. Gemini 2.5 Flash) with a standardized style guide prompt to suggest improvements to the source content before translation. The AI commits suggestions to the PR. Non-blocking — serves as a helper, not a gatekeeper. Runs before the translation step. Requires defining the style guide prompt and adding the CMS field. |
+| F3 | **AI Image Content QA (vision model)** | Editors frequently upload off-brand or inappropriate images, or the site adopts strict visual templates | Invoke a cheap vision model (e.g. Gemini 2.0 Flash) to check uploaded images against allowed content templates and brand guidelines. Runs as a CI step on PRs that modify `public/images/`. Would block merge if the image fails content policy checks. Deferred because editors are trusted org members with GitHub 2FA — the threat model doesn't currently justify this. |
+
+---
+
+*Last updated: Mar 19, 2026 (Tasks #21–22 added, Future features F1–F3 defined)*

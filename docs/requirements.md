@@ -59,6 +59,28 @@ Supported content types for admin uploads:
 - Embedded media (YouTube/Vimeo embeds for video, Spotify embeds)
 - PDFs (optional, for downloadable resources)
 
+### 2.4 Content Limits
+
+| Field | Limit | Rationale |
+|-------|-------|-----------|
+| Title | 100 characters | Fits in Google search results and social media previews |
+| Description | 200 characters | Maps to `<meta description>` for SEO |
+| Body (news) | ~5,000 characters (~800 words) | Keeps posts scannable; community audiences rarely read longer |
+| Body (events) | ~2,000 characters (~300 words) | Events need logistics, not essays |
+
+Enforced at three layers: Decap CMS field validation (where supported), Astro content collection Zod schemas (build-time), and a CI validation step (PR-time).
+
+### 2.5 Image Requirements
+
+| Property | Constraint |
+|----------|-----------|
+| Max file size | 2 MB (auto-compressed); hard block at 5 MB |
+| Resolution | 800×600 minimum, 4096×4096 maximum |
+| Formats | JPEG, PNG, WebP |
+| Auto-optimization | Resize, compress, and convert to WebP when possible |
+
+Validated by a planned GitHub Action (Pillow-based). Prefers auto-fixing over blocking.
+
 ---
 
 ## 3. Languages & Translation
@@ -110,9 +132,12 @@ Supported content types for admin uploads:
 Managed via a **GitHub Organization (free tier)** with a **public repository**. Each admin/editor needs a personal GitHub account (free).
 
 - **Admins** (`Maintain` role): Board of Directors, developer — can push directly to `main`, manage repo settings, merge PRs
-- **Editors** (`Write` role): Cultural team, content writers — can create content via Decap CMS; with branch protection on `main`, their changes go through a PR that an admin approves before publishing
+- **Editors** (`Write` role): Cultural team, content writers — can create content via Decap CMS; their changes open a PR that **cannot be merged until the designated CODEOWNER approves**
+- **Translators** (`Write` role): Review auto-translated content on content PRs — designated as CODEOWNER for `src/content/`, so their approval is required before any content PR can be merged
 
-> **Note:** The editorial workflow (editors → PR → admin approval) depends on branch protection rules, which are only available for free on **public** repositories. A private repo would require GitHub Team ($4/user/month).
+> **Note:** The editorial workflow (editors → PR → CODEOWNER approval → merge) depends on repository rulesets, which are only available for free on **public** repositories. A private repo would require GitHub Team ($4/user/month).
+
+**CODEOWNERS enforcement:** The `CODEOWNERS` file maps file paths to required reviewers. Combined with the "Require review from Code Owners" ruleset setting, this means the PR merge button is disabled until the designated owner approves. Content changes require translators team approval; infrastructure changes require developer approval. See [Workflows](workflows.md) for the full merge gate specification.
 
 **Owner redundancy:** The GitHub Organization must have at least 2 Owners (e.g., developer + board president) to prevent lockout if one person loses access to their account.
 

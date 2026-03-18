@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ghrweb",
+  "main": "src/oauth.ts",
   "compatibility_date": "2026-03-18",
   "assets": {
     "directory": "./dist",

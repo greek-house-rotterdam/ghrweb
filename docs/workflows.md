@@ -9,7 +9,7 @@
 All content changes go through pull requests (PRs). Nothing reaches the live website without admin approval. Translations are generated automatically within the PR, and a preview of the full website is built for review.
 
 ```
-Content created → PR opened → Translations added → Preview built → Review → Merge → Live
+Content created → PR opened → Image QA (planned) → Translations added → Preview built → Review → Merge → Live
 ```
 
 ---
@@ -27,27 +27,36 @@ For non-technical team members who write content through the admin panel.
      ↓
    Decap CMS creates a PR automatically (editorial workflow)
      ↓
-4. Translation workflow runs
+4. [planned] Image QA runs (if images were added/changed)
+     - Validates dimensions, file size, format
+     - Auto-optimizes where possible (resize, compress, WebP)
+     - Blocks merge only for hard limit violations (e.g. >5 MB)
+     ↓
+5. Translation workflow runs
      - Detects new/changed content files
      - Translates to the other two languages via DeepL
      - Commits translations to the same PR
      ↓
-5. Cloudflare builds a deploy preview
+6. Cloudflare builds a deploy preview
      - Preview URL appears as a status check on the PR
      ↓
-6. Translators team is auto-requested for review (via CODEOWNERS)
+7. Translators team is auto-requested for review (via CODEOWNERS)
+     ⛔ PR is BLOCKED — cannot be merged until a CODEOWNER approves
      ↓
-7. Admin opens the preview link → reviews the rendered website
+8. Reviewer opens the preview link → reviews the rendered website
      ↓
-8. Admin approves and merges the PR
+9. Reviewer approves the PR (CODEOWNER approval satisfies the merge gate)
      ↓
-9. Cloudflare deploys to production → content is live
+10. Admin merges the PR
+     ↓
+11. Cloudflare deploys to production → content is live
 ```
 
 **Key points:**
 - Editors never see Git, terminals, or raw files
 - Translations appear automatically — no manual translation step
-- The admin reviews the actual rendered website, not Markdown
+- The reviewer checks the actual rendered website, not Markdown
+- **The PR is blocked until a CODEOWNER approves** — this is enforced by the repository ruleset, not just convention
 
 ---
 
@@ -62,11 +71,15 @@ For the developer making code or content changes locally.
      ↓
 3. If the PR contains content files (src/content/**/*.md):
      - Translation workflow runs and adds translations
-     - Translators team is requested for review
+     - Translators team is requested for review (CODEOWNERS)
+     ⛔ PR blocked until translators approve
+   If the PR contains infrastructure files (.github/, src/pages/, configs):
+     - Developer (@PanoEvJ) is requested for review (CODEOWNERS)
+     ⛔ PR blocked until developer approves
      ↓
 4. Cloudflare builds a deploy preview
      ↓
-5. Review the preview → Merge the PR
+5. Reviewer approves → Admin merges the PR
      ↓
 6. Cloudflare deploys to production
 ```
@@ -136,6 +149,32 @@ Commits deletions to the same PR
 
 ---
 
+## Image QA Workflow *(Planned)*
+
+**Trigger:** PR opened or updated, targeting `main`, with changes in `public/images/`
+
+**What it does:**
+
+1. Scans all new/changed image files in the PR
+2. Validates each image against quality rules:
+   - File size ≤2 MB (hard block at >5 MB)
+   - Resolution between 800×600 and 4096×4096
+   - Allowed formats: JPEG, PNG, WebP
+3. Auto-optimizes where possible:
+   - Resizes oversized images to max dimensions
+   - Compresses to target file size
+   - Converts to WebP for optimal web performance
+4. Commits optimized images to the PR branch
+5. Fails the check (blocks merge) only for hard limit violations that can't be auto-fixed
+
+**Design principle:** Prefer auto-fixing over blocking. Non-technical editors shouldn't have to manually resize images.
+
+**Dependencies:** Pillow (Python). No AI model needed — this is pure metadata validation.
+
+**Ordering:** Runs before the translation workflow so bad assets are caught early.
+
+---
+
 ## Deploy Previews (Cloudflare Pages)
 
 Cloudflare Pages automatically builds a preview for every PR. The preview URL appears as a commit status check on the PR in GitHub.
@@ -154,29 +193,44 @@ The preview updates every time new commits are pushed to the PR (including when 
 
 ## Review Process
 
-The `CODEOWNERS` file determines who must approve based on which files are changed:
+### Merge Gates
 
-| Files changed | Required reviewer |
-|---------------|-------------------|
-| `src/content/` | `translators` team |
-| `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json` | `@PanoEvJ` (developer) |
+A PR targeting `main` **cannot be merged** until all of the following pass:
+
+| Gate | Type | What it checks |
+|------|------|----------------|
+| **CODEOWNER approval** | Human review | The designated CODEOWNER for the changed files must approve the PR. This is enforced by the repository ruleset ("Require review from Code Owners"). Without their approval, the merge button is disabled. |
+| **Status checks** | Automated | `translate` and `verify` jobs must pass (content PRs). `Cloudflare Pages` must build successfully. Image QA *(planned)* must pass. |
+| **At least 1 approval** | Human review | The ruleset requires a minimum of 1 PR approval. CODEOWNER approval satisfies this. |
+
+### Who Must Approve
+
+The `CODEOWNERS` file determines who **must** approve based on which files are changed:
+
+| Files changed | Required approver | PR is blocked until... |
+|---------------|-------------------|------------------------|
+| `src/content/` | `@greek-house-rotterdam/translators` | A member of the translators team approves |
+| `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json` | `@PanoEvJ` (developer) | The developer approves |
 
 This means:
-- **Content PRs** — translators team is auto-requested. Editors can freely create content without bothering the developer.
-- **Infrastructure PRs** — developer is auto-requested. Editors cannot accidentally break the site's engine, deployment pipeline, or dependencies.
+- **Content PRs** — translators team is auto-requested. The PR **cannot be merged** until a translator approves. Editors can freely create content without bothering the developer.
+- **Infrastructure PRs** — developer is auto-requested. The PR **cannot be merged** until the developer approves. Editors cannot accidentally break the site's engine, deployment pipeline, or dependencies.
+- **Mixed PRs** (content + infrastructure) — both approvals are required.
 
-The ruleset on `main` also requires at least 1 approval to merge.
+### What to Review
 
-**What to review (content PRs):**
+**Content PRs (translators):**
 - Open the Cloudflare deploy preview link
 - Check the content reads well in all three languages
 - Check that images and formatting look correct
-- Approve the PR and merge
+- Approve the PR (this unblocks the merge)
 
-**What to review (infrastructure PRs):**
+**Infrastructure PRs (developer):**
 - Check the code changes are safe and correct
 - Verify the preview site still works
-- Approve the PR and merge
+- Approve the PR (this unblocks the merge)
+
+**Who merges:** Any member of the `admins` team (bypass actors on the ruleset) can merge after all gates pass.
 
 ---
 
@@ -224,17 +278,17 @@ npm run build && npx wrangler deploy
 
 ## Summary
 
-| Step | Who | What happens |
-|------|-----|-------------|
-| Create content | Editor or Admin | Write in Decap CMS or locally |
-| PR opened | Decap CMS or developer | Automatic (editorial workflow) or manual |
-| Translation | GitHub Action | Automatic — detects changes, translates, commits |
-| Preview | Cloudflare Pages | Automatic — builds and links preview URL |
-| Review request | CODEOWNERS | Automatic — requests translators team |
-| Review | Admin/Translator | Manual — check preview, approve |
-| Merge | Admin | Manual — squash and merge |
-| Deploy | Cloudflare Pages | Automatic — live in ~30 seconds |
+| Step | Who | What happens | Blocks merge? |
+|------|-----|-------------|---------------|
+| Create content | Editor or Admin | Write in Decap CMS or locally | — |
+| PR opened | Decap CMS or developer | Automatic (editorial workflow) or manual | — |
+| Image QA *(planned)* | GitHub Action | Validates and auto-optimizes images | Yes — on hard limit violations |
+| Translation | GitHub Action | Detects changes, translates, commits | Yes — if `translate` or `verify` fails |
+| Preview | Cloudflare Pages | Builds and links preview URL | Yes — if build fails |
+| CODEOWNER review | Translators / Developer | Auto-requested based on changed files | **Yes — PR cannot merge without CODEOWNER approval** |
+| Merge | Admin | Squash and merge (after all gates pass) | — |
+| Deploy | Cloudflare Pages | Deploys to production (~30 seconds) | — |
 
 ---
 
-_Last updated: March 2026 (added local dev and wrangler direct deploy sections)_
+_Last updated: March 2026 (added planned Image QA workflow, updated editor workflow steps)_

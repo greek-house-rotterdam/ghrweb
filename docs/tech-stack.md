@@ -97,9 +97,10 @@ Decap CMS opens a PR (editorial workflow)
   ├──→ Cloudflare builds deploy preview of the PR
   │
   └──→ Translators team auto-requested for review (CODEOWNERS)
+         ⛔ PR blocked until CODEOWNER approves
          │
          ▼
-       Admin reviews deploy preview → Merges PR
+       Reviewer approves → Admin merges PR
          │
          ▼
        Cloudflare deploys to production
@@ -163,7 +164,7 @@ Both are Tailwind CSS v4 compatible and ship zero JavaScript by default.
 - No terminal, no Git knowledge, no code
 - Rich text editing, image upload, draft/publish workflow
 - GitHub Organization with teams enables admin/editor role separation
-- Branch protection allows editorial review: editors submit, admins approve
+- Repository ruleset enforces editorial review: editors submit, CODEOWNER must approve before merge is allowed
 
 ### For the project
 
@@ -184,11 +185,13 @@ Two layers:
 | **UI strings** | Nav, buttons, footer, labels | JSON translation files — translated once, maintained manually |
 | **Content** | News, events, page text | GitHub Action auto-translates within PRs using DeepL API |
 
-**Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files → calls DeepL API → commits translations to the same PR → verification script checks for missing files → admin reviews the deploy preview and merges → Cloudflare deploys.
+**Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files → calls DeepL API → commits translations to the same PR → verification script checks for missing files → **PR is blocked until the designated CODEOWNER approves** → admin reviews the deploy preview and merges → Cloudflare deploys.
 
 **Deletion flow:** Content is deleted in a PR → translation workflow detects deleted files → removes corresponding files in the other two language folders → commits deletions to the same PR. This prevents "ghost posts" (translations that outlive their source).
 
 **No infinite loops:** The translation workflow commits to the PR branch using `GITHUB_TOKEN`. GitHub's built-in rule ensures these pushes do not trigger new workflow runs.
+
+**Future option — AI translation:** DeepL may be replaced by Gemini 2.5 Flash as the primary translation backend if quality or cost issues arise. AI models handle Markdown frontmatter more reliably via system prompts. DeepL would remain as a fallback. See `docs/pending-tasks.md` (Feature F1) for trigger conditions.
 
 ---
 
@@ -197,6 +200,7 @@ Two layers:
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | **Translate Content** | PR opened/updated targeting `main` with content changes | Auto-translate new/changed content within the PR; sync deletions; verify content integrity |
+| **Image QA** *(planned)* | PR opened/updated with changes in `public/images/` | Validate image dimensions, file size, and format. Auto-optimize where possible (resize, compress, convert to WebP). Block merge only for hard limit violations. Uses Pillow — no AI. |
 | **Dependency updates** | Scheduled (Renovate/Dependabot) | Keep npm packages current |
 
 Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed. Cloudflare also builds deploy previews for every PR, providing a rendered preview URL for admin review.
@@ -247,3 +251,5 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | # | Decision | Options | Status |
 |---|----------|---------|--------|
 | ~~1~~ | ~~Translation API~~ | ~~DeepL API vs OpenAI API~~ | **Decided: DeepL API** — higher translation quality for European languages, free tier (500k chars/mo) more than sufficient for this project's volume. Implemented in `.github/workflows/translate.yml`. |
+| 2 | AI translation backend | Gemini 2.5 Flash vs current DeepL | **Deferred.** Revisit if DeepL quality degrades or free tier is exhausted. See `docs/pending-tasks.md` (Feature F1). |
+| 3 | AI-assisted content alignment | Opt-in AI editing via CMS checkbox | **Deferred.** Revisit if editors request writing assistance or tone consistency becomes an issue. See `docs/pending-tasks.md` (Feature F2). |
