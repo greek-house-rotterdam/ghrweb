@@ -76,30 +76,34 @@ function authResultPage(status: "success" | "error", content: string): string {
   const escaped = JSON.stringify(content);
 
   if (status === "error") {
-    return `<!doctype html><html><body><script>
+    return `<!doctype html><html><body>
+<p>OAuth error: ${content}</p>
+<script>
 (function() {
-  var opener = window.opener;
-  if (opener) {
-    opener.postMessage(
+  if (window.opener) {
+    window.opener.postMessage(
       "authorization:github:error:" + JSON.stringify({ message: ${escaped} }),
-      opener.location.origin
+      "*"
     );
+    setTimeout(function() { window.close(); }, 500);
   }
-  window.close();
 })();
 </script></body></html>`;
   }
 
-  return `<!doctype html><html><body><script>
+  return `<!doctype html><html><body>
+<p>Authenticating...</p>
+<script>
 (function() {
-  var opener = window.opener;
-  if (opener) {
-    opener.postMessage(
+  if (window.opener) {
+    window.opener.postMessage(
       "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" }),
-      opener.location.origin
+      "*"
     );
+    setTimeout(function() { window.close(); }, 500);
+  } else {
+    document.body.innerHTML = "<p>Error: popup lost connection to the admin page. Close this window and try again.</p>";
   }
-  window.close();
 })();
 </script></body></html>`;
 }
