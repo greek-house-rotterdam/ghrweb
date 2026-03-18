@@ -9,16 +9,18 @@ const { lang } = Astro.props;
 const currentPath = Astro.url.pathname;
 ---
 
-<div class="flex items-center gap-2 text-sm">
-  {Object.entries(LANGUAGES).map(([code, label]) => {
+<div class="flex items-center">
+  {Object.entries(LANGUAGES).map(([code, _label]) => {
     const targetPath = currentPath.replace(`/${lang}`, `/${code}`);
     const isActive = code === lang;
     return (
       <a
         href={targetPath}
         class:list={[
-          "px-2 py-1 rounded transition-colors",
-          isActive ? "font-bold text-gray-900" : "text-gray-500 hover:text-gray-700",
+          "px-2 py-1 text-xs font-bold uppercase border-2 border-black -ml-0.5 first:ml-0 transition-all",
+          isActive
+            ? "bg-black text-white"
+            : "bg-white text-black hover:bg-yellow-300",
         ]}
         aria-current={isActive ? "page" : undefined}
       >
