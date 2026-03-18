@@ -15,6 +15,7 @@
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
-    "decap-server": "^3.5.0"
+    "decap-server": "^3.5.0",
+    "wrangler": "^4.75.0"
   }
 }

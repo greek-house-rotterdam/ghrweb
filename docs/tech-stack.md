@@ -11,7 +11,7 @@
 | **Framework** | Astro | Static site generator — outputs plain HTML, built-in i18n, excellent SEO |
 | **Styling** | Tailwind CSS | Utility-first CSS — fast to build, AI-friendly, responsive by default |
 | **CMS** | Decap CMS | Git-based admin UI at `/admin` — free, no backend, non-technical friendly |
-| **Hosting** | Cloudflare Pages | Static hosting with global CDN — free tier, auto-deploy from GitHub |
+| **Hosting** | Cloudflare Workers (static assets) | Static hosting with global CDN — free tier, auto-deploy from GitHub. Configured via `wrangler.json`. |
 | **Translation** | GitHub Action + DeepL API | Auto-translates content within PRs — trilingual (GR/NL/EN) |
 | **Forms** | Google Forms (embedded) | Contact and enrollment — built-in spam protection, responses in Google Sheets |
 | **Analytics** | Google Analytics (GA4) | Traffic and engagement tracking — requires cookie consent banner (GDPR) |
@@ -33,6 +33,7 @@
 │  src/i18n/             ← Translation strings                        │
 │  public/images/        ← Uploaded images                            │
 │  public/admin/         ← Decap CMS admin panel                      │
+│  wrangler.json         ← Cloudflare deployment config               │
 │  CODEOWNERS            ← Requires translators review on content     │
 └──────────┬───────────────────────┬──────────────────────────────────┘
            │                       │
@@ -118,6 +119,33 @@ Decap CMS opens a PR (editorial workflow)
 
 ---
 
+## UI Components
+
+**Strategy:** Individual components, not starter templates. The codebase already has i18n, content collections, Decap CMS integration, and deployment pipelines — a template would overwrite all of this for marginal design benefit.
+
+| Library | Role | How it's used |
+|---------|------|---------------|
+| **Starwind UI** | Interactive components | CLI-installed Astro-native components (accordion, dropdown, mobile nav, carousel). Code ownership — files live in the project. |
+| **HyperUI** | Static layout blocks | Copy-paste Tailwind HTML for one-off sections (hero, CTA, timeline, team cards, footer). No dependency. |
+
+Both are Tailwind CSS v4 compatible and ship zero JavaScript by default.
+
+**Component-to-page mapping:**
+
+| Page | Key components | Source |
+|------|---------------|--------|
+| Home | Hero, news cards, event cards, CTA | HyperUI + Starwind Card |
+| History | Timeline | HyperUI |
+| Teams | Team/activity cards | HyperUI + Starwind Card, Badge |
+| News / Events | Card grid, pagination | Starwind Card, Pagination |
+| FAQ | Accordion | Starwind Accordion |
+| Contact | Info layout, map embed | HyperUI |
+| About | Content section, board cards | HyperUI + Starwind Avatar |
+| Header | Responsive nav, mobile drawer | Starwind Sheet |
+| Footer | Multi-column, social icons | HyperUI |
+
+---
+
 ## Why This Stack
 
 ### For the developer
@@ -179,6 +207,7 @@ Deployment is handled by Cloudflare Pages directly (built-in GitHub integration)
 
 - **Static hosting** — no server, no runtime, no database to exploit
 - **Cloudflare** — DDoS protection, SSL, WAF included on free tier
+- **Cloudflare access model** — organization-owned account, with `@PanoEvJ` assigned Super Admin for setup/operations
 - **Decap CMS** — runs in browser, authenticates via GitHub OAuth, commits directly to repo
 - **No user uploads** — eliminates file-based attack vectors
 - **Google Forms** — form processing happens on Google's infrastructure, not ours
@@ -203,7 +232,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 6 | Database | None | No dynamic data — content is Markdown in Git, forms go to Google Sheets | Firebase Firestore, Supabase (no use case — would add cost and complexity for zero benefit) |
 | 7 | Content storage | Markdown in GitHub repo | Version-controlled, portable, works with Decap CMS and Astro content collections | Database-backed CMS (unnecessary layer), Cloudflare KV/R2 (overkill for text content) |
 | 8 | Translation approach | GitHub Action + DeepL API (PR-based) | Triggers on PR, translates within the PR before merge. Admin reviews rendered preview. | Push-to-main approach (blocked by branch protection on free tier), manual translation (doesn't scale) |
-| 9 | Deployment | Cloudflare auto-deploy | Push to `main` = live in ~30 sec, no CI/CD config needed | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
+| 9 | Deployment | Cloudflare Workers auto-deploy | Push to production branch runs `npm run build` + `npx wrangler deploy`. Preview branches run `npx wrangler versions upload`. Configured via `wrangler.json` (static assets from `./dist`). Temporary URL: `*.pages.dev` until custom domain is connected. | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
 | 10 | Analytics | Google Analytics (GA4) | Free, full-featured, already referenced in success metrics. Requires cookie consent banner (GDPR) | Plausible (~€9/mo, GDPR-friendly but paid), Firebase Analytics (designed for mobile apps/SPAs, not static sites) |
 | 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor/translator roles, repository rulesets for editorial workflow, CODEOWNERS for translation review, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
 | 12 | Repository visibility | Public | Enables rulesets, required PR reviews, and Code Owners on the free tier — all unavailable for private repos without a paid plan. Unlimited GitHub Actions minutes. No secrets to protect — site content is public by nature. | Private repo (would require GitHub Team at $4/user/month to get rulesets, which the editorial workflow depends on) |
@@ -211,6 +240,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 14 | Git merge strategy | Squash and merge only | Clean linear history. Simplifies the merge button for non-technical users — one predictable action. Each PR becomes exactly one commit on `main`. | Merge commits (messy history), rebase (confusing for non-technical users) |
 | 15 | Translation review | CODEOWNERS + translators team | Auto-requests translators team on content PRs. Enforced by "Require review from Code Owners" in the ruleset. | Manual reviewer assignment (easy to forget), no review (risks bad translations going live) |
 | 16 | Infrastructure protection | CODEOWNERS + developer review | Auto-requests developer (`@PanoEvJ`) for changes to `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json`. Editors can freely create content but cannot break the site's engine. | No protection (editors could accidentally break deployment), blanket admin review on everything (slows down content publishing unnecessarily) |
+| 17 | UI component approach | Starwind UI + HyperUI (individual components) | Codebase already has i18n, content collections, CMS, workflows — components are additive, not destructive. Both are Astro-native / Tailwind v4 compatible, zero JS by default. | Astro starter templates (would overwrite existing infra), daisyUI (adds plugin layer and its own design system — unnecessary abstraction) |
 
 ### Open Decisions
 

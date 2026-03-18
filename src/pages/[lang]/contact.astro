@@ -8,34 +8,58 @@ export const getStaticPaths = getStaticLangPaths;
 const { lang } = Astro.params as { lang: Lang };
 ---
 
-<Layout title={t(lang, "nav.contact")} lang={lang}>
-  <section class="py-12">
+<Layout title={t(lang, "contact.title")} lang={lang}>
+  <section class="py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h1 class="text-3xl font-bold text-gray-900">{t(lang, "nav.contact")}</h1>
-      <div class="mt-8 grid gap-8 lg:grid-cols-2">
-        <!-- Google Form embed -->
-        <div>
-          <!-- TODO: Replace with actual Google Form embed URL -->
-          <iframe
-            src="https://docs.google.com/forms/d/e/FORM_ID/viewform?embedded=true"
-            width="100%"
-            height="600"
-            class="rounded-lg border border-gray-200"
-            title="Contact Form"
-          >
-            Loading…
-          </iframe>
-        </div>
-        <!-- Map & contact info -->
-        <div>
-          <!-- TODO: Replace with actual Google Maps embed -->
-          <div class="aspect-video rounded-lg bg-gray-100 flex items-center justify-center">
-            <p class="text-gray-400">Google Maps embed</p>
+      <h1 class="text-4xl font-extrabold text-black">{t(lang, "contact.title")}</h1>
+
+      <div class="mt-10 grid gap-8 lg:grid-cols-2">
+        {/* Contact form */}
+        <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+          <h2 class="text-xl font-extrabold">{t(lang, "contact.form.title")}</h2>
+          <div class="mt-4">
+            {/* TODO: Replace with actual Google Form embed URL */}
+            <iframe
+              src="https://docs.google.com/forms/d/e/FORM_ID/viewform?embedded=true"
+              width="100%"
+              height="500"
+              class="border-2 border-black"
+              title="Contact Form"
+            >
+              Loading…
+            </iframe>
           </div>
-          <div class="mt-6 space-y-3 text-sm text-gray-600">
-            <p>📍 Greek House in Rotterdam, Address TBD</p>
-            <p>📞 Phone TBD</p>
-            <p>✉️ email@example.com</p>
+        </div>
+
+        {/* Contact info + map */}
+        <div class="space-y-6">
+          <div class="border-2 border-black bg-yellow-50 p-6 shadow-[4px_4px_0_0_#000]">
+            <h2 class="text-xl font-extrabold">{t(lang, "contact.info.title")}</h2>
+            <div class="mt-4 space-y-3">
+              <div class="flex items-start gap-3">
+                <span class="text-lg">📍</span>
+                <div>
+                  <p class="font-bold text-sm">Greek House in Rotterdam</p>
+                  <p class="text-sm text-gray-600">Address TBD, Rotterdam, NL</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">📞</span>
+                <p class="text-sm text-gray-600">+31 (0) XX XXX XXXX</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-lg">✉️</span>
+                <p class="text-sm text-gray-600">info@greekhouse-rotterdam.nl</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+            <h2 class="text-xl font-extrabold">{t(lang, "contact.map.title")}</h2>
+            {/* TODO: Replace with actual Google Maps embed */}
+            <div class="mt-4 aspect-video border-2 border-black bg-gray-100 flex items-center justify-center">
+              <p class="text-gray-400 font-bold text-sm">Google Maps</p>
+            </div>
           </div>
         </div>
       </div>

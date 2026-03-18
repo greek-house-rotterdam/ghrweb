@@ -6,14 +6,62 @@ import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
+
+const boardMembers: Record<Lang, { name: string; role: string }[]> = {
+  gr: [
+    { name: "Πρόεδρος", role: "Πρόεδρος Δ.Σ." },
+    { name: "Αντιπρόεδρος", role: "Αντιπρόεδρος Δ.Σ." },
+    { name: "Γραμματέας", role: "Γραμματέας" },
+    { name: "Ταμίας", role: "Ταμίας" },
+  ],
+  nl: [
+    { name: "Voorzitter", role: "Voorzitter Bestuur" },
+    { name: "Vicevoorzitter", role: "Vicevoorzitter Bestuur" },
+    { name: "Secretaris", role: "Secretaris" },
+    { name: "Penningmeester", role: "Penningmeester" },
+  ],
+  en: [
+    { name: "President", role: "Board President" },
+    { name: "Vice President", role: "Board Vice President" },
+    { name: "Secretary", role: "Secretary" },
+    { name: "Treasurer", role: "Treasurer" },
+  ],
+};
+
+const members = boardMembers[lang];
 ---
 
-<Layout title={t(lang, "nav.about")} lang={lang}>
-  <section class="py-12">
-    <div class="mx-auto max-w-3xl px-4">
-      <h1 class="text-3xl font-bold text-gray-900">{t(lang, "nav.about")}</h1>
-      <!-- TODO: Add organization overview, mission, board members -->
-      <p class="mt-4 text-gray-600">About us content coming soon.</p>
+<Layout title={t(lang, "about.title")} lang={lang}>
+  {/* Mission */}
+  <section class="py-16">
+    <div class="mx-auto max-w-4xl px-4">
+      <h1 class="text-4xl font-extrabold text-black">{t(lang, "about.title")}</h1>
+
+      <div class="mt-10 border-4 border-black bg-blue-50 p-8 shadow-[6px_6px_0_0_#000]">
+        <h2 class="text-2xl font-extrabold">{t(lang, "about.mission.title")}</h2>
+        <p class="mt-4 text-gray-700 leading-relaxed text-lg">
+          {t(lang, "about.mission.text")}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Board */}
+  <section class="border-y-4 border-black bg-yellow-50 py-16">
+    <div class="mx-auto max-w-4xl px-4">
+      <h2 class="text-3xl font-extrabold text-black">{t(lang, "about.board.title")}</h2>
+
+      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+        {members.map((member) => (
+          <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+            <div class="size-16 border-2 border-black bg-gray-200 flex items-center justify-center text-2xl font-extrabold text-gray-400">
+              ?
+            </div>
+            <h3 class="mt-4 text-lg font-extrabold">{member.name}</h3>
+            <p class="mt-1 text-sm text-gray-600">{member.role}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 </Layout>

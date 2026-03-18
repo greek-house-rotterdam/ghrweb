@@ -8,32 +8,99 @@ interface Props {
 
 const { lang } = Astro.props;
 
+const quickLinks = [
+  { href: `/${lang}/history`, label: t(lang, "nav.history") },
+  { href: `/${lang}/teams`, label: t(lang, "nav.teams") },
+  { href: `/${lang}/news`, label: t(lang, "nav.news") },
+  { href: `/${lang}/events`, label: t(lang, "nav.events") },
+];
+
+const infoLinks = [
+  { href: `/${lang}/about`, label: t(lang, "nav.about") },
+  { href: `/${lang}/faq`, label: t(lang, "nav.faq") },
+  { href: `/${lang}/contact`, label: t(lang, "nav.contact") },
+  { href: `/${lang}/become-a-member`, label: t(lang, "nav.become-a-member") },
+];
+
 const socialLinks = [
-  { label: "Instagram", href: "#", icon: "instagram" },
-  { label: "Facebook", href: "#", icon: "facebook" },
-  { label: "Spotify", href: "#", icon: "spotify" },
-] as const;
+  { label: "Instagram", href: "#", icon: "M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" },
+  { label: "Facebook", href: "#", icon: "M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.988h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12Z" },
+  { label: "Spotify", href: "#", icon: "M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm4.586 14.424a.622.622 0 0 1-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 0 1-.277-1.215c3.809-.87 7.076-.496 9.712 1.115a.623.623 0 0 1 .207.857Zm1.224-2.722a.78.78 0 0 1-1.072.257c-2.687-1.652-6.785-2.131-9.965-1.166a.78.78 0 0 1-.452-1.493c3.632-1.102 8.147-.568 11.232 1.33a.78.78 0 0 1 .257 1.072Zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.935.935 0 0 1-.543-1.79c3.533-1.072 9.404-.865 13.115 1.338a.935.935 0 0 1-1.054 1.545l.1.064Z" },
+];
 ---
 
-<footer class="border-t border-gray-200 bg-gray-50">
-  <div class="mx-auto max-w-7xl px-4 py-8">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-gray-500">
+<footer class="border-t-4 border-black bg-white">
+  <div class="mx-auto max-w-7xl px-4 py-12">
+    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Brand */}
+      <div>
+        <a href={`/${lang}`} class="text-2xl font-extrabold tracking-tight">
+          GHR<span class="text-blue-700">.</span>
+        </a>
+        <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+          {t(lang, "footer.tagline")}
+        </p>
+      </div>
+
+      {/* Quick links */}
+      <div>
+        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+          {t(lang, "nav.home")}
+        </h3>
+        <ul class="space-y-2">
+          {quickLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-gray-700 hover:text-black hover:underline decoration-yellow-300 decoration-2 underline-offset-2">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Info links */}
+      <div>
+        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+          Info
+        </h3>
+        <ul class="space-y-2">
+          {infoLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-gray-700 hover:text-black hover:underline decoration-yellow-300 decoration-2 underline-offset-2">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Social */}
+      <div>
+        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+          Social
+        </h3>
+        <div class="flex gap-3 mt-3">
+          {socialLinks.map((link) => (
+            <a
+              href={link.href}
+              aria-label={link.label}
+              class="flex items-center justify-center size-10 border-2 border-black bg-white shadow-[3px_3px_0_0_#000] hover:bg-yellow-300 hover:shadow-none transition-all"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg class="size-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d={link.icon} />
+              </svg>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 border-t-2 border-black pt-6 text-center">
+      <p class="text-sm text-gray-600">
         &copy; {new Date().getFullYear()} Greek House in Rotterdam. {t(lang, "footer.rights")}
       </p>
-      <div class="flex items-center gap-4">
-        {socialLinks.map((link) => (
-          <a
-            href={link.href}
-            aria-label={link.label}
-            class="text-gray-400 hover:text-gray-600 transition-colors"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {link.label}
-          </a>
-        ))}
-      </div>
     </div>
   </div>
 </footer>

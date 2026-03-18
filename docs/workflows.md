@@ -180,6 +180,48 @@ The ruleset on `main` also requires at least 1 approval to merge.
 
 ---
 
+## Local Development
+
+Two ways to run the site locally:
+
+| Command | Runtime | When to use |
+|---------|---------|-------------|
+| `npm run dev` | Node.js (via Astro) | Day-to-day development. Fast, hot-reload. |
+| `npx wrangler dev` | Cloudflare workerd | Testing deployment behavior. Simulates Cloudflare's edge runtime. |
+
+For a static site, both behave identically. Wrangler only matters if you add server-side logic (SSR, API routes on Workers).
+
+---
+
+## Direct Deploy (via Wrangler CLI)
+
+You can deploy directly from your local terminal without going through GitHub/CI.
+
+**Setup (one-time):**
+
+```
+npx wrangler login
+```
+
+This opens a browser window to authenticate with your Cloudflare account and stores an API token locally.
+
+**Deploy:**
+
+```
+npm run build && npx wrangler deploy
+```
+
+**When to use:**
+- Emergency fix that needs to go live immediately
+- Debugging a deployment issue that only reproduces on Cloudflare
+- Deploying before the GitHub CI pipeline is fully set up
+
+**When NOT to use:**
+- Normal workflow — always go through PRs so translations run and reviews happen
+- The next GitHub-triggered deploy will overwrite whatever you deployed manually
+
+---
+
 ## Summary
 
 | Step | Who | What happens |
@@ -195,4 +237,4 @@ The ruleset on `main` also requires at least 1 approval to merge.
 
 ---
 
-_Last updated: February 2026 (includes legacy scrape workflow)_
+_Last updated: March 2026 (added local dev and wrangler direct deploy sections)_

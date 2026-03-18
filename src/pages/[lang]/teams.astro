@@ -6,14 +6,54 @@ import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
+
+const teams: Record<Lang, { name: string; desc: string; emoji: string; color: string }[]> = {
+  gr: [
+    { name: "Χορευτική Ομάδα", desc: "Παραδοσιακοί ελληνικοί χοροί από όλες τις περιοχές της Ελλάδας. Μαθήματα για αρχάριους και προχωρημένους.", emoji: "💃", color: "bg-pink-100" },
+    { name: "Μαθήματα Ολλανδικών", desc: "Δωρεάν μαθήματα ολλανδικής γλώσσας για μέλη της ελληνικής κοινότητας.", emoji: "📚", color: "bg-blue-100" },
+    { name: "Εργαστήρι Τέχνης", desc: "Δημιουργικά εργαστήρια ζωγραφικής, κεραμικής και χειροτεχνίας.", emoji: "🎨", color: "bg-yellow-100" },
+    { name: "Κοινοτικές Συναντήσεις", desc: "Τακτικές συναντήσεις για ανταλλαγή ιδεών, σχεδιασμό εκδηλώσεων και κοινωνικοποίηση.", emoji: "🤝", color: "bg-green-100" },
+    { name: "Νεολαία", desc: "Δραστηριότητες και εκδηλώσεις ειδικά σχεδιασμένες για τη νεότερη γενιά Ελλήνων.", emoji: "⚡", color: "bg-purple-100" },
+    { name: "Μαγειρική", desc: "Μαθήματα παραδοσιακής ελληνικής μαγειρικής και κοινά γεύματα.", emoji: "🍳", color: "bg-orange-100" },
+  ],
+  nl: [
+    { name: "Dansgroep", desc: "Traditionele Griekse dansen uit alle regio's van Griekenland. Lessen voor beginners en gevorderden.", emoji: "💃", color: "bg-pink-100" },
+    { name: "Nederlandse Lessen", desc: "Gratis Nederlandse taallessen voor leden van de Griekse gemeenschap.", emoji: "📚", color: "bg-blue-100" },
+    { name: "Kunstworkshop", desc: "Creatieve workshops in schilderen, keramiek en handwerk.", emoji: "🎨", color: "bg-yellow-100" },
+    { name: "Gemeenschapsbijeenkomsten", desc: "Regelmatige bijeenkomsten voor het uitwisselen van ideeën, het plannen van evenementen en socialiseren.", emoji: "🤝", color: "bg-green-100" },
+    { name: "Jeugd", desc: "Activiteiten en evenementen speciaal ontworpen voor de jongere generatie Grieken.", emoji: "⚡", color: "bg-purple-100" },
+    { name: "Koken", desc: "Lessen in traditionele Griekse keuken en gezamenlijke maaltijden.", emoji: "🍳", color: "bg-orange-100" },
+  ],
+  en: [
+    { name: "Dance Group", desc: "Traditional Greek dances from all regions of Greece. Classes for beginners and advanced.", emoji: "💃", color: "bg-pink-100" },
+    { name: "Dutch Language Classes", desc: "Free Dutch language classes for members of the Greek community.", emoji: "📚", color: "bg-blue-100" },
+    { name: "Art Workshop", desc: "Creative workshops in painting, ceramics, and crafts.", emoji: "🎨", color: "bg-yellow-100" },
+    { name: "Community Gatherings", desc: "Regular meetings for exchanging ideas, planning events, and socializing.", emoji: "🤝", color: "bg-green-100" },
+    { name: "Youth", desc: "Activities and events specially designed for the younger generation of Greeks.", emoji: "⚡", color: "bg-purple-100" },
+    { name: "Cooking", desc: "Traditional Greek cooking classes and communal meals.", emoji: "🍳", color: "bg-orange-100" },
+  ],
+};
+
+const items = teams[lang];
 ---
 
-<Layout title={t(lang, "nav.teams")} lang={lang}>
-  <section class="py-12">
+<Layout title={t(lang, "teams.title")} lang={lang}>
+  <section class="py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h1 class="text-3xl font-bold text-gray-900">{t(lang, "nav.teams")}</h1>
-      <!-- TODO: Add team cards (dance, Dutch classes, art, meetings, etc.) -->
-      <p class="mt-4 text-gray-600">Teams content coming soon.</p>
+      <h1 class="text-4xl font-extrabold text-black">{t(lang, "teams.title")}</h1>
+      <p class="mt-4 text-lg text-gray-600 max-w-2xl">
+        {t(lang, "teams.intro")}
+      </p>
+
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((team) => (
+          <div class={`border-2 border-black p-6 shadow-[4px_4px_0_0_#000] ${team.color}`}>
+            <span class="text-4xl">{team.emoji}</span>
+            <h3 class="mt-4 text-xl font-extrabold">{team.name}</h3>
+            <p class="mt-2 text-sm text-gray-700">{team.desc}</p>
+          </div>
+        ))}
+      </div>
     </div>
   </section>
 </Layout>
