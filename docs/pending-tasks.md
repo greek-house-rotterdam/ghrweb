@@ -35,11 +35,11 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
 | 4 | ~~**[HIGH] Scrape and archive all content from `https://vvgn.eu/nl/`**~~ | ~~Confirm scope and permission to copy content~~ | Done. Repeatable scraper at `scripts/scrape_vvgn.py`. Outputs at `data/scrapes/vvgn/` (records, `manifest.json`, `crawl-report.md`, inventory CSV). Content-manager handoff: `docs/vvgn-content-manager-dossier.md`. |
-| 5 | **Connect Cloudflare to org repo** | Repo transfer complete (done) | **In progress.** Cloudflare dashboard → Compute → Workers & Pages → Create → Connect to Git → select `greek-house-rotterdam/ghrweb`. Uses the new unified Workers flow (not legacy Pages). Build: `npm run build`, deploy: `npx wrangler deploy`, config: `wrangler.json` in repo root. Set `NODE_VERSION=24` in env vars. Temporary URL: `*.pages.dev` until custom domain is connected. |
-| 6 | **Configure Decap CMS OAuth** | Cloudflare Pages connected, GitHub OAuth app created | Decap CMS needs a GitHub OAuth app registered under the org for admin login at `/admin` |
+| 5 | ~~**Connect Cloudflare to org repo**~~ | ~~Repo transfer complete~~ | Done. Connected via Cloudflare Workers & Pages (Compute → Workers & Pages → Create → Connect to Git). Uses unified Workers flow with `wrangler.json` for static asset deployment. Build: `npm run build`, deploy: `npx wrangler deploy`. `NODE_VERSION=24` set in Cloudflare env vars. Production branch: `main`. Temporary URL on `*.pages.dev` — custom domain to be connected later (Task #8). `wrangler` added as devDependency to prevent CI scaffolding wizard. |
+| 6 | **Configure Decap CMS OAuth** | Cloudflare connected (done) | Decap CMS needs a GitHub OAuth app registered under the org for admin login at `/admin`. Prerequisite is now met — Cloudflare is live. |
 | 7 | ~~**Set up DeepL / translation GitHub Action**~~ | ~~Translation API decision finalized~~ | Done. Workflow at `.github/workflows/translate.yml`, script at `.github/scripts/translate.py`. Requires `DEEPL_API_KEY` secret in GitHub repo settings. |
 | 9 | **Evaluate OpenAI for translation** | Content volume or complexity increases | Consider switching from DeepL to OpenAI API if translations feel "robotic" or if Markdown structure (frontmatter) is frequently broken. OpenAI offers better contextual control and structural integrity via system prompts. |
-| 8 | **Connect custom domain** | Domain DNS access available | Cloudflare Pages → Custom domains → Add domain → Update DNS records |
+| 8 | **Connect custom domain** | Domain DNS access available | Cloudflare project settings → Custom domains → Add domain → Update DNS records. Site is live on `*.pages.dev` in the meantime. |
 
 ## Security Hardening
 
@@ -67,7 +67,7 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 |---|------|-------------|---------|
 | 18 | **Install Starwind UI and add core interactive components** | None — ready now | `npx starwind-ui init` then `npx starwind-ui add accordion card badge button sheet pagination avatar`. These are needed for FAQ, news/event cards, mobile nav drawer, and listing pages. |
 | 19 | **Build page sections using HyperUI patterns** | Task #18 complete (Starwind provides the interactive primitives) | Copy-paste and adapt Tailwind HTML from HyperUI for: hero section (Home), timeline (History), team cards (Teams), CTA blocks (Home, Become a Member), footer layout, contact section. Customize colors/spacing to match GHR visual identity. |
-| 20 | **Define color palette and visual identity tokens** | None — ready now | Choose primary/accent/neutral colors (Greek blue + warm accent?) and define them as Tailwind CSS v4 theme variables. Ensures consistency across all components and pages. |
+| 20 | ~~**Define color palette and visual identity tokens**~~ | ~~None — ready now~~ | Done. Defined semantic color tokens in `src/styles/global.css` using Tailwind CSS v4 `@theme`. Primary: Hellenic Blue (`#0D5EAF`, from Greek flag). Accent: Mediterranean Gold (`#FACC15`). Each has dark/light/lighter variants. All 15 `.astro` files updated from hardcoded `blue-*`/`yellow-*` classes to semantic `primary-*`/`accent-*` tokens. Neutrals (gray scale) kept as standard Tailwind. |
 
 ## Developer Tooling
 
@@ -79,8 +79,8 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
-| 14 | **Investigate traffic spike capacity** | Site is live on Cloudflare Pages | Research Cloudflare Pages free tier limits (bandwidth, requests/day, concurrent connections). Determine failure mode during a viral event (e.g. major news): does it throttle, bill overages, or shut down? Document the "safe" traffic ceiling. |
+| 14 | **Investigate traffic spike capacity** | Site is live on Cloudflare (done) | Research Cloudflare Workers free tier limits (bandwidth, requests/day, concurrent connections). Determine failure mode during a viral event (e.g. major news): does it throttle, bill overages, or shut down? Document the "safe" traffic ceiling. Prerequisite now met — site is deployed. |
 
 ---
 
-*Last updated: Feb 23, 2026 (added UI component tasks #18–#20)*
+*Last updated: Mar 19, 2026 (Task #20 complete — color palette and visual identity tokens defined)*

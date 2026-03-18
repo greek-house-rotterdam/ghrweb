@@ -23,24 +23,24 @@ const events = allEvents
 
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
   {/* Hero */}
-  <section class="border-b-4 border-black bg-blue-700 py-20 sm:py-28">
+  <section class="border-b-4 border-black bg-primary py-20 sm:py-28">
     <div class="mx-auto max-w-4xl px-4 text-center">
       <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
         {t(lang, "home.hero.title")}
       </h1>
-      <p class="mt-6 text-lg text-blue-100 sm:text-xl max-w-2xl mx-auto">
+      <p class="mt-6 text-lg text-primary-content sm:text-xl max-w-2xl mx-auto">
         {t(lang, "home.hero.subtitle")}
       </p>
       <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
         <a
           href={`/${lang}/become-a-member`}
-          class="border-2 border-black bg-yellow-300 px-8 py-4 text-lg font-extrabold text-black shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+          class="border-2 border-black bg-accent px-8 py-4 text-lg font-extrabold text-black shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
         >
           {t(lang, "nav.become-a-member")}
         </a>
         <a
           href={`/${lang}/contact`}
-          class="border-2 border-white bg-transparent px-8 py-4 text-lg font-extrabold text-white hover:bg-white hover:text-blue-700 transition-all"
+          class="border-2 border-white bg-transparent px-8 py-4 text-lg font-extrabold text-white hover:bg-white hover:text-primary transition-all"
         >
           {t(lang, "nav.contact")}
         </a>
@@ -58,7 +58,7 @@ const events = allEvents
             href={`/${lang}/news/${post.id.split("/").pop()}`}
             class="block border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
           >
-            <span class="inline-block border border-black bg-yellow-300 px-2 py-0.5 text-xs font-bold uppercase">
+            <span class="inline-block border border-black bg-accent px-2 py-0.5 text-xs font-bold uppercase">
               {post.data.date.toLocaleDateString(lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{post.data.title}</h3>
@@ -70,7 +70,7 @@ const events = allEvents
         <div class="mt-8">
           <a
             href={`/${lang}/news`}
-            class="inline-block border-2 border-black bg-white px-5 py-2 font-bold text-black shadow-[3px_3px_0_0_#000] hover:bg-yellow-300 hover:shadow-none transition-all"
+            class="inline-block border-2 border-black bg-white px-5 py-2 font-bold text-black shadow-[3px_3px_0_0_#000] hover:bg-accent hover:shadow-none transition-all"
           >
             {t(lang, "common.read-more")} →
           </a>
@@ -80,7 +80,7 @@ const events = allEvents
   </section>
 
   {/* Upcoming Events */}
-  <section class="border-y-4 border-black bg-yellow-50 py-16">
+  <section class="border-y-4 border-black bg-accent-lighter py-16">
     <div class="mx-auto max-w-7xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -89,7 +89,7 @@ const events = allEvents
             href={`/${lang}/events/${event.id.split("/").pop()}`}
             class="block border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
           >
-            <span class="inline-block border border-black bg-blue-100 px-2 py-0.5 text-xs font-bold uppercase">
+            <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
               {event.data.date.toLocaleDateString(lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{event.data.title}</h3>
@@ -113,7 +113,7 @@ const events = allEvents
         <p class="mt-4 text-gray-600">{t(lang, "home.cta.subtitle")}</p>
         <a
           href={`/${lang}/become-a-member`}
-          class="mt-8 inline-block border-2 border-black bg-blue-700 px-8 py-4 text-lg font-extrabold text-white shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+          class="mt-8 inline-block border-2 border-black bg-primary px-8 py-4 text-lg font-extrabold text-white shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
         >
           {t(lang, "nav.become-a-member")}
         </a>

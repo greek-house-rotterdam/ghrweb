@@ -45,7 +45,7 @@ const items = faqs[lang];
       <div class="mt-10 space-y-3">
         {items.map((faq) => (
           <details class="group [&_summary::-webkit-details-marker]:hidden">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 border-2 border-black bg-white px-5 py-4 font-bold text-black shadow-[4px_4px_0_0_#000] hover:bg-yellow-100 focus:bg-yellow-100 focus:outline-0 transition-colors">
+            <summary class="flex cursor-pointer items-center justify-between gap-4 border-2 border-black bg-white px-5 py-4 font-bold text-black shadow-[4px_4px_0_0_#000] hover:bg-accent-light focus:bg-accent-light focus:outline-0 transition-colors">
               <span>{faq.q}</span>
               <svg
                 class="size-5 shrink-0 transition-transform group-open:-rotate-180"
