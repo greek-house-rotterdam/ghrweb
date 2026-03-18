@@ -30,7 +30,7 @@
    - Optional: 2 hardware keys stored in separate secure locations
 4. Invite individual admins using their personal Cloudflare users.
 5. Give least-privilege roles (developer/admin only where needed).
-6. Connect Cloudflare Pages to `greek-house-rotterdam/ghrweb`.
+6. Connect Cloudflare Workers to `greek-house-rotterdam/ghrweb` (Dashboard → Compute → Workers & Pages → Create → Connect to Git).
 7. Confirm org-level billing ownership (payment method + invoice access).
 
 ---
@@ -80,4 +80,4 @@
 
 ---
 
-_Last updated: Feb 22, 2026_
+_Last updated: Mar 18, 2026 (updated dashboard navigation — Pages is now under Compute → Workers & Pages)_

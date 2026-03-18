@@ -11,7 +11,7 @@
 | **Framework** | Astro | Static site generator — outputs plain HTML, built-in i18n, excellent SEO |
 | **Styling** | Tailwind CSS | Utility-first CSS — fast to build, AI-friendly, responsive by default |
 | **CMS** | Decap CMS | Git-based admin UI at `/admin` — free, no backend, non-technical friendly |
-| **Hosting** | Cloudflare Pages | Static hosting with global CDN — free tier, auto-deploy from GitHub |
+| **Hosting** | Cloudflare Workers (static assets) | Static hosting with global CDN — free tier, auto-deploy from GitHub. Configured via `wrangler.json`. |
 | **Translation** | GitHub Action + DeepL API | Auto-translates content within PRs — trilingual (GR/NL/EN) |
 | **Forms** | Google Forms (embedded) | Contact and enrollment — built-in spam protection, responses in Google Sheets |
 | **Analytics** | Google Analytics (GA4) | Traffic and engagement tracking — requires cookie consent banner (GDPR) |
@@ -33,6 +33,7 @@
 │  src/i18n/             ← Translation strings                        │
 │  public/images/        ← Uploaded images                            │
 │  public/admin/         ← Decap CMS admin panel                      │
+│  wrangler.json         ← Cloudflare deployment config               │
 │  CODEOWNERS            ← Requires translators review on content     │
 └──────────┬───────────────────────┬──────────────────────────────────┘
            │                       │
@@ -231,7 +232,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 6 | Database | None | No dynamic data — content is Markdown in Git, forms go to Google Sheets | Firebase Firestore, Supabase (no use case — would add cost and complexity for zero benefit) |
 | 7 | Content storage | Markdown in GitHub repo | Version-controlled, portable, works with Decap CMS and Astro content collections | Database-backed CMS (unnecessary layer), Cloudflare KV/R2 (overkill for text content) |
 | 8 | Translation approach | GitHub Action + DeepL API (PR-based) | Triggers on PR, translates within the PR before merge. Admin reviews rendered preview. | Push-to-main approach (blocked by branch protection on free tier), manual translation (doesn't scale) |
-| 9 | Deployment | Cloudflare auto-deploy | Push to `main` = live in ~30 sec, no CI/CD config needed | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
+| 9 | Deployment | Cloudflare Workers auto-deploy | Push to production branch runs `npm run build` + `npx wrangler deploy`. Preview branches run `npx wrangler versions upload`. Configured via `wrangler.json` (static assets from `./dist`). Temporary URL: `*.pages.dev` until custom domain is connected. | GitHub Actions deploy step (unnecessary — Cloudflare handles it natively) |
 | 10 | Analytics | Google Analytics (GA4) | Free, full-featured, already referenced in success metrics. Requires cookie consent banner (GDPR) | Plausible (~€9/mo, GDPR-friendly but paid), Firebase Analytics (designed for mobile apps/SPAs, not static sites) |
 | 11 | CMS auth / access control | GitHub Organization (free tier) + GitHub OAuth | Teams for admin/editor/translator roles, repository rulesets for editorial workflow, CODEOWNERS for translation review, free, individual accountability | Netlify Identity (adds external dependency, free tier limited to 5 users), shared GitHub account (no audit trail, no individual access control) |
 | 12 | Repository visibility | Public | Enables rulesets, required PR reviews, and Code Owners on the free tier — all unavailable for private repos without a paid plan. Unlimited GitHub Actions minutes. No secrets to protect — site content is public by nature. | Private repo (would require GitHub Team at $4/user/month to get rulesets, which the editorial workflow depends on) |
