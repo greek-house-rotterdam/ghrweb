@@ -6,6 +6,12 @@
     <title>GHR Admin</title>
   </head>
   <body>
+    <script>
+      var channel = new BroadcastChannel("decap-cms-auth");
+      channel.addEventListener("message", function (event) {
+        window.postMessage(event.data, window.location.origin);
+      });
+    </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
   </body>
 </html>
