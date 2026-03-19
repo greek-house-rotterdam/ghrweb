@@ -96,19 +96,16 @@ function authResultPage(status: "success" | "error", content: string): string {
 </body></html>`;
   }
 
-  // After GitHub redirects back, window.opener is often null due to
-  // Cross-Origin-Opener-Policy headers. We try multiple delivery methods:
-  // 1. window.opener.postMessage (works when COOP doesn't block it)
-  // 2. BroadcastChannel (works same-origin across browsing contexts)
-  // 3. localStorage + storage event (most reliable cross-window fallback)
+  // Send the token back to the admin page and close the popup.
+  // Primary: window.opener.postMessage (Decap CMS listens for this).
+  // Fallback: BroadcastChannel, relayed by admin/index.html in case
+  // a future browser update nullifies window.opener via COOP headers.
   return `<!doctype html><html><body>
 <p>Authenticating...</p>
 <script>
 (function() {
   var msg = "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" });
 
-  // Deliver token to admin page via window.opener (primary)
-  // and BroadcastChannel (fallback for COOP restrictions)
   try {
     if (window.opener && !window.opener.closed) {
       window.opener.postMessage(msg, window.location.origin);
