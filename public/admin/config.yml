@@ -5,6 +5,7 @@ backend:
   name: github
   repo: greek-house-rotterdam/ghrweb
   branch: main
+  base_url: https://ghrweb.enosi-ellinon-ollandias.workers.dev
 
 publish_mode: editorial_workflow
 
