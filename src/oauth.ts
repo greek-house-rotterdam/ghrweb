@@ -25,13 +25,28 @@ export default {
 
 function handleAuth(url: URL, env: Env): Response {
   const scope = url.searchParams.get("scope") || "repo,user";
+  const provider = url.searchParams.get("provider") || "github";
   const params = new URLSearchParams({
     client_id: env.GITHUB_CLIENT_ID,
     redirect_uri: `${url.origin}/callback`,
     scope,
   });
 
-  return Response.redirect(`${GITHUB_AUTHORIZE_URL}?${params}`, 302);
+  const redirectUrl = `${GITHUB_AUTHORIZE_URL}?${params}`;
+
+  // Decap CMS expects a handshake message ("authorizing:<provider>") before
+  // it starts listening for the auth token. We must send this from the popup
+  // before redirecting to GitHub.
+  return new Response(
+    `<!doctype html><html><body>
+<script>
+(function() {
+  window.opener.postMessage("authorizing:${provider}", window.location.origin);
+  window.location.href = ${JSON.stringify(redirectUrl)};
+})();
+</script></body></html>`,
+    { headers: { "Content-Type": "text/html;charset=utf-8" } },
+  );
 }
 
 async function handleCallback(url: URL, env: Env): Promise<Response> {
@@ -87,47 +102,26 @@ function authResultPage(status: "success" | "error", content: string): string {
   // 2. BroadcastChannel (works same-origin across browsing contexts)
   // 3. localStorage + storage event (most reliable cross-window fallback)
   return `<!doctype html><html><body>
-<h3>OAuth Debug</h3>
-<ul id="log"></ul>
+<p>Authenticating...</p>
 <script>
 (function() {
-  var log = document.getElementById("log");
-  function addLog(text) {
-    var li = document.createElement("li");
-    li.textContent = text;
-    log.appendChild(li);
-  }
-
   var msg = "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" });
-  addLog("Token obtained successfully");
 
-  // Method 1: Direct opener postMessage
+  // Deliver token to admin page via window.opener (primary)
+  // and BroadcastChannel (fallback for COOP restrictions)
   try {
     if (window.opener && !window.opener.closed) {
       window.opener.postMessage(msg, window.location.origin);
-      addLog("Method 1 (window.opener): SENT");
-    } else {
-      addLog("Method 1 (window.opener): " + (window.opener ? "closed" : "null"));
     }
-  } catch(e) { addLog("Method 1 (window.opener): ERROR " + e.message); }
+  } catch(e) {}
 
-  // Method 2: BroadcastChannel
   try {
     var channel = new BroadcastChannel("decap-cms-auth");
     channel.postMessage(msg);
-    addLog("Method 2 (BroadcastChannel): SENT");
-    setTimeout(function() { channel.close(); }, 5000);
-  } catch(e) { addLog("Method 2 (BroadcastChannel): ERROR " + e.message); }
+    setTimeout(function() { channel.close(); }, 2000);
+  } catch(e) {}
 
-  // Method 3: localStorage storage event
-  try {
-    localStorage.setItem("decap-cms-auth", msg);
-    addLog("Method 3 (localStorage): SET");
-    setTimeout(function() { localStorage.removeItem("decap-cms-auth"); }, 3000);
-  } catch(e) { addLog("Method 3 (localStorage): ERROR " + e.message); }
-
-  addLog("Is this a popup? " + (window.opener !== null));
-  addLog("Origin: " + window.location.origin);
+  setTimeout(function() { window.close(); }, 1000);
 })();
 </script></body></html>`;
 }
