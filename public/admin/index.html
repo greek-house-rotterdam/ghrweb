@@ -11,6 +11,7 @@
       // Multiple methods are used because browser security policies
       // (COOP) can block window.opener after cross-origin redirects.
       function relayAuth(data) {
+        document.title = "AUTH: " + (typeof data === "string" ? data.substring(0, 50) : "non-string");
         if (typeof data === "string" && data.indexOf("authorization:") === 0) {
           window.postMessage(data, window.location.origin);
         }
