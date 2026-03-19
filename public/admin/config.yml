@@ -6,7 +6,7 @@ backend:
   repo: greek-house-rotterdam/ghrweb
   branch: main
   auth_type: pkce
-  app_id: GITHUB_OAUTH_CLIENT_ID
+  app_id: Ov23lihw8yWpvdLcUQ8b
 
 publish_mode: editorial_workflow
 
