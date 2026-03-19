@@ -87,35 +87,47 @@ function authResultPage(status: "success" | "error", content: string): string {
   // 2. BroadcastChannel (works same-origin across browsing contexts)
   // 3. localStorage + storage event (most reliable cross-window fallback)
   return `<!doctype html><html><body>
-<p>Authenticating...</p>
+<h3>OAuth Debug</h3>
+<ul id="log"></ul>
 <script>
 (function() {
-  var msg = "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" });
-  var delivered = false;
+  var log = document.getElementById("log");
+  function addLog(text) {
+    var li = document.createElement("li");
+    li.textContent = text;
+    log.appendChild(li);
+  }
 
-  // Method 1: Direct opener postMessage (best case, no COOP)
+  var msg = "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" });
+  addLog("Token obtained successfully");
+
+  // Method 1: Direct opener postMessage
   try {
     if (window.opener && !window.opener.closed) {
       window.opener.postMessage(msg, window.location.origin);
-      delivered = true;
+      addLog("Method 1 (window.opener): SENT");
+    } else {
+      addLog("Method 1 (window.opener): " + (window.opener ? "closed" : "null"));
     }
-  } catch(e) {}
+  } catch(e) { addLog("Method 1 (window.opener): ERROR " + e.message); }
 
   // Method 2: BroadcastChannel
   try {
     var channel = new BroadcastChannel("decap-cms-auth");
     channel.postMessage(msg);
-    // Don't close immediately — let the message deliver
-    setTimeout(function() { channel.close(); }, 2000);
-  } catch(e) {}
+    addLog("Method 2 (BroadcastChannel): SENT");
+    setTimeout(function() { channel.close(); }, 5000);
+  } catch(e) { addLog("Method 2 (BroadcastChannel): ERROR " + e.message); }
 
-  // Method 3: localStorage triggers a "storage" event in other same-origin tabs
+  // Method 3: localStorage storage event
   try {
     localStorage.setItem("decap-cms-auth", msg);
-    localStorage.removeItem("decap-cms-auth");
-  } catch(e) {}
+    addLog("Method 3 (localStorage): SET");
+    setTimeout(function() { localStorage.removeItem("decap-cms-auth"); }, 3000);
+  } catch(e) { addLog("Method 3 (localStorage): ERROR " + e.message); }
 
-  setTimeout(function() { window.close(); }, 1500);
+  addLog("Is this a popup? " + (window.opener !== null));
+  addLog("Origin: " + window.location.origin);
 })();
 </script></body></html>`;
 }
