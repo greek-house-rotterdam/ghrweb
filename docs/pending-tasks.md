@@ -39,7 +39,7 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | 6 | **Configure Decap CMS OAuth** | Cloudflare connected (done) | **Code ready** — Worker OAuth proxy at `src/oauth.ts`, wrangler configured, admin UI dynamically sets `base_url`. **Remaining manual steps:** 1) Register GitHub OAuth App under the org (callback URL: `https://<site-url>/callback`). 2) Set Worker secrets: `npx wrangler secret put GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`. 3) Deploy and test `/admin` login. |
 | 7 | ~~**Set up DeepL / translation GitHub Action**~~ | ~~Translation API decision finalized~~ | Done. Workflow at `.github/workflows/translate.yml`, script at `.github/scripts/translate.py`. Requires `DEEPL_API_KEY` secret in GitHub repo settings. |
 | 9 | ~~**Evaluate OpenAI for translation**~~ | ~~Content volume or complexity increases~~ | Superseded by Future Feature F1 (AI Translation via Gemini 2.5 Flash). See "Future / Optional Enhancements" section below. |
-| 8 | **Connect custom domain** | Domain DNS access available | Cloudflare project settings → Custom domains → Add domain → Update DNS records. Site is live on `*.pages.dev` in the meantime. |
+| 8 | **Connect custom domain** | Domain DNS access available | Cloudflare project settings → Custom domains → Add domain → Update DNS records. Site is live on `*.pages.dev` in the meantime. **Also update:** 1) `base_url` in `public/admin/config.yml` to the new domain. 2) GitHub OAuth App Homepage URL and Authorization callback URL to `https://<new-domain>/callback`. |
 
 ## Security Hardening
 
