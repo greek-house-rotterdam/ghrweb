@@ -81,19 +81,41 @@ function authResultPage(status: "success" | "error", content: string): string {
 </body></html>`;
   }
 
-  // BroadcastChannel bypasses the COOP restriction that nullifies
-  // window.opener after cross-origin redirects through github.com.
-  // A listener on the admin page re-dispatches this as a window message
-  // that Decap CMS recognizes.
+  // After GitHub redirects back, window.opener is often null due to
+  // Cross-Origin-Opener-Policy headers. We try multiple delivery methods:
+  // 1. window.opener.postMessage (works when COOP doesn't block it)
+  // 2. BroadcastChannel (works same-origin across browsing contexts)
+  // 3. localStorage + storage event (most reliable cross-window fallback)
   return `<!doctype html><html><body>
 <p>Authenticating...</p>
 <script>
 (function() {
   var msg = "authorization:github:success:" + JSON.stringify({ token: ${escaped}, provider: "github" });
-  var channel = new BroadcastChannel("decap-cms-auth");
-  channel.postMessage(msg);
-  channel.close();
-  setTimeout(function() { window.close(); }, 500);
+  var delivered = false;
+
+  // Method 1: Direct opener postMessage (best case, no COOP)
+  try {
+    if (window.opener && !window.opener.closed) {
+      window.opener.postMessage(msg, window.location.origin);
+      delivered = true;
+    }
+  } catch(e) {}
+
+  // Method 2: BroadcastChannel
+  try {
+    var channel = new BroadcastChannel("decap-cms-auth");
+    channel.postMessage(msg);
+    // Don't close immediately — let the message deliver
+    setTimeout(function() { channel.close(); }, 2000);
+  } catch(e) {}
+
+  // Method 3: localStorage triggers a "storage" event in other same-origin tabs
+  try {
+    localStorage.setItem("decap-cms-auth", msg);
+    localStorage.removeItem("decap-cms-auth");
+  } catch(e) {}
+
+  setTimeout(function() { window.close(); }, 1500);
 })();
 </script></body></html>`;
 }

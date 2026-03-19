@@ -7,9 +7,26 @@
   </head>
   <body>
     <script>
+      // Relay auth messages from the OAuth popup to Decap CMS.
+      // Multiple methods are used because browser security policies
+      // (COOP) can block window.opener after cross-origin redirects.
+      function relayAuth(data) {
+        if (typeof data === "string" && data.indexOf("authorization:") === 0) {
+          window.postMessage(data, window.location.origin);
+        }
+      }
+
+      // Method 2: BroadcastChannel
       var channel = new BroadcastChannel("decap-cms-auth");
       channel.addEventListener("message", function (event) {
-        window.postMessage(event.data, window.location.origin);
+        relayAuth(event.data);
+      });
+
+      // Method 3: localStorage "storage" event (fires in other tabs on change)
+      window.addEventListener("storage", function (event) {
+        if (event.key === "decap-cms-auth" && event.newValue) {
+          relayAuth(event.newValue);
+        }
       });
     </script>
     <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
