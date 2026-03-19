@@ -3,6 +3,9 @@
   "name": "ghrweb",
   "main": "src/oauth.ts",
   "compatibility_date": "2026-03-18",
+  "vars": {
+    "GITHUB_CLIENT_ID": "Ov23lihw8yWpvdLcUQ8b"
+  },
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
