@@ -135,6 +135,8 @@ Managed via a **GitHub Organization (free tier)** with a **public repository**. 
 - **Editors** (`Write` role): Cultural team, content writers — can create content via Decap CMS; their changes open a PR that **cannot be merged until the designated CODEOWNER approves**
 - **Translators** (`Write` role): Review auto-translated content on content PRs — designated as CODEOWNER for `src/content/`, so their approval is required before any content PR can be merged
 
+**Two-factor authentication (2FA) is required** for all organization members. Members who disable 2FA are automatically removed from the organization by GitHub.
+
 > **Note:** The editorial workflow (editors → PR → CODEOWNER approval → merge) depends on repository rulesets, which are only available for free on **public** repositories. A private repo would require GitHub Team ($4/user/month).
 
 **CODEOWNERS enforcement:** The `CODEOWNERS` file maps file paths to required reviewers. Combined with the "Require review from Code Owners" ruleset setting, this means the PR merge button is disabled until the designated owner approves. Content changes require translators team approval; infrastructure changes require developer approval. See [Workflows](workflows.md) for the full merge gate specification.

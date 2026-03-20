@@ -215,10 +215,10 @@ Deployment is handled by Cloudflare Pages directly (built-in GitHub integration)
 - **Decap CMS** — runs in browser, authenticates via GitHub OAuth, commits directly to repo
 - **No user uploads** — eliminates file-based attack vectors
 - **Google Forms** — form processing happens on Google's infrastructure, not ours
-- **GitHub Organization** — team-based access control, individual accountability, supports enforcing 2FA for all members
+- **GitHub Organization** — team-based access control, individual accountability, 2FA enforced for all members
 - **Owner redundancy** — at least 2 Organization Owners required (e.g., developer + board president) to prevent lockout if one loses access. Losing the sole Owner means losing control of the repo, CMS access, and deployment pipeline.
 
-The only authentication surface is GitHub OAuth (supports 2FA).
+The only authentication surface is GitHub OAuth (2FA required).
 
 ---
 
