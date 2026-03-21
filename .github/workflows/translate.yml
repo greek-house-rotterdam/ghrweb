@@ -9,23 +9,26 @@ on:
 
 permissions:
   contents: write
+  statuses: write
 
 jobs:
   translate:
     runs-on: ubuntu-latest
+    outputs:
+      new_sha: ${{ steps.push-translations.outputs.new_sha }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
         run: uv export --no-hashes | uv pip install --system -r -
@@ -61,6 +64,7 @@ jobs:
           fi
 
       - name: Commit and push translations
+        id: push-translations
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -68,16 +72,18 @@ jobs:
 
           if git diff --staged --quiet; then
             echo "No changes to commit."
+            echo "new_sha=" >> "$GITHUB_OUTPUT"
           else
             git commit -m "chore: auto-translate and sync content"
             git push
+            echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
 
   verify:
     needs: translate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
@@ -85,9 +91,21 @@ jobs:
       - name: Pull latest changes
         run: git pull origin ${{ github.head_ref }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
       - name: Verify content integrity
         run: python .github/scripts/verify_content.py
+
+      - name: Report status on auto-commit
+        if: ${{ needs.translate.outputs.new_sha != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for context in translate verify; do
+            gh api repos/${{ github.repository }}/statuses/${{ needs.translate.outputs.new_sha }} \
+              -f state=success \
+              -f context="$context" \
+              -f description="Passed (via auto-translation workflow)"
+          done
