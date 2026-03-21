@@ -1,5 +1,5 @@
 ---
-title: Easter Festival 2026
+title: Easter 2026
 description: We celebrate Easter together at the Greek House in Rotterdam.
 date: 2026-04-12
 lang: en
@@ -7,6 +7,6 @@ lang: en
 
 Hellenic House Rotterdam invites you to our annual Easter celebration.
 
-We will roast lamb on a spit, crack red eggs and celebrate with traditional music and dancing.
+We roast lamb on a spit, break red eggs and celebrate with traditional music and dance.
 
-Bring your families and friends - all are welcome!
+Bring your family and friends - everyone is welcome!

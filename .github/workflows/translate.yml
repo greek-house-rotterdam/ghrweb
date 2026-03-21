@@ -24,8 +24,11 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
       - name: Install dependencies
-        run: pip install deepl pyyaml
+        run: uv export --no-hashes | uv pip install --system -r -
 
       - name: Detect and translate changed content
         env:

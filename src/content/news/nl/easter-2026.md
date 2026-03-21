@@ -7,6 +7,6 @@ lang: nl
 
 Hellenic House Rotterdam nodigt je uit voor onze jaarlijkse paasviering.
 
-We zullen lam roosteren aan het spit, rode eieren kraken en feestvieren met traditionele muziek en dans.
+We roosteren lam aan het spit, breken rode eieren en vieren feest met traditionele muziek en dans.
 
 Breng je familie en vrienden mee - iedereen is welkom!
