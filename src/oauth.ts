@@ -41,7 +41,7 @@ function handleAuth(url: URL, env: Env): Response {
     `<!doctype html><html><body>
 <script>
 (function() {
-  window.opener.postMessage("authorizing:${provider}", window.location.origin);
+  window.opener.postMessage("authorizing:${provider}", "*");
   window.location.href = ${JSON.stringify(redirectUrl)};
 })();
 </script></body></html>`,
@@ -108,7 +108,7 @@ function authResultPage(status: "success" | "error", content: string): string {
 
   try {
     if (window.opener && !window.opener.closed) {
-      window.opener.postMessage(msg, window.location.origin);
+      window.opener.postMessage(msg, "*");
     }
   } catch(e) {}
 
