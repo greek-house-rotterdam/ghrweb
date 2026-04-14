@@ -3,6 +3,7 @@ import Layout from "../../../layouts/Layout.astro";
 import { t } from "../../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
+import { Button } from "@/components/starwind/button";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -24,17 +25,19 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
       {/* Category filter */}
       <div class="mt-6 flex flex-wrap gap-2" id="category-filter">
         {categories.map((cat) => (
-          <button
+          <Button
+            variant={cat === "all" ? "default" : "outline"}
+            size="sm"
             data-category={cat}
             class:list={[
-              "border-2 border-black px-3 py-1 text-sm font-bold uppercase transition-all",
+              "border-2 border-black font-bold uppercase",
               cat === "all"
                 ? "bg-black text-white"
                 : "bg-white text-black hover:bg-accent-gold",
             ]}
           >
             {cat === "all" ? t(lang, "common.all") : cat}
-          </button>
+          </Button>
         ))}
       </div>
 

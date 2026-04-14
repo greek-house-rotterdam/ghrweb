@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/starwind/accordion";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -19,27 +20,25 @@ const faqs = allFaqs
     <div class="mx-auto max-w-3xl px-4">
       <h1 class="text-4xl font-extrabold text-black">{t(lang, "faq.title")}</h1>
 
-      <div class="mt-10 space-y-3">
-        {faqs.map((faq) => (
-          <details class="group [&_summary::-webkit-details-marker]:hidden">
-            <summary class="flex cursor-pointer items-center justify-between gap-4 border-2 border-black bg-white px-5 py-4 font-bold text-black shadow-[4px_4px_0_0_#000] hover:bg-accent-gold-light focus:bg-accent-gold-light focus:outline-0 transition-colors">
-              <span>{faq.data.question}</span>
-              <svg
-                class="size-5 shrink-0 transition-transform group-open:-rotate-180"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </summary>
-            <div class="border-x-2 border-b-2 border-black bg-white px-5 py-4">
-              <p class="text-gray-700 leading-relaxed">{faq.data.answer}</p>
-            </div>
-          </details>
-        ))}
-      </div>
+      {faqs.length > 0 && (
+        <Accordion type="single" class="mt-10 space-y-3">
+          {faqs.map((faq) => (
+            <AccordionItem
+              value={faq.id}
+              class="border-2 border-black bg-white shadow-[4px_4px_0_0_#000] !border-b-2"
+            >
+              <AccordionTrigger class="px-5 py-4 font-bold text-black hover:bg-accent-gold-light focus:bg-accent-gold-light transition-colors">
+                {faq.data.question}
+              </AccordionTrigger>
+              <AccordionContent class="border-t-2 border-black">
+                <div class="px-5 py-4">
+                  <p class="text-gray-700 leading-relaxed">{faq.data.answer}</p>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      )}
 
       {faqs.length === 0 && (
         <div class="mt-10 border-2 border-black border-dashed bg-gray-50 p-10 text-center">

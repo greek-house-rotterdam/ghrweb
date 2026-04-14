@@ -101,7 +101,7 @@
   --border: var(--color-neutral-200);
   --input: var(--color-neutral-200);
   --outline: var(--color-neutral-400);
-  --radius: 0.625rem;
+  --radius: 0;
 
   /* sidebar variables */
   --sidebar-background: var(--color-neutral-50);
