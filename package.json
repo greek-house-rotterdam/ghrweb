@@ -7,7 +7,9 @@
     "dev:cms": "npx decap-server & astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@tabler/icons": "^3.41.1",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260317.1",
     "decap-server": "^3.5.0",
+    "vitest": "^4.1.4",
     "wrangler": "^4.75.0"
   }
 }
