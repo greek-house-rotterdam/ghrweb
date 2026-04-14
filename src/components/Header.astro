@@ -11,12 +11,11 @@ const { lang } = Astro.props;
 
 const navItems = [
   { href: `/${lang}`, label: t(lang, "nav.home") },
-  { href: `/${lang}/history`, label: t(lang, "nav.history") },
-  { href: `/${lang}/teams`, label: t(lang, "nav.teams") },
-  { href: `/${lang}/news`, label: t(lang, "nav.news") },
   { href: `/${lang}/events`, label: t(lang, "nav.events") },
+  { href: `/${lang}/teams`, label: t(lang, "nav.activities") },
+  { href: `/${lang}/news`, label: t(lang, "nav.news") },
   { href: `/${lang}/about`, label: t(lang, "nav.about") },
-  { href: `/${lang}/faq`, label: t(lang, "nav.faq") },
+  { href: `/${lang}/resources`, label: t(lang, "nav.resources") },
   { href: `/${lang}/contact`, label: t(lang, "nav.contact") },
 ] as const;
 ---
