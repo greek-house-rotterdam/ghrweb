@@ -1,6 +1,7 @@
 # Pending Tasks — Greek House in Rotterdam
 
 > Tasks that are defined but cannot be completed yet. Each has a clear trigger or prerequisite.
+> UX report (`docs/UX_report.pdf`) informs priorities for Phases A–C.
 
 ---
 
@@ -58,7 +59,7 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
-| 12 | **Add site-level tests** | Core site structure and build pipeline working | Build smoke test (Astro compiles without errors), content schema validation (frontmatter matches Zod schemas), internal link checking. Keep lightweight. |
+| 12 | **Add site-level tests** | Phase A schema work complete (Tasks #23–27) | Build smoke test (Astro compiles without errors), content schema validation (frontmatter matches Zod schemas), internal link checking. Keep lightweight. Blocked until schemas are finalized to avoid rework. |
 | 17 | **Unit test i18n utilities** | Utility logic is stable and non-trivial enough to warrant tests | Test `getLangFromSlug`, `getStaticLangPaths` (from `src/i18n/utils.ts`) and `t()` (from `src/i18n/ui.ts`). Good first candidates: pure functions with clear inputs/outputs. |
 
 ## UI Components & Design
@@ -66,7 +67,6 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
 | 18 | ~~**Install Starwind UI and add core interactive components**~~ | ~~None — ready now~~ | Done. Installed Starwind UI (`npx starwind@latest init`) and added 8 components: accordion, card, badge, button, sheet, pagination, avatar, dialog (sheet dependency). Merged `global.css` into `src/styles/starwind.css`. Mapped brand colors (Hellenic Blue, Mediterranean Gold) to Starwind theme tokens. Renamed `accent-*` → `accent-gold-*` across all `.astro` files to avoid conflict with Starwind's `accent` (neutral) token. Added dependencies: `tw-animate-css`, `@tailwindcss/forms`, `tailwind-variants`, `tailwind-merge`. Components at `src/components/starwind/`. |
-| 19 | **Build page sections using HyperUI patterns** | Task #18 complete (Starwind provides the interactive primitives) | Copy-paste and adapt Tailwind HTML from HyperUI for: hero section (Home), timeline (History), team cards (Teams), CTA blocks (Home, Become a Member), footer layout, contact section. Color tokens are in `src/styles/starwind.css`: `primary-*` for Hellenic Blue, `accent-gold-*` for Mediterranean Gold (renamed from `accent-*` to avoid Starwind conflict). |
 | 20 | ~~**Define color palette and visual identity tokens**~~ | ~~None — ready now~~ | Done. Semantic color tokens now in `src/styles/starwind.css` (migrated from `global.css`) using Tailwind CSS v4 `@theme`. Primary: Hellenic Blue (`#0D5EAF`, from Greek flag). Accent: Mediterranean Gold (`#FACC15`, now `accent-gold-*`). Each has dark/light/lighter variants. All `.astro` files use semantic tokens. Added `.vscode/settings.json` with `css.lint.unknownAtRules: "ignore"` to suppress false-positive linter warnings on `@theme`. |
 
 ## Developer Tooling
@@ -86,7 +86,38 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
 | 21 | **Image technical QA (GitHub Action)** | Translation workflow stable, content collections in use | Add a CI step that validates uploaded images before merge. Uses Pillow (no AI). Checks: max file size (≤2 MB), min resolution (800×600), max resolution (≤4096×4096), allowed formats (JPEG, PNG, WebP). Prefer **auto-optimization** (resize + compress + convert to WebP) over blocking, with a hard block only for files that exceed absolute limits (e.g. >5 MB). Runs before the translation step so bad assets are caught early. Add to `.github/workflows/translate.yml` as a preceding job, or as a separate workflow triggered on `public/images/` changes. |
-| 22 | **Content character limits** | Astro content collections defined (Zod schemas) | Enforce character limits: title ≤100 chars, description ≤200 chars, body ≤5000 chars (news) / ≤2000 chars (events). Enforce in three layers: Decap CMS `pattern` on string widgets, Zod `.max()` in Astro content collection schemas, and a CI validation step. |
+| 22 | **Content character limits** | Phase A schema work complete (Tasks #23–27) | Enforce character limits: title ≤100 chars, description ≤200 chars, body ≤5000 chars (news) / ≤2000 chars (events). Enforce in three layers: Decap CMS `pattern` on string widgets, Zod `.max()` in Astro content collection schemas, and a CI validation step. Align with any new fields added in Phase A. |
+
+---
+
+## UX-Driven Redesign (from `docs/UX_report.pdf`)
+
+> These tasks implement the findings from the user survey. They are grouped into three phases with strict ordering: Phase A (schemas & information architecture) must complete before Phase C (page sections), because building UI on the old IA would cause rework. Phase B (navigation & content) can partially run in parallel with Phase A.
+
+### Phase A — Schemas & Information Architecture (do first)
+
+| # | Task | Priority | Prerequisite | Details |
+|---|------|----------|-------------|---------|
+| 23 | **Add `category` tag to events schema** | HIGH | None — ready now | Add a `category` enum field to the events Zod schema (`src/content.config.ts`) and Decap CMS config (`public/admin/config.yml`). Values: `workshop`, `social`, `cultural`, `class`, `meetup` (refine based on actual activity types). Add client-side category filter to the events listing page (`src/pages/[lang]/events/index.astro`). This directly addresses users' #1 complaint: inability to find specific event types. |
+| 24 | **Create `activities` content collection** | HIGH | None — ready now | New CMS-managed collection for ongoing activities/groups (Photography, Philosophy, Greek Dance, Arts, Dutch Classes, Cooking, Youth, etc.). Schema: `title`, `description`, `image`, `emoji`, `schedule` (free text, e.g. "Every Thursday 19:00"), `lang`, `body` (markdown with details, how to join). Replaces the hardcoded teams array in `src/pages/[lang]/teams.astro`. Add individual activity detail pages at `/[lang]/activities/[slug]`. Link events to activities via `category` or a dedicated `activity` reference field. |
+| 25 | **Add `price` and `registrationRequired` fields to events schema** | MEDIUM | None — ready now | Add optional `price` (string, e.g. "€5 / free for members") and `registrationRequired` (boolean) fields to events Zod schema and CMS config. Display on event detail and listing pages. Addresses user question: "Is membership required to join?" |
+| 26 | **Make FAQ a CMS-managed collection** | MEDIUM | None — ready now | Create a `faq` content collection with fields: `question`, `answer` (markdown), `order` (number for sorting), `lang`. Migrate the 6 existing hardcoded Q&As into markdown files. Update `src/pages/[lang]/faq.astro` to query the collection instead of using inline arrays. Enables editors to add/edit FAQs via `/admin` without code changes. |
+| 27 | **Create "Useful Information" resource collection & page** | MEDIUM | Task #26 pattern established | New `resources` content collection for practical info for Greeks in NL (municipal registration, healthcare, tax, education, etc.). Schema: `title`, `description`, `category` (e.g. "Legal", "Healthcare", "Education"), `lang`, `body`. New page at `/[lang]/resources`. Addresses UX report's "Resource Library" need. |
+
+### Phase B — Navigation & Content (can partially parallel Phase A)
+
+| # | Task | Priority | Prerequisite | Details |
+|---|------|----------|-------------|---------|
+| 28 | **Rename "Teams" → "Activities" and reorder navigation** | HIGH | Task #24 (activities collection exists) | Rename nav item and route from `/teams` to `/activities`. Reorder primary nav to: `Home → Events → Activities → News → About → Contact` (6 items). Move FAQ into About page as a section or keep as sub-link. Move History into About as a section. Reduces nav items from 8 to 6, prioritizes what users actually look for (events, activities). Update Header, Footer, all internal links, i18n keys. |
+| 29 | **Expand FAQ content with UX report questions** | HIGH | Task #26 (FAQ is CMS-managed) | Add the missing questions identified in the UX report: membership fees & payment, how to volunteer, joining mid-program activities, membership requirements for events, visiting hours, difference between membership types. Target: 12–15 Q&As covering Membership & Registration, Activities & Events, and Communication & Visiting categories. |
+| 30 | **Fill placeholder links and content** | HIGH | Actual URLs and content from stakeholders | Replace all `href="#"` placeholders: social media URLs (Instagram, Facebook, Spotify), Google Form URL (contact page), Google Maps embed (contact page coordinates), become-a-member CTA form link. Add membership fee amounts and payment details to become-a-member page. **Blocked on:** stakeholders providing the actual URLs, fee structure, and form links. |
+| 31 | **Replace mobile `<details>` menu with Starwind Sheet** | MEDIUM | Task #28 (nav finalized) | Swap the `<details>`-based mobile hamburger menu in `Header.astro` for the Starwind `Sheet` component (slide-out drawer). Provides proper overlay, focus trapping, accessible close button, and smooth animation. Do this after nav reorder so we build it once. |
+
+### Phase C — Page Sections (replaces old Task #19)
+
+| # | Task | Priority | Prerequisite | Details |
+|---|------|----------|-------------|---------|
+| 19 | **Build page sections with Starwind components** | HIGH | Phase A complete (Tasks #23–27), Task #28 (nav reorder) | Redesign page sections using Starwind components and HyperUI patterns for the **new** information architecture. Includes: hero section (Home), activity cards with Starwind `Card` (Activities), event listing with category `Badge` filters and `Pagination` (Events), FAQ with Starwind `Accordion` (FAQ), CTA blocks with Starwind `Button` (Home, Become a Member), board member `Avatar` cards (About), contact section. Color tokens in `src/styles/starwind.css`: `primary-*` for Hellenic Blue, `accent-gold-*` for Mediterranean Gold. |
 
 ---
 
@@ -99,7 +130,9 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | F1 | **AI Translation (Gemini 2.5 Flash)** | DeepL translations feel robotic, Markdown structure breaks frequently, or DeepL free tier (500K chars/mo) is exhausted | Replace DeepL as the primary translation backend. Use the same workflow architecture (GitHub Action, PR-based). AI models handle Markdown frontmatter more reliably via system prompts. Keep DeepL as a fallback. Requires a `GEMINI_API_KEY` secret. Supersedes Task #9. |
 | F2 | **AI-Assisted Content Alignment (opt-in)** | Editors request help with writing quality, or content tone/style becomes inconsistent | Add an `ai_assist` boolean checkbox to Decap CMS collections. When enabled, a GitHub Action step invokes an AI model (e.g. Gemini 2.5 Flash) with a standardized style guide prompt to suggest improvements to the source content before translation. The AI commits suggestions to the PR. Non-blocking — serves as a helper, not a gatekeeper. Runs before the translation step. Requires defining the style guide prompt and adding the CMS field. |
 | F3 | **AI Image Content QA (vision model)** | Editors frequently upload off-brand or inappropriate images, or the site adopts strict visual templates | Invoke a cheap vision model (e.g. Gemini 2.0 Flash) to check uploaded images against allowed content templates and brand guidelines. Runs as a CI step on PRs that modify `public/images/`. Would block merge if the image fails content policy checks. Deferred because editors are trusted org members with GitHub 2FA — the threat model doesn't currently justify this. |
+| F4 | **Social media feed integration** | Manual double-posting becomes a burden for editors | API integration pulling recent Instagram/Facebook posts into a "Latest News" or "Social" feed on the site. Reduces manual effort. Consider Instagram Basic Display API or Facebook Graph API. |
+| F5 | **Full-text search (Pagefind)** | Site content grows beyond ~50 pages, or users report difficulty finding content despite category filters | Add [Pagefind](https://pagefind.app/) — a static search library that indexes at build time. Zero runtime cost, works with Astro. Lightweight alternative to Algolia/ElasticSearch for static sites. |
 
 ---
 
-*Last updated: Apr 12, 2026 (Task #6 done — OAuth fix; Task #18 done — Starwind UI installed)*
+*Last updated: Apr 14, 2026 (UX report analysis — added Phase A/B/C tasks #23–31, redefined #19, added F4/F5, updated prerequisites for #12 and #22)*
