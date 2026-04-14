@@ -2,6 +2,7 @@
 import { t } from "../i18n/ui";
 import LanguagePicker from "./LanguagePicker.astro";
 import type { Lang } from "../i18n/utils";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle } from "@/components/starwind/sheet";
 
 interface Props {
   lang: Lang;
@@ -46,34 +47,39 @@ const navItems = [
         {t(lang, "nav.become-a-member")}
       </a>
 
-      {/* Mobile menu toggle */}
-      <details class="lg:hidden group relative">
-        <summary class="flex cursor-pointer items-center border-2 border-black p-2 shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none transition-all list-none [&::-webkit-details-marker]:hidden">
-          <svg class="size-6 group-open:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      {/* Mobile menu — Starwind Sheet */}
+      <Sheet class="lg:hidden">
+        <SheetTrigger class="border-2 border-black p-2 shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none transition-all">
+          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
-          <svg class="size-6 hidden group-open:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </summary>
-
-        <div class="absolute right-0 top-full mt-2 w-64 border-2 border-black bg-white shadow-[4px_4px_0_0_#000] z-50">
-          {navItems.map((item) => (
+        </SheetTrigger>
+        <SheetContent side="right">
+          <SheetHeader>
+            <SheetTitle>
+              <span class="text-2xl font-extrabold tracking-tight">
+                GHR<span class="text-primary">.</span>
+              </span>
+            </SheetTitle>
+          </SheetHeader>
+          <nav class="mt-4 flex flex-col">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class="px-4 py-3 text-sm font-bold uppercase tracking-wide text-black hover:bg-accent-gold border-b border-black last:border-b-0"
+              >
+                {item.label}
+              </a>
+            ))}
             <a
-              href={item.href}
-              class="block px-4 py-3 text-sm font-bold uppercase tracking-wide text-black hover:bg-accent-gold border-b border-black last:border-b-0"
+              href={`/${lang}/become-a-member`}
+              class="mt-4 mx-4 border-2 border-black bg-primary px-4 py-3 text-center text-sm font-bold uppercase tracking-wide text-white hover:bg-primary-dark transition-all"
             >
-              {item.label}
+              {t(lang, "nav.become-a-member")}
             </a>
-          ))}
-          <a
-            href={`/${lang}/become-a-member`}
-            class="block px-4 py-3 text-sm font-bold uppercase tracking-wide text-white bg-primary hover:bg-primary-dark sm:hidden"
-          >
-            {t(lang, "nav.become-a-member")}
-          </a>
-        </div>
-      </details>
+          </nav>
+        </SheetContent>
+      </Sheet>
     </div>
   </nav>
 </header>
