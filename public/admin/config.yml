@@ -13,6 +13,8 @@ media_folder: public/images
 public_folder: /images
 
 collections:
+  # ── News ──────────────────────────────────────────────────────────
+
   - name: news-gr
     label: "Νέα (Ελληνικά)"
     folder: src/content/news/gr
@@ -52,6 +54,8 @@ collections:
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
+  # ── Events ────────────────────────────────────────────────────────
+
   - name: events-gr
     label: "Εκδηλώσεις (Ελληνικά)"
     folder: src/content/events/gr
@@ -63,6 +67,13 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
+        default: "other"
+      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
+      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -78,6 +89,13 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
+        default: "other"
+      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Gratis voor leden' or '€5'" }
+      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -93,6 +111,151 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
+        default: "other"
+      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
+      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── Activities ────────────────────────────────────────────────────
+
+  - name: activities-gr
+    label: "Δραστηριότητες (Ελληνικά)"
+    folder: src/content/activities/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
+      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: activities-nl
+    label: "Activiteiten (Nederlands)"
+    folder: src/content/activities/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
+      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: activities-en
+    label: "Activities (English)"
+    folder: src/content/activities/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
+      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── FAQ ───────────────────────────────────────────────────────────
+
+  - name: faq-gr
+    label: "Συχνές Ερωτήσεις (Ελληνικά)"
+    folder: src/content/faq/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "text" }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }
+
+  - name: faq-nl
+    label: "Veelgestelde vragen (Nederlands)"
+    folder: src/content/faq/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "text" }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }
+
+  - name: faq-en
+    label: "FAQ (English)"
+    folder: src/content/faq/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Answer", name: "answer", widget: "text" }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }
+
+  # ── Resources / Useful Information ────────────────────────────────
+
+  - name: resources-gr
+    label: "Χρήσιμες Πληροφορίες (Ελληνικά)"
+    folder: src/content/resources/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        default: "other"
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: resources-nl
+    label: "Nuttige informatie (Nederlands)"
+    folder: src/content/resources/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        default: "other"
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: resources-en
+    label: "Useful Information (English)"
+    folder: src/content/resources/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Description", name: "description", widget: "string" }
+      - label: "Category"
+        name: "category"
+        widget: "select"
+        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        default: "other"
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }

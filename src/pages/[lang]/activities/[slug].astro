@@ -1,0 +1,58 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { t } from "../../../i18n/ui";
+import type { Lang } from "../../../i18n/utils";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const allActivities = await getCollection("activities");
+  return allActivities.map((activity) => {
+    const lang = activity.id.split("/")[0];
+    const slug = activity.id.split("/").slice(1).join("/");
+    return { params: { lang, slug }, props: { activity } };
+  });
+}
+
+const { activity } = Astro.props;
+const { lang } = Astro.params as { lang: Lang };
+const { Content } = await render(activity);
+---
+
+<Layout title={activity.data.title} description={activity.data.description} lang={lang}>
+  <article class="py-16">
+    <div class="mx-auto max-w-3xl px-4">
+      <a
+        href={`/${lang}/teams`}
+        class="inline-block border-2 border-black bg-white px-4 py-2 text-sm font-bold shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none transition-all"
+      >
+        ← {t(lang, "common.back")}
+      </a>
+
+      <div class="mt-8">
+        {activity.data.emoji && (
+          <span class="text-5xl">{activity.data.emoji}</span>
+        )}
+        <h1 class="mt-4 text-3xl font-extrabold text-black sm:text-4xl">{activity.data.title}</h1>
+        <p class="mt-3 text-lg text-gray-600">{activity.data.description}</p>
+
+        {activity.data.schedule && (
+          <p class="mt-4 inline-block border-2 border-black bg-primary-light px-4 py-2 text-sm font-bold">
+            {activity.data.schedule}
+          </p>
+        )}
+      </div>
+
+      {activity.data.image && (
+        <img
+          src={activity.data.image}
+          alt={activity.data.title}
+          class="mt-8 w-full border-2 border-black object-cover"
+        />
+      )}
+
+      <div class="mt-10 border-t-2 border-black pt-8 prose prose-lg max-w-none prose-headings:font-extrabold prose-a:text-primary prose-a:underline prose-a:decoration-2">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Layout>

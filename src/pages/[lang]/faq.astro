@@ -2,39 +2,16 @@
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const faqs: Record<Lang, { q: string; a: string }[]> = {
-  gr: [
-    { q: "Πώς μπορώ να γίνω μέλος;", a: "Μπορείτε να εγγραφείτε μέσω της σελίδας «Γίνε Μέλος». Επιλέξτε τον τύπο συνδρομής που σας ταιριάζει (Φίλος, Μέλος ή Δόκιμο Μέλος) και συμπληρώστε τη φόρμα εγγραφής." },
-    { q: "Ποιο είναι το κόστος της συνδρομής;", a: "Η ετήσια συνδρομή εξαρτάται από τον τύπο μέλους. Επικοινωνήστε μαζί μας για αναλυτικές πληροφορίες σχετικά με τα τρέχοντα ποσά." },
-    { q: "Πρέπει να είμαι Έλληνας για να γίνω μέλος;", a: "Όχι! Καλωσορίζουμε όλους τους φίλους του ελληνικού πολιτισμού, ανεξαρτήτως καταγωγής." },
-    { q: "Πού βρίσκεται το Ελληνικό Σπίτι;", a: "Το Ελληνικό Σπίτι βρίσκεται στο Ρότερνταμ. Δείτε τη σελίδα Επικοινωνίας για ακριβή διεύθυνση και χάρτη." },
-    { q: "Πώς μπορώ να συμμετέχω σε εκδηλώσεις;", a: "Οι εκδηλώσεις δημοσιεύονται στην ιστοσελίδα μας και στα μέσα κοινωνικής δικτύωσης. Οι περισσότερες εκδηλώσεις είναι ανοιχτές σε μέλη και φίλους." },
-    { q: "Σε ποιες γλώσσες γίνονται οι δραστηριότητες;", a: "Οι δραστηριότητες γίνονται κυρίως στα ελληνικά, αλλά πολλές είναι διαθέσιμες και στα ολλανδικά ή αγγλικά." },
-  ],
-  nl: [
-    { q: "Hoe kan ik lid worden?", a: "U kunt zich inschrijven via de pagina 'Word Lid'. Kies het type lidmaatschap dat bij u past (Vriend, Lid of Kandidaat-lid) en vul het inschrijfformulier in." },
-    { q: "Wat kost het lidmaatschap?", a: "De jaarlijkse contributie hangt af van het type lidmaatschap. Neem contact met ons op voor gedetailleerde informatie over de huidige bedragen." },
-    { q: "Moet ik Grieks zijn om lid te worden?", a: "Nee! We verwelkomen alle vrienden van de Griekse cultuur, ongeacht afkomst." },
-    { q: "Waar is het Grieks Huis?", a: "Het Grieks Huis bevindt zich in Rotterdam. Zie de Contactpagina voor het exacte adres en een kaart." },
-    { q: "Hoe kan ik deelnemen aan evenementen?", a: "Evenementen worden gepubliceerd op onze website en sociale media. De meeste evenementen staan open voor leden en vrienden." },
-    { q: "In welke talen worden activiteiten gehouden?", a: "Activiteiten worden voornamelijk in het Grieks gehouden, maar veel zijn ook beschikbaar in het Nederlands of Engels." },
-  ],
-  en: [
-    { q: "How can I become a member?", a: "You can sign up through the 'Become a Member' page. Choose the membership type that suits you (Friend, Member, or Candidate Member) and fill out the registration form." },
-    { q: "What is the membership fee?", a: "The annual fee depends on the membership type. Contact us for detailed information about current amounts." },
-    { q: "Do I need to be Greek to become a member?", a: "No! We welcome all friends of Greek culture, regardless of background." },
-    { q: "Where is the Greek House located?", a: "The Greek House is located in Rotterdam. See the Contact page for the exact address and a map." },
-    { q: "How can I participate in events?", a: "Events are published on our website and social media. Most events are open to members and friends." },
-    { q: "In what languages are activities held?", a: "Activities are mainly held in Greek, but many are also available in Dutch or English." },
-  ],
-};
-
-const items = faqs[lang];
+const allFaqs = await getCollection("faq");
+const faqs = allFaqs
+  .filter((f) => f.data.lang === lang)
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout title={t(lang, "faq.title")} lang={lang}>
@@ -43,10 +20,10 @@ const items = faqs[lang];
       <h1 class="text-4xl font-extrabold text-black">{t(lang, "faq.title")}</h1>
 
       <div class="mt-10 space-y-3">
-        {items.map((faq) => (
+        {faqs.map((faq) => (
           <details class="group [&_summary::-webkit-details-marker]:hidden">
             <summary class="flex cursor-pointer items-center justify-between gap-4 border-2 border-black bg-white px-5 py-4 font-bold text-black shadow-[4px_4px_0_0_#000] hover:bg-accent-gold-light focus:bg-accent-gold-light focus:outline-0 transition-colors">
-              <span>{faq.q}</span>
+              <span>{faq.data.question}</span>
               <svg
                 class="size-5 shrink-0 transition-transform group-open:-rotate-180"
                 xmlns="http://www.w3.org/2000/svg"
@@ -58,11 +35,17 @@ const items = faqs[lang];
               </svg>
             </summary>
             <div class="border-x-2 border-b-2 border-black bg-white px-5 py-4">
-              <p class="text-gray-700 leading-relaxed">{faq.a}</p>
+              <p class="text-gray-700 leading-relaxed">{faq.data.answer}</p>
             </div>
           </details>
         ))}
       </div>
+
+      {faqs.length === 0 && (
+        <div class="mt-10 border-2 border-black border-dashed bg-gray-50 p-10 text-center">
+          <p class="text-gray-500 font-bold">No FAQs yet.</p>
+        </div>
+      )}
     </div>
   </section>
 </Layout>

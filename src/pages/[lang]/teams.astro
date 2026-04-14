@@ -2,58 +2,51 @@
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
+import { getCollection } from "astro:content";
 
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const teams: Record<Lang, { name: string; desc: string; emoji: string; color: string }[]> = {
-  gr: [
-    { name: "Χορευτική Ομάδα", desc: "Παραδοσιακοί ελληνικοί χοροί από όλες τις περιοχές της Ελλάδας. Μαθήματα για αρχάριους και προχωρημένους.", emoji: "💃", color: "bg-pink-100" },
-    { name: "Μαθήματα Ολλανδικών", desc: "Δωρεάν μαθήματα ολλανδικής γλώσσας για μέλη της ελληνικής κοινότητας.", emoji: "📚", color: "bg-primary-light" },
-    { name: "Εργαστήρι Τέχνης", desc: "Δημιουργικά εργαστήρια ζωγραφικής, κεραμικής και χειροτεχνίας.", emoji: "🎨", color: "bg-accent-gold-light" },
-    { name: "Κοινοτικές Συναντήσεις", desc: "Τακτικές συναντήσεις για ανταλλαγή ιδεών, σχεδιασμό εκδηλώσεων και κοινωνικοποίηση.", emoji: "🤝", color: "bg-green-100" },
-    { name: "Νεολαία", desc: "Δραστηριότητες και εκδηλώσεις ειδικά σχεδιασμένες για τη νεότερη γενιά Ελλήνων.", emoji: "⚡", color: "bg-purple-100" },
-    { name: "Μαγειρική", desc: "Μαθήματα παραδοσιακής ελληνικής μαγειρικής και κοινά γεύματα.", emoji: "🍳", color: "bg-orange-100" },
-  ],
-  nl: [
-    { name: "Dansgroep", desc: "Traditionele Griekse dansen uit alle regio's van Griekenland. Lessen voor beginners en gevorderden.", emoji: "💃", color: "bg-pink-100" },
-    { name: "Nederlandse Lessen", desc: "Gratis Nederlandse taallessen voor leden van de Griekse gemeenschap.", emoji: "📚", color: "bg-primary-light" },
-    { name: "Kunstworkshop", desc: "Creatieve workshops in schilderen, keramiek en handwerk.", emoji: "🎨", color: "bg-accent-gold-light" },
-    { name: "Gemeenschapsbijeenkomsten", desc: "Regelmatige bijeenkomsten voor het uitwisselen van ideeën, het plannen van evenementen en socialiseren.", emoji: "🤝", color: "bg-green-100" },
-    { name: "Jeugd", desc: "Activiteiten en evenementen speciaal ontworpen voor de jongere generatie Grieken.", emoji: "⚡", color: "bg-purple-100" },
-    { name: "Koken", desc: "Lessen in traditionele Griekse keuken en gezamenlijke maaltijden.", emoji: "🍳", color: "bg-orange-100" },
-  ],
-  en: [
-    { name: "Dance Group", desc: "Traditional Greek dances from all regions of Greece. Classes for beginners and advanced.", emoji: "💃", color: "bg-pink-100" },
-    { name: "Dutch Language Classes", desc: "Free Dutch language classes for members of the Greek community.", emoji: "📚", color: "bg-primary-light" },
-    { name: "Art Workshop", desc: "Creative workshops in painting, ceramics, and crafts.", emoji: "🎨", color: "bg-accent-gold-light" },
-    { name: "Community Gatherings", desc: "Regular meetings for exchanging ideas, planning events, and socializing.", emoji: "🤝", color: "bg-green-100" },
-    { name: "Youth", desc: "Activities and events specially designed for the younger generation of Greeks.", emoji: "⚡", color: "bg-purple-100" },
-    { name: "Cooking", desc: "Traditional Greek cooking classes and communal meals.", emoji: "🍳", color: "bg-orange-100" },
-  ],
-};
-
-const items = teams[lang];
+const allActivities = await getCollection("activities");
+const activities = allActivities
+  .filter((a) => a.data.lang === lang)
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Layout title={t(lang, "teams.title")} lang={lang}>
+<Layout title={t(lang, "activities.title")} lang={lang}>
   <section class="py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h1 class="text-4xl font-extrabold text-black">{t(lang, "teams.title")}</h1>
+      <h1 class="text-4xl font-extrabold text-black">{t(lang, "activities.title")}</h1>
       <p class="mt-4 text-lg text-gray-600 max-w-2xl">
-        {t(lang, "teams.intro")}
+        {t(lang, "activities.intro")}
       </p>
 
       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((team) => (
-          <div class={`border-2 border-black p-6 shadow-[4px_4px_0_0_#000] ${team.color}`}>
-            <span class="text-4xl">{team.emoji}</span>
-            <h3 class="mt-4 text-xl font-extrabold">{team.name}</h3>
-            <p class="mt-2 text-sm text-gray-700">{team.desc}</p>
-          </div>
+        {activities.map((activity) => (
+          <a
+            href={`/${lang}/activities/${activity.id.split("/").pop()}`}
+            class="block border-2 border-black p-6 bg-white shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
+          >
+            {activity.data.emoji && (
+              <span class="text-4xl">{activity.data.emoji}</span>
+            )}
+            <h3 class="mt-4 text-xl font-extrabold">{activity.data.title}</h3>
+            <p class="mt-2 text-sm text-gray-700">{activity.data.description}</p>
+            {activity.data.schedule && (
+              <p class="mt-3 text-xs font-bold text-primary">
+                {activity.data.schedule}
+              </p>
+            )}
+          </a>
         ))}
       </div>
+
+      {activities.length === 0 && (
+        <div class="mt-10 border-2 border-black border-dashed bg-gray-50 p-10 text-center">
+          <p class="text-gray-500 font-bold">{t(lang, "activities.none")}</p>
+        </div>
+      )}
     </div>
   </section>
 </Layout>
