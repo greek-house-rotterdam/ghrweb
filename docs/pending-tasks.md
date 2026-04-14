@@ -98,26 +98,26 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 | # | Task | Priority | Prerequisite | Details |
 |---|------|----------|-------------|---------|
-| 23 | **Add `category` tag to events schema** | HIGH | None — ready now | Add a `category` enum field to the events Zod schema (`src/content.config.ts`) and Decap CMS config (`public/admin/config.yml`). Values: `workshop`, `social`, `cultural`, `class`, `meetup` (refine based on actual activity types). Add client-side category filter to the events listing page (`src/pages/[lang]/events/index.astro`). This directly addresses users' #1 complaint: inability to find specific event types. |
-| 24 | **Create `activities` content collection** | HIGH | None — ready now | New CMS-managed collection for ongoing activities/groups (Photography, Philosophy, Greek Dance, Arts, Dutch Classes, Cooking, Youth, etc.). Schema: `title`, `description`, `image`, `emoji`, `schedule` (free text, e.g. "Every Thursday 19:00"), `lang`, `body` (markdown with details, how to join). Replaces the hardcoded teams array in `src/pages/[lang]/teams.astro`. Add individual activity detail pages at `/[lang]/activities/[slug]`. Link events to activities via `category` or a dedicated `activity` reference field. |
-| 25 | **Add `price` and `registrationRequired` fields to events schema** | MEDIUM | None — ready now | Add optional `price` (string, e.g. "€5 / free for members") and `registrationRequired` (boolean) fields to events Zod schema and CMS config. Display on event detail and listing pages. Addresses user question: "Is membership required to join?" |
-| 26 | **Make FAQ a CMS-managed collection** | MEDIUM | None — ready now | Create a `faq` content collection with fields: `question`, `answer` (markdown), `order` (number for sorting), `lang`. Migrate the 6 existing hardcoded Q&As into markdown files. Update `src/pages/[lang]/faq.astro` to query the collection instead of using inline arrays. Enables editors to add/edit FAQs via `/admin` without code changes. |
-| 27 | **Create "Useful Information" resource collection & page** | MEDIUM | Task #26 pattern established | New `resources` content collection for practical info for Greeks in NL (municipal registration, healthcare, tax, education, etc.). Schema: `title`, `description`, `category` (e.g. "Legal", "Healthcare", "Education"), `lang`, `body`. New page at `/[lang]/resources`. Addresses UX report's "Resource Library" need. |
+| 23 | ~~**Add `category` tag to events schema**~~ | ~~HIGH~~ | ~~None~~ | Done. Added `category` enum (workshop/social/cultural/class/meetup/other) to events Zod schema and CMS config. Client-side category filter on events listing page. |
+| 24 | ~~**Create `activities` content collection**~~ | ~~HIGH~~ | ~~None~~ | Done. CMS-managed collection replacing hardcoded teams. 6 activities migrated (3 languages × 6 = 18 files). Detail pages at `/[lang]/activities/[slug]`. |
+| 25 | ~~**Add `price` and `registrationRequired` fields to events schema**~~ | ~~MEDIUM~~ | ~~None~~ | Done. Optional `price` (string) and `registrationRequired` (boolean) fields added to events schema, CMS config, and displayed on listing/detail pages. |
+| 26 | ~~**Make FAQ a CMS-managed collection**~~ | ~~MEDIUM~~ | ~~None~~ | Done. `faq` collection with `question`, `answer`, `order`, `lang`. 6 original + 7 new Q&As = 13 per language (39 total files). Editors can manage via `/admin`. |
+| 27 | ~~**Create "Useful Information" resource collection & page**~~ | ~~MEDIUM~~ | ~~None~~ | Done. `resources` collection with category grouping. Page at `/[lang]/resources`. Seeded with 1 example per language. |
 
 ### Phase B — Navigation & Content (can partially parallel Phase A)
 
 | # | Task | Priority | Prerequisite | Details |
 |---|------|----------|-------------|---------|
-| 28 | **Rename "Teams" → "Activities" and reorder navigation** | HIGH | Task #24 (activities collection exists) | Rename nav item and route from `/teams` to `/activities`. Reorder primary nav to: `Home → Events → Activities → News → About → Contact` (6 items). Move FAQ into About page as a section or keep as sub-link. Move History into About as a section. Reduces nav items from 8 to 6, prioritizes what users actually look for (events, activities). Update Header, Footer, all internal links, i18n keys. |
-| 29 | **Expand FAQ content with UX report questions** | HIGH | Task #26 (FAQ is CMS-managed) | Add the missing questions identified in the UX report: membership fees & payment, how to volunteer, joining mid-program activities, membership requirements for events, visiting hours, difference between membership types. Target: 12–15 Q&As covering Membership & Registration, Activities & Events, and Communication & Visiting categories. |
-| 30 | **Fill placeholder links and content** | HIGH | Actual URLs and content from stakeholders | Replace all `href="#"` placeholders: social media URLs (Instagram, Facebook, Spotify), Google Form URL (contact page), Google Maps embed (contact page coordinates), become-a-member CTA form link. Add membership fee amounts and payment details to become-a-member page. **Blocked on:** stakeholders providing the actual URLs, fee structure, and form links. |
-| 31 | **Replace mobile `<details>` menu with Starwind Sheet** | MEDIUM | Task #28 (nav finalized) | Swap the `<details>`-based mobile hamburger menu in `Header.astro` for the Starwind `Sheet` component (slide-out drawer). Provides proper overlay, focus trapping, accessible close button, and smooth animation. Do this after nav reorder so we build it once. |
+| 28 | ~~**Rename "Teams" → "Activities" and reorder navigation**~~ | ~~HIGH~~ | ~~Task #24~~ | Done. Nav reordered to: Home → Events → Activities → News → About → Resources → Contact (7 items). "Teams" renamed to "Activities" in all 3 languages. History moved to footer. |
+| 29 | ~~**Expand FAQ content with UX report questions**~~ | ~~HIGH~~ | ~~Task #26~~ | Done. FAQ expanded from 6 to 13 Q&As per language. Added: annual fees, volunteering, joining mid-program, membership for events, visiting hours, membership types, updates beyond social media. |
+| 30 | ~~**Fill placeholder links and content**~~ | ~~HIGH~~ | ~~Stakeholder input~~ | Partially done. Social links (Facebook, Instagram), email, Google Maps filled. **Still placeholder:** Google Form embed URL, phone number, physical address, become-a-member CTA link. |
+| 31 | ~~**Replace mobile `<details>` menu with Starwind Sheet**~~ | ~~MEDIUM~~ | ~~Task #28~~ | Done. Slide-out drawer with overlay, focus trapping, ESC close, accessible close button. |
 
 ### Phase C — Page Sections (replaces old Task #19)
 
 | # | Task | Priority | Prerequisite | Details |
 |---|------|----------|-------------|---------|
-| 19 | **Build page sections with Starwind components** | HIGH | Phase A complete (Tasks #23–27), Task #28 (nav reorder) | Redesign page sections using Starwind components and HyperUI patterns for the **new** information architecture. Includes: hero section (Home), activity cards with Starwind `Card` (Activities), event listing with category `Badge` filters and `Pagination` (Events), FAQ with Starwind `Accordion` (FAQ), CTA blocks with Starwind `Button` (Home, Become a Member), board member `Avatar` cards (About), contact section. Color tokens in `src/styles/starwind.css`: `primary-*` for Hellenic Blue, `accent-gold-*` for Mediterranean Gold. |
+| 19 | ~~**Build page sections with Starwind components**~~ | ~~HIGH~~ | ~~Phase A + #28~~ | Done. Selective integration: Accordion (FAQ — keyboard nav, ARIA, animations), Avatar (About — board member initials), Button (Events — filter focus states), Sheet (Header — mobile menu). Set `--radius: 0` globally. Skipped Card/Badge/Pagination where override burden > benefit. See `docs/design-system.md` for rationale. |
 
 ---
 
@@ -135,4 +135,4 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 
 ---
 
-*Last updated: Apr 14, 2026 (UX report analysis — added Phase A/B/C tasks #23–31, redefined #19, added F4/F5, updated prerequisites for #12 and #22)*
+*Last updated: Apr 14, 2026 (Phase A/B/C complete — tasks #19, #23–29, #31 done; #30 partially done)*
