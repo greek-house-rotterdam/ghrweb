@@ -4,6 +4,7 @@ import { t } from "../../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
 import { Button } from "@/components/starwind/button";
+import BrutCard from "../../../components/BrutCard.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -43,11 +44,7 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
 
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" id="events-grid">
         {events.map((event) => (
-          <a
-            href={`/${lang}/events/${event.id.split("/").pop()}`}
-            data-category={event.data.category}
-            class="event-card block border-2 border-black bg-white shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all overflow-hidden"
-          >
+          <BrutCard tag="a" href={`/${lang}/events/${event.id.split("/").pop()}`} interactive class="event-card block bg-white overflow-hidden" data-category={event.data.category}>
             {event.data.image && (
               <img
                 src={event.data.image}
@@ -88,7 +85,7 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
                 </div>
               )}
             </div>
-          </a>
+          </BrutCard>
         ))}
       </div>
 

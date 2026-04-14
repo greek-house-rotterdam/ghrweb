@@ -70,6 +70,44 @@ Starwind's own semantic tokens (`primary`, `secondary`, `muted`, `error`, etc.) 
 
 ---
 
+## Brutalist Wrapper Components
+
+Two thin wrappers at `src/components/` encapsulate the repeated brutalist classes. They are the single source of truth for the card and button patterns — change the shadow, border, or hover effect here and it updates site-wide.
+
+### `BrutCard.astro`
+
+Static container with thick border and offset shadow.
+
+| Prop | Type | Default | Purpose |
+|------|------|---------|---------|
+| `tag` | `"div"` \| `"a"` | `"div"` | Renders as link when `"a"` |
+| `href` | `string` | — | Link target (requires `tag="a"`) |
+| `interactive` | `boolean` | `false` | Adds hover-press effect (shadow-none + translate) |
+| `class` | `string` | — | Additional Tailwind classes (bg color, padding, etc.) |
+
+Usage: `<BrutCard class="bg-white p-6">` or `<BrutCard tag="a" href="/..." interactive class="block bg-white p-6">`
+
+### `BrutButton.astro`
+
+Button or link with offset shadow and press-down hover effect.
+
+| Prop | Type | Default | Purpose |
+|------|------|---------|---------|
+| `href` | `string` | — | Renders as `<a>` when provided, `<button>` otherwise |
+| `size` | `"sm"` \| `"md"` | `"md"` | `sm`: 3px shadow, smaller padding (back buttons). `md`: 4px shadow, larger padding (CTAs) |
+| `class` | `string` | — | Background color, text color, etc. |
+
+Usage: `<BrutButton href="/join" class="bg-primary text-white text-lg">` or `<BrutButton href="/back" size="sm" class="bg-white text-black hover:bg-accent-gold">`
+
+### What's NOT wrapped
+
+- **FAQ AccordionItem**: Uses Starwind Accordion with brutalist class overrides inline — the Accordion provides its own structure
+- **Header CTA button**: One-off with `hover:bg-primary-dark` instead of the standard press effect
+- **Footer social icons / Sheet trigger**: Small icon elements with `shadow-[3px_3px_0_0_#000]` — unique sizing not worth abstracting
+- **CTA hero box** on home and become-a-member: Uses `border-4` and `shadow-[8px_8px_0_0_#000]` (heavier variant) — too few instances to warrant a wrapper
+
+---
+
 ## What it would take to change the style
 
 ### Scenario: Switch from brutalist to a softer/rounded aesthetic

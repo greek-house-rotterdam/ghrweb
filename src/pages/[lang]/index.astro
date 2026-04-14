@@ -3,6 +3,8 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
+import BrutCard from "../../components/BrutCard.astro";
+import BrutButton from "../../components/BrutButton.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -32,12 +34,9 @@ const events = allEvents
         {t(lang, "home.hero.subtitle")}
       </p>
       <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-        <a
-          href={`/${lang}/become-a-member`}
-          class="border-2 border-black bg-accent-gold px-8 py-4 text-lg font-extrabold text-black shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-        >
+        <BrutButton href={`/${lang}/become-a-member`} class="bg-accent-gold text-black text-lg">
           {t(lang, "nav.become-a-member")}
-        </a>
+        </BrutButton>
         <a
           href={`/${lang}/contact`}
           class="border-2 border-white bg-transparent px-8 py-4 text-lg font-extrabold text-white hover:bg-white hover:text-primary transition-all"
@@ -54,26 +53,20 @@ const events = allEvents
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.latest-news")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {news.map((post) => (
-          <a
-            href={`/${lang}/news/${post.id.split("/").pop()}`}
-            class="block border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-          >
+          <BrutCard tag="a" href={`/${lang}/news/${post.id.split("/").pop()}`} interactive class="block bg-white p-6">
             <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
               {post.data.date.toLocaleDateString(lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{post.data.title}</h3>
             <p class="mt-2 text-sm text-gray-600 line-clamp-2">{post.data.description}</p>
-          </a>
+          </BrutCard>
         ))}
       </div>
       {news.length > 0 && (
         <div class="mt-8">
-          <a
-            href={`/${lang}/news`}
-            class="inline-block border-2 border-black bg-white px-5 py-2 font-bold text-black shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none transition-all"
-          >
+          <BrutButton href={`/${lang}/news`} size="sm" class="bg-white text-black hover:bg-accent-gold">
             {t(lang, "common.read-more")} →
-          </a>
+          </BrutButton>
         </div>
       )}
     </div>
@@ -85,10 +78,7 @@ const events = allEvents
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {events.map((event) => (
-          <a
-            href={`/${lang}/events/${event.id.split("/").pop()}`}
-            class="block border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-          >
+          <BrutCard tag="a" href={`/${lang}/events/${event.id.split("/").pop()}`} interactive class="block bg-white p-6">
             <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
               {event.data.date.toLocaleDateString(lang)}
             </span>
@@ -99,7 +89,7 @@ const events = allEvents
                 📍 {event.data.location}
               </p>
             )}
-          </a>
+          </BrutCard>
         ))}
       </div>
     </div>
@@ -111,12 +101,9 @@ const events = allEvents
       <div class="border-4 border-black bg-white p-10 shadow-[8px_8px_0_0_#000]">
         <h2 class="text-3xl font-extrabold">{t(lang, "home.cta.title")}</h2>
         <p class="mt-4 text-gray-600">{t(lang, "home.cta.subtitle")}</p>
-        <a
-          href={`/${lang}/become-a-member`}
-          class="mt-8 inline-block border-2 border-black bg-primary px-8 py-4 text-lg font-extrabold text-white shadow-[4px_4px_0_0_#000] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all"
-        >
+        <BrutButton href={`/${lang}/become-a-member`} class="mt-8 bg-primary text-white text-lg">
           {t(lang, "nav.become-a-member")}
-        </a>
+        </BrutButton>
       </div>
     </div>
   </section>

@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
+import BrutCard from "../../components/BrutCard.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -15,7 +16,7 @@ const { lang } = Astro.params as { lang: Lang };
 
       <div class="mt-10 grid gap-8 lg:grid-cols-2">
         {/* Contact form */}
-        <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+        <BrutCard class="bg-white p-6">
           <h2 class="text-xl font-extrabold">{t(lang, "contact.form.title")}</h2>
           <div class="mt-4">
             {/* TODO: Replace with actual Google Form embed URL */}
@@ -29,11 +30,11 @@ const { lang } = Astro.params as { lang: Lang };
               Loading…
             </iframe>
           </div>
-        </div>
+        </BrutCard>
 
         {/* Contact info + map */}
         <div class="space-y-6">
-          <div class="border-2 border-black bg-accent-gold-lighter p-6 shadow-[4px_4px_0_0_#000]">
+          <BrutCard class="bg-accent-gold-lighter p-6">
             <h2 class="text-xl font-extrabold">{t(lang, "contact.info.title")}</h2>
             <div class="mt-4 space-y-3">
               <div class="flex items-start gap-3">
@@ -52,9 +53,9 @@ const { lang } = Astro.params as { lang: Lang };
                 <a href="mailto:het.griekse.huis@gmail.com" class="text-sm text-gray-600 hover:text-black hover:underline">het.griekse.huis@gmail.com</a>
               </div>
             </div>
-          </div>
+          </BrutCard>
 
-          <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+          <BrutCard class="bg-white p-6">
             <h2 class="text-xl font-extrabold">{t(lang, "contact.map.title")}</h2>
             <div class="mt-4 aspect-video border-2 border-black overflow-hidden">
               <iframe
@@ -76,7 +77,7 @@ const { lang } = Astro.params as { lang: Lang };
             >
               {t(lang, "contact.map.title")} →
             </a>
-          </div>
+          </BrutCard>
         </div>
       </div>
     </div>

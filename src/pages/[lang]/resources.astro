@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
+import BrutCard from "../../components/BrutCard.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -33,10 +34,10 @@ const categories = [...new Set(resources.map((r) => r.data.category))];
             {resources
               .filter((r) => r.data.category === category)
               .map((resource) => (
-                <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+                <BrutCard class="bg-white p-6">
                   <h3 class="text-lg font-extrabold">{resource.data.title}</h3>
                   <p class="mt-2 text-sm text-gray-700">{resource.data.description}</p>
-                </div>
+                </BrutCard>
               ))}
           </div>
         </div>

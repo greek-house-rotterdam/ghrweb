@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { Avatar, AvatarFallback } from "@/components/starwind/avatar";
+import BrutCard from "../../components/BrutCard.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -54,7 +55,7 @@ const members = boardMembers[lang];
 
       <div class="mt-10 grid gap-6 sm:grid-cols-2">
         {members.map((member) => (
-          <div class="border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000]">
+          <BrutCard class="bg-white p-6">
             <Avatar size="lg" class="rounded-none size-16 border-2 border-black bg-gray-200">
               <AvatarFallback class="rounded-none text-2xl font-extrabold text-gray-400">
                 {member.name.charAt(0)}
@@ -62,7 +63,7 @@ const members = boardMembers[lang];
             </Avatar>
             <h3 class="mt-4 text-lg font-extrabold">{member.name}</h3>
             <p class="mt-1 text-sm text-gray-600">{member.role}</p>
-          </div>
+          </BrutCard>
         ))}
       </div>
     </div>

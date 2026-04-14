@@ -1,0 +1,25 @@
+---
+/**
+ * Brutalist card wrapper. Static container with thick border and offset shadow.
+ * For clickable cards, set `interactive` to add the hover-press effect.
+ * Pass `tag="a"` and `href` for link cards.
+ */
+import type { HTMLAttributes } from "astro/types";
+
+type Props = HTMLAttributes<"div"> & {
+  tag?: "div" | "a";
+  href?: string;
+  interactive?: boolean;
+};
+
+const { tag: Tag = "div", href, interactive = false, class: className, ...rest } = Astro.props;
+const classes = [
+  "border-2 border-black shadow-[4px_4px_0_0_#000]",
+  interactive && "hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all",
+  className,
+];
+---
+
+<Tag href={href} class:list={classes} {...rest}>
+  <slot />
+</Tag>
