@@ -21,8 +21,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -34,8 +34,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -47,8 +47,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
@@ -62,8 +62,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
@@ -84,8 +84,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
@@ -106,8 +106,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "End Date", name: "endDate", widget: "datetime", required: false }
       - { label: "Location", name: "location", widget: "string", required: false }
@@ -130,8 +130,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
@@ -145,8 +145,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
@@ -160,8 +160,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
@@ -177,7 +177,7 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -189,7 +189,7 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -201,7 +201,7 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Question", name: "question", widget: "string" }
+      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
@@ -215,8 +215,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"
@@ -232,8 +232,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"
@@ -249,8 +249,8 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Description", name: "description", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
+      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"

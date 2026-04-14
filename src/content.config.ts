@@ -6,8 +6,8 @@ const langEnum = z.enum(["gr", "nl", "en"]);
 const news = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    title: z.string().max(100),
+    description: z.string().max(200),
     date: z.coerce.date(),
     image: z.string().optional(),
     lang: langEnum,
@@ -21,8 +21,8 @@ const eventCategory = z
 const events = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/events" }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    title: z.string().max(100),
+    description: z.string().max(200),
     date: z.coerce.date(),
     endDate: z.coerce.date().optional(),
     location: z.string().optional(),
@@ -37,11 +37,11 @@ const events = defineCollection({
 const activities = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/activities" }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    title: z.string().max(100),
+    description: z.string().max(200),
+    image: z.string().optional(),
     emoji: z.string().optional(),
     schedule: z.string().optional(),
-    image: z.string().optional(),
     order: z.number().default(100),
     lang: langEnum,
   }),
@@ -50,7 +50,7 @@ const activities = defineCollection({
 const faq = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/faq" }),
   schema: z.object({
-    question: z.string(),
+    question: z.string().max(200),
     answer: z.string(),
     order: z.number().default(100),
     lang: langEnum,
@@ -60,8 +60,8 @@ const faq = defineCollection({
 const resources = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/resources" }),
   schema: z.object({
-    title: z.string(),
-    description: z.string(),
+    title: z.string().max(100),
+    description: z.string().max(200),
     category: z.string(),
     order: z.number().default(100),
     lang: langEnum,

@@ -1,0 +1,57 @@
+name: Image QA
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+    paths:
+      - "public/images/**"
+
+permissions:
+  contents: write
+
+jobs:
+  image-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: pip install Pillow
+
+      - name: Find changed images
+        id: changed
+        run: |
+          git fetch origin main
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'public/images/' > /tmp/changed_images.txt
+          cat /tmp/changed_images.txt
+          if [ -s /tmp/changed_images.txt ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Validate and optimize images
+        if: steps.changed.outputs.has_changes == 'true'
+        run: xargs -d '\n' python .github/scripts/image_qa.py < /tmp/changed_images.txt
+
+      - name: Commit optimized images
+        if: steps.changed.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/images/
+
+          if git diff --staged --quiet; then
+            echo "No images were optimized."
+          else
+            git commit -m "chore: auto-optimize images"
+            git push
+          fi

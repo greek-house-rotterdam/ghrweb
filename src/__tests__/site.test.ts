@@ -12,16 +12,16 @@ const CONTENT = join(ROOT, "src/content");
 const langEnum = z.enum(["gr", "nl", "en"]);
 
 const newsSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(100),
+  description: z.string().max(200),
   date: z.coerce.date(),
   image: z.string().optional(),
   lang: langEnum,
 });
 
 const eventsSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(100),
+  description: z.string().max(200),
   date: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   location: z.string().optional(),
@@ -35,8 +35,8 @@ const eventsSchema = z.object({
 });
 
 const activitiesSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(100),
+  description: z.string().max(200),
   emoji: z.string().optional(),
   schedule: z.string().optional(),
   image: z.string().optional(),
@@ -45,15 +45,15 @@ const activitiesSchema = z.object({
 });
 
 const faqSchema = z.object({
-  question: z.string(),
+  question: z.string().max(200),
   answer: z.string(),
   order: z.number().default(100),
   lang: langEnum,
 });
 
 const resourcesSchema = z.object({
-  title: z.string(),
-  description: z.string(),
+  title: z.string().max(100),
+  description: z.string().max(200),
   category: z.string(),
   order: z.number().default(100),
   lang: langEnum,
