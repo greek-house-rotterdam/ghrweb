@@ -1,0 +1,79 @@
+name: Content Review
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+    paths:
+      - "src/content/**/*.md"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Find changed content files
+        id: changed
+        run: |
+          git fetch origin main
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/changed_content.txt || true
+          cat /tmp/changed_content.txt
+          if [ -s /tmp/changed_content.txt ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run AI content review
+        if: steps.changed.outputs.has_changes == 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REVIEW_OUTPUT: /tmp/content-review.json
+        run: xargs -d '\n' python .github/scripts/content_review.py < /tmp/changed_content.txt
+
+      - name: Post PR comments
+        if: steps.changed.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          REVIEW_FILE="/tmp/content-review.json"
+          if [ ! -f "$REVIEW_FILE" ] || [ "$(cat "$REVIEW_FILE")" = "[]" ]; then
+            echo "No findings to report."
+            exit 0
+          fi
+
+          # Post one comment per file with findings
+          python3 -c "
+          import json, subprocess, sys
+
+          with open('$REVIEW_FILE') as f:
+              results = json.load(f)
+
+          for result in results:
+              if not result.get('findings'):
+                  continue
+              comment = result['comment']
+              comment += '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
+
+              subprocess.run(
+                  ['gh', 'pr', 'comment', '${{ github.event.pull_request.number }}',
+                   '--body', comment],
+                  check=True,
+              )
+              print(f'Posted comment for {result[\"file\"]}')
+          "
