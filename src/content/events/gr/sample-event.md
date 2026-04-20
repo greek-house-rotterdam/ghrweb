@@ -13,6 +13,8 @@ lang: gr
 
 Με το μουσικό σχήμα "Εμπειροτέχνες".
 
+
+
 Τοποθεσία: Maassilo, Maashaven Zuidzijde 1-2, 3081 AE Rotterdam
 
 Ώρα έναρξης: 15:00
