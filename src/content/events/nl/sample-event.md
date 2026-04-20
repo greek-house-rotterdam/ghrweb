@@ -1,5 +1,5 @@
 ---
-title: Feest
+title: Viering
 description: Een avond vol Griekse muziek, dans en eten.
 date: 2026-05-31 15:00:00+02:00
 endDate: 2026-05-31 21:00:00+02:00
@@ -12,33 +12,33 @@ lang: nl
 
 Het Grieks Huis in Rotterdam en de Rotterdamse traditionele dansgroep "Kaneloriza" organiseren een feest. Kom en vier een authentieke Griekse avond met live muziek, traditionele dansen en heerlijk eten.
 
-Met de muziekgroep "Empiritechnoi".
+Met de muziekband "Empiritechnoi".
 
-Locatie.
+
 
 Begintijd: 15:00
 
 Deuren open: 14:30
 
-Duur: 6 uur
+Duur: 14:00 uur: 14 uur: 6 uur
 
 Beperkt aantal tickets
 
-Kom met je vrienden - het dansen begint vroeg!
+Kom met je vrienden - de dans begint vroeg!
 
 
 
-🎟️ Wat is bij het ticket inbegrepen?
+🎟️ Wat is bij een ticket inbegrepen?
 
 Het ticket is inclusief toegang tot het evenement en live muziek.
 
-Eten en drinken kan ter plekke worden gekocht.
+Eten en drinken zijn verkrijgbaar tijdens het evenement.
 
 
 
 Zijn er zitplaatsen?
 
-De locatie wordt ingericht met stands, krukken en enkele zitplaatsen.
+De locatie wordt aangelegd met tribunes, krukken en enkele zitplaatsen.
 
 De zitplaatsen zijn beperkt en beschikbaar op basis van wie het eerst komt, het eerst maalt.
 
@@ -66,7 +66,7 @@ We raden aan om vroeg te komen. De muziek begint om 15:30 uur en het feest eindi
 
 Je moet een geldig studentenkaartje laten zien bij de ingang.
 
-Als je dit niet laat zien, kan het zijn dat je het verschil met de normale prijs moet betalen.
+Als je dit niet laat zien, kan het verschil met de normale prijs worden teruggevraagd.
 
 
 
@@ -90,7 +90,7 @@ Er is geen specifieke dresscode, maar iets comfortabels om te dansen wordt aanbe
 
 Wat voor muziek is er?
 
-Live Griekse traditionele muziek door de muziekgroep "Empiritechnes", afkomstig uit Griekenland, met een programma voor dans en entertainment.
+Live Griekse traditionele muziek door de muziekgroep "Empeirites", afkomstig uit Griekenland, met een programma voor dans en entertainment.
 
 
 
