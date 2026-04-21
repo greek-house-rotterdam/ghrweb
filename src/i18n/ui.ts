@@ -51,6 +51,7 @@ const ui = {
     "resources.title": "Χρήσιμες Πληροφορίες",
     "resources.intro": "Πρακτικές πληροφορίες για Έλληνες στην Ολλανδία.",
     "resources.none": "Δεν υπάρχουν πληροφορίες ακόμα.",
+    "common.manually-edited": "Χειροκίνητη μετάφραση",
   },
   nl: {
     "nav.home": "Home",
@@ -102,6 +103,7 @@ const ui = {
     "resources.title": "Nuttige Informatie",
     "resources.intro": "Praktische informatie voor Grieken in Nederland.",
     "resources.none": "Nog geen informatie.",
+    "common.manually-edited": "Handmatig vertaald",
   },
   en: {
     "nav.home": "Home",
@@ -153,6 +155,7 @@ const ui = {
     "resources.title": "Useful Information",
     "resources.intro": "Practical information for Greeks in the Netherlands.",
     "resources.none": "No information yet.",
+    "common.manually-edited": "Manually translated",
   },
 } as const;
 

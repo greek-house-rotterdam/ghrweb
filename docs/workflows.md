@@ -173,6 +173,22 @@ The workflow will skip this file unconditionally. Use this for hand-crafted tran
 - For routine wording fixes — `source_hash` handles this automatically without locking
 - On source files — `translation_locked` is only meaningful on translated files (those with `source_hash`)
 
+### "Manually translated" badge
+
+Locked translations display a **"Manually translated"** badge on their detail page (news, events, activities). The badge appears in the metadata row alongside date, location, and category badges.
+
+**When the badge appears:**
+- The content file has `translation_locked: true` in its frontmatter
+- This means someone has explicitly marked this translation as hand-maintained
+
+**When the badge does NOT appear:**
+- **Source files** (e.g. the Greek original) — they are not translations, so there is nothing to flag
+- **Auto-translated files** — even though they have `source_hash`, they were machine-generated and don't need a visual indicator
+- **Manually edited translations without `translation_locked`** — these edits are silently protected by `source_hash` (the workflow skips retranslation as long as the source is unchanged). No badge is shown because the edit is considered a minor correction, not a permanent override. If the source is later updated, these files will be retranslated normally.
+- **Listing pages and cards** — the badge only appears on detail pages to avoid visual clutter in card grids
+
+The badge is translated: "Χειροκίνητη μετάφραση" (GR), "Handmatig vertaald" (NL), "Manually translated" (EN).
+
 ---
 
 ## Deletion Sync

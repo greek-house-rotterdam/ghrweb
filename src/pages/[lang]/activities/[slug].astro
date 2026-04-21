@@ -27,9 +27,16 @@ const { Content } = await render(activity);
       </BrutButton>
 
       <div class="mt-8">
-        {activity.data.emoji && (
-          <span class="text-5xl">{activity.data.emoji}</span>
-        )}
+        <div class="flex items-center gap-3">
+          {activity.data.emoji && (
+            <span class="text-5xl">{activity.data.emoji}</span>
+          )}
+          {activity.data.translation_locked && (
+            <span class="inline-block border border-black bg-blue-100 px-2 py-0.5 text-xs font-bold uppercase">
+              {t(lang, "common.manually-edited")}
+            </span>
+          )}
+        </div>
         <h1 class="mt-4 text-3xl font-extrabold text-black sm:text-4xl">{activity.data.title}</h1>
         <p class="mt-3 text-lg text-gray-600">{activity.data.description}</p>
 
