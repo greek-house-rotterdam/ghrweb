@@ -9,7 +9,7 @@
 All content changes go through pull requests (PRs). Nothing reaches the live website without admin approval. Translations are generated automatically within the PR, and a preview of the full website is built for review.
 
 ```
-Content created → PR opened → Image QA (planned) → Translations added → Preview built → Review → Merge → Live
+Content created → PR opened → Image QA → Translations added → Content Review → Preview built → Review → Merge → Live
 ```
 
 ---
@@ -234,6 +234,38 @@ Commits deletions to the same PR
 
 ---
 
+## Content Review Workflow (GitHub Action)
+
+**Trigger:** PR opened or updated, targeting `main`, with changes in `src/content/**/*.md`
+
+**What it does:**
+
+1. Detects content files changed in the PR
+2. Sends each file to Gemini 2.0 Flash for review against the content style guide (`docs/content-style-guide.md`)
+3. Posts PR comments with findings, grouped by severity (critical, major, minor)
+
+**Advisory only — does not block merge.** The review is informational. Editors and reviewers decide whether to act on the findings.
+
+**Only reviews human-authored changes.** The workflow uses event-aware diffing to avoid reviewing auto-translated content:
+
+| Event | What gets reviewed | Why |
+|-------|--------------------|-----|
+| `opened` | All content files in the PR vs `main` | Initial review of all new/changed content |
+| `synchronize` | Only files changed in the latest push | Avoids re-reviewing auto-translations and previously reviewed content |
+
+This means:
+- When an editor creates a Greek post and opens a PR → the Greek post is reviewed
+- When the translation bot pushes NL + EN translations → no new review (bot uses `GITHUB_TOKEN`, which does not trigger workflows)
+- When a reviewer later edits the English translation → only the English file is reviewed
+
+**Files involved:**
+- Workflow: `.github/workflows/content-review.yml`
+- Review script: `.github/scripts/content_review.py`
+- Style guide: `docs/content-style-guide.md`
+- Gemini API key: stored as `GEMINI_API_KEY` in repository secrets
+
+---
+
 ## Deploy Previews (Cloudflare Pages)
 
 Cloudflare Pages automatically builds a preview for every PR. The preview URL appears as a commit status check on the PR in GitHub.
@@ -341,8 +373,9 @@ npm run build && npx wrangler deploy
 |------|-----|-------------|---------------|
 | Create content | Editor or Admin | Write in Decap CMS or locally | — |
 | PR opened | Decap CMS or developer | Automatic (editorial workflow) or manual | — |
-| Image QA *(planned)* | GitHub Action | Validates and auto-optimizes images | Yes — on hard limit violations |
+| Image QA | GitHub Action | Validates and auto-optimizes images | Yes — on hard limit violations |
 | Translation | GitHub Action | Detects changes, translates, commits | Yes — if `translate` or `verify` fails |
+| Content Review | GitHub Action | AI review of human-authored content only | No — advisory comments only |
 | Preview | Cloudflare Pages | Builds and links preview URL | Yes — if build fails |
 | CODEOWNER review | Translators / Developer | Auto-requested based on changed files | **Yes — PR cannot merge without CODEOWNER approval** |
 | Merge | Admin | Squash and merge (after all gates pass) | — |
@@ -350,4 +383,4 @@ npm run build && npx wrangler deploy
 
 ---
 
-_Last updated: April 2026 (added source hash protection for manual translation edits, translation_locked escape hatch)_
+_Last updated: April 2026 (added source hash protection for manual translation edits, translation_locked escape hatch, content review workflow with event-aware diffing)_
