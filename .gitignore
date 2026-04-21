@@ -35,3 +35,6 @@ scripts-dev/**
 
 # data
 data/scrapes/vvgn/records/**/*.json
+
+# tmp files
+.tmp/
