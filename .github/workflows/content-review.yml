@@ -3,7 +3,7 @@ name: Content Review
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize]
+    types: [opened, synchronize, labeled]
     paths:
       - "src/content/**/*.md"
 
@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   review:
+    # Skip draft PRs from Decap CMS — only run when editor moves to "In Review"
+    if: "!contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

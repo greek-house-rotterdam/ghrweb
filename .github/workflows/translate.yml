@@ -3,7 +3,7 @@ name: Translate Content
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize]
+    types: [opened, synchronize, labeled]
     paths:
       - "src/content/**/*.md"
 
@@ -13,6 +13,8 @@ permissions:
 
 jobs:
   translate:
+    # Skip draft PRs from Decap CMS — only run when editor moves to "In Review"
+    if: "!contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')"
     runs-on: ubuntu-latest
     outputs:
       new_sha: ${{ steps.push-translations.outputs.new_sha }}
