@@ -291,8 +291,10 @@ A PR targeting `main` **cannot be merged** until all of the following pass:
 | Gate | Type | What it checks |
 |------|------|----------------|
 | **CODEOWNER approval** | Human review | The designated CODEOWNER for the changed files must approve the PR. This is enforced by the repository ruleset ("Require review from Code Owners"). Without their approval, the merge button is disabled. |
-| **Status checks** | Automated | `translate` and `verify` jobs must pass (content PRs). `Cloudflare Pages` must build successfully. Image QA *(planned)* must pass. |
+| **Cloudflare Pages build** | Automated | The site must build successfully. This is the only required status check — it runs on every PR regardless of which files changed. |
 | **At least 1 approval** | Human review | The ruleset requires a minimum of 1 PR approval. CODEOWNER approval satisfies this. |
+
+**Other workflow checks** (`test-node`, `test-python`, `translate`, `verify`, `image-qa`, `content-review`) are **not required** in the ruleset. They still run and report results on the PR, but do not block merging. This is intentional — each workflow uses path filters and only triggers on relevant PRs. Making them required would permanently block PRs that don't match their path filters, because a check that never runs never reports a status. See `docs/github-access-control.md` for the full rationale.
 
 ### Who Must Approve
 
@@ -373,14 +375,15 @@ npm run build && npx wrangler deploy
 |------|-----|-------------|---------------|
 | Create content | Editor or Admin | Write in Decap CMS or locally | — |
 | PR opened | Decap CMS or developer | Automatic (editorial workflow) or manual | — |
-| Image QA | GitHub Action | Validates and auto-optimizes images | Yes — on hard limit violations |
-| Translation | GitHub Action | Detects changes, translates, commits | Yes — if `translate` or `verify` fails |
+| Image QA | GitHub Action | Validates and auto-optimizes images | No — informational |
+| Translation | GitHub Action | Detects changes, translates, commits | No — informational |
+| Tests | GitHub Action | Runs Node + Python test suites (code PRs only) | No — informational |
 | Content Review | GitHub Action | AI review of human-authored content only | No — advisory comments only |
-| Preview | Cloudflare Pages | Builds and links preview URL | Yes — if build fails |
+| Preview | Cloudflare Pages | Builds and links preview URL | **Yes — required status check** |
 | CODEOWNER review | Translators / Developer | Auto-requested based on changed files | **Yes — PR cannot merge without CODEOWNER approval** |
 | Merge | Admin | Squash and merge (after all gates pass) | — |
 | Deploy | Cloudflare Pages | Deploys to production (~30 seconds) | — |
 
 ---
 
-_Last updated: April 2026 (added source hash protection for manual translation edits, translation_locked escape hatch, content review workflow with event-aware diffing)_
+_Last updated: April 2026 (updated merge gates — only Cloudflare Pages build is a required status check; other workflow checks are informational)_
