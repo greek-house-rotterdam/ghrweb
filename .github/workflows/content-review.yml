@@ -24,14 +24,29 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
       - name: Install dependencies
-        run: pip install requests
+        run: uv export --no-hashes | uv pip install --system -r -
 
       - name: Find changed content files
         id: changed
         run: |
           git fetch origin main
-          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/changed_content.txt || true
+
+          if [ "${{ github.event.action }}" = "opened" ]; then
+            # PR just opened — review all new content in the PR
+            echo "PR opened: reviewing all content changes vs main"
+            git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/changed_content.txt || true
+          else
+            # synchronize (new push) — only review files changed in this push,
+            # not the full PR. This avoids re-reviewing auto-translated files
+            # and previously reviewed content.
+            echo "New push: reviewing only files in ${{ github.event.before }}..${{ github.event.after }}"
+            git diff --name-only --diff-filter=ACM ${{ github.event.before }}..${{ github.event.after }} -- 'src/content/' | grep '\.md$' > /tmp/changed_content.txt || true
+          fi
+
           cat /tmp/changed_content.txt
           if [ -s /tmp/changed_content.txt ]; then
             echo "has_changes=true" >> "$GITHUB_OUTPUT"
