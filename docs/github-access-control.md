@@ -91,9 +91,9 @@ Org-wide toggles that limit what members can do structurally, regardless of thei
 
 Repository-level ruleset — replaces classic branch protection.
 
-- **Bypass actors:** Organization admin + admins team (Always allow)
+- **Bypass actors:** Organization admins + `admins` team (Always allow)
 - **Require pull request before merging** — 1 approval, dismiss stale approvals, require conversation resolution
-- **Require status checks to pass** — `translate` (and `verify`), `Cloudflare Pages`
+- **Require status checks to pass** — `Cloudflare Pages` (build must succeed). Other workflow checks (`test-node`, `test-python`, `translate`, `verify`, `image-qa`, `content-review`) are **not** required — see [Why not all checks are required](#why-not-all-checks-are-required) below.
 - **Require review from Code Owners** — `CODEOWNERS` file requires `translators` team review on `src/content/` changes
 - **Allowed merge method:** Squash only — keeps history clean, simplifies the merge button for non-technical users
 - **Require linear history** — enforces squash-only at the Git level
@@ -105,6 +105,29 @@ This enforces the editorial workflow: editors create content via Decap CMS → P
 ### 2FA
 
 Required for all organization members.
+
+---
+
+## Why Not All Checks Are Required
+
+Only the **Cloudflare Pages** build check is required before merging. The other workflow checks (`test-node`, `test-python`, `translate`, `verify`, `image-qa`, `content-review`) are visible on every PR but **not** required in the ruleset.
+
+**Reason:** Each workflow uses path filters to run only on relevant PRs:
+
+| Workflow | Runs when PR changes... |
+|----------|------------------------|
+| `test-node`, `test-python` | Code files (`.ts`, `.astro`, `.py`, configs) |
+| `translate`, `verify` | Content files (`src/content/**/*.md`) |
+| `image-qa` | Images (`public/images/**`) |
+| `content-review` | Content files (`src/content/**/*.md`) |
+
+If a workflow doesn't trigger (because the PR doesn't touch its paths), GitHub never receives a status report for that check. A required check that never reports is treated as permanently pending — the merge button stays disabled forever.
+
+For example, if `test-node` were required, a content-only PR from an editor would be permanently blocked because the test workflow has no reason to run on markdown changes.
+
+**Cloudflare Pages** is the only check that runs on every PR regardless of which files changed, so it's the only one safe to require.
+
+The other checks still provide value: they run, report green/red on the PR, and reviewers can see the results before approving. They're informational rather than blocking.
 
 ---
 

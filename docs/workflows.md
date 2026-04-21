@@ -9,8 +9,38 @@
 All content changes go through pull requests (PRs). Nothing reaches the live website without admin approval. Translations are generated automatically within the PR, and a preview of the full website is built for review.
 
 ```
-Content created → PR opened → Image QA → Translations added → Content Review → Preview built → Review → Merge → Live
+Draft (save) → In Review (workflows run) → Approved → Publish (merge) → Live
 ```
+
+---
+
+## Decap CMS Editorial Statuses
+
+Decap CMS uses three statuses to track content through the editorial pipeline. All three map to a single GitHub PR — the statuses are managed via **PR labels**, not separate PRs.
+
+| CMS status | What the editor sees | What happens on GitHub | Workflows run? |
+|---|---|---|---|
+| **Draft** | "Saved" — content is stored but not ready | PR is created with `decap-cms/draft` label | **No** — workflows skip draft PRs |
+| **In Review** | "Ready for review" — editor is done writing | Label changes to `decap-cms/pending_review` | **Yes** — translate, content review, image QA |
+| **Ready** / **Publish** | "Approved, merge it" | PR is merged into `main` | Cloudflare deploys to production |
+
+**Why drafts don't trigger workflows:** Decap CMS has no server-side storage — every "save" writes to a Git branch and opens a PR, even for drafts. Without draft gating, saving an unfinished post would immediately trigger translation and AI review, wasting API calls on incomplete content. All content workflows check for the `decap-cms/draft` label and skip if present.
+
+**How it works technically:** Each workflow triggers on `pull_request` events of type `opened`, `synchronize`, and `labeled`. Each job has a condition:
+
+```yaml
+if: "!contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')"
+```
+
+When the editor moves content from Draft to In Review, Decap CMS removes the `decap-cms/draft` label and adds `decap-cms/pending_review`. This fires a `labeled` event, the job condition passes (no draft label), and workflows run.
+
+### GitHub event types explained
+
+| Event type | When it fires | Example |
+|---|---|---|
+| `opened` | PR is first created | Editor saves a draft → PR created |
+| `synchronize` | New commits are pushed to an existing PR | Editor edits content, or translation bot commits |
+| `labeled` | A label is added to the PR | Editor moves status from Draft to In Review |
 
 ---
 
@@ -23,37 +53,36 @@ For non-technical team members who write content through the admin panel.
 
 2. Write or edit a post in the visual editor
 
-3. Click "Publish"
+3. Click "Save" → status: Draft
      ↓
-   Decap CMS creates a PR automatically (editorial workflow)
+   Decap CMS creates a PR with the decap-cms/draft label
+   Cloudflare builds a deploy preview (preview URL on the PR)
+   ⏸ No other workflows run yet — content is still a draft
      ↓
-4. [planned] Image QA runs (if images were added/changed)
-     - Validates dimensions, file size, format
-     - Auto-optimizes where possible (resize, compress, WebP)
-     - Blocks merge only for hard limit violations (e.g. >5 MB)
+4. Editor continues editing (optional — can save multiple times)
      ↓
-5. Translation workflow runs
-     - Detects new/changed content files
-     - Translates to the other two languages via DeepL
-     - Commits translations to the same PR
+5. Editor sets status to "In Review" when ready
      ↓
-6. Cloudflare builds a deploy preview
-     - Preview URL appears as a status check on the PR
+   Label changes → workflows trigger:
+     - Image QA validates and optimizes images
+     - Translation workflow translates to the other two languages
+     - AI content review posts advisory comments
      ↓
-7. Translators team is auto-requested for review (via CODEOWNERS)
+6. Translators team is auto-requested for review (via CODEOWNERS)
      ⛔ PR is BLOCKED — cannot be merged until a CODEOWNER approves
      ↓
-8. Reviewer opens the preview link → reviews the rendered website
+7. Reviewer opens the preview link → reviews the rendered website
      ↓
-9. Reviewer approves the PR (CODEOWNER approval satisfies the merge gate)
+8. Reviewer approves the PR (CODEOWNER approval satisfies the merge gate)
      ↓
-10. Admin merges the PR
+9. Admin clicks "Publish" (or merges the PR on GitHub)
      ↓
-11. Cloudflare deploys to production → content is live
+10. Cloudflare deploys to production → content is live
 ```
 
 **Key points:**
 - Editors never see Git, terminals, or raw files
+- Saving a draft does NOT trigger translation or review — only moving to "In Review" does
 - Translations appear automatically — no manual translation step
 - After auto-translation, reviewers can edit individual languages without triggering retranslation (see [Manual Translation Edits](#manual-translation-edits-source-hash-protection))
 - The reviewer checks the actual rendered website, not Markdown
@@ -105,7 +134,7 @@ Note: many Dutch post URLs are placeholders that point to Greek/English content.
 
 ## Translation Workflow (GitHub Action)
 
-**Trigger:** PR opened or updated, targeting `main`, with changes in `src/content/**/*.md`
+**Trigger:** PR targeting `main` with changes in `src/content/**/*.md`, **only when the PR is not a draft** (no `decap-cms/draft` label). Fires on PR open, new commits, or label change (Draft → In Review).
 
 **What it does:**
 
@@ -236,7 +265,7 @@ Commits deletions to the same PR
 
 ## Content Review Workflow (GitHub Action)
 
-**Trigger:** PR opened or updated, targeting `main`, with changes in `src/content/**/*.md`
+**Trigger:** PR targeting `main` with changes in `src/content/**/*.md`, **only when the PR is not a draft** (no `decap-cms/draft` label).
 
 **What it does:**
 
@@ -291,8 +320,10 @@ A PR targeting `main` **cannot be merged** until all of the following pass:
 | Gate | Type | What it checks |
 |------|------|----------------|
 | **CODEOWNER approval** | Human review | The designated CODEOWNER for the changed files must approve the PR. This is enforced by the repository ruleset ("Require review from Code Owners"). Without their approval, the merge button is disabled. |
-| **Status checks** | Automated | `translate` and `verify` jobs must pass (content PRs). `Cloudflare Pages` must build successfully. Image QA *(planned)* must pass. |
+| **Cloudflare Pages build** | Automated | The site must build successfully. This is the only required status check — it runs on every PR regardless of which files changed. |
 | **At least 1 approval** | Human review | The ruleset requires a minimum of 1 PR approval. CODEOWNER approval satisfies this. |
+
+**Other workflow checks** (`test-node`, `test-python`, `translate`, `verify`, `image-qa`, `content-review`) are **not required** in the ruleset. They still run and report results on the PR, but do not block merging. This is intentional — each workflow uses path filters and only triggers on relevant PRs. Making them required would permanently block PRs that don't match their path filters, because a check that never runs never reports a status. See `docs/github-access-control.md` for the full rationale.
 
 ### Who Must Approve
 
@@ -373,14 +404,15 @@ npm run build && npx wrangler deploy
 |------|-----|-------------|---------------|
 | Create content | Editor or Admin | Write in Decap CMS or locally | — |
 | PR opened | Decap CMS or developer | Automatic (editorial workflow) or manual | — |
-| Image QA | GitHub Action | Validates and auto-optimizes images | Yes — on hard limit violations |
-| Translation | GitHub Action | Detects changes, translates, commits | Yes — if `translate` or `verify` fails |
+| Image QA | GitHub Action | Validates and auto-optimizes images | No — informational |
+| Translation | GitHub Action | Detects changes, translates, commits | No — informational |
+| Tests | GitHub Action | Runs Node + Python test suites (code PRs only) | No — informational |
 | Content Review | GitHub Action | AI review of human-authored content only | No — advisory comments only |
-| Preview | Cloudflare Pages | Builds and links preview URL | Yes — if build fails |
+| Preview | Cloudflare Pages | Builds and links preview URL | **Yes — required status check** |
 | CODEOWNER review | Translators / Developer | Auto-requested based on changed files | **Yes — PR cannot merge without CODEOWNER approval** |
 | Merge | Admin | Squash and merge (after all gates pass) | — |
 | Deploy | Cloudflare Pages | Deploys to production (~30 seconds) | — |
 
 ---
 
-_Last updated: April 2026 (added source hash protection for manual translation edits, translation_locked escape hatch, content review workflow with event-aware diffing)_
+_Last updated: April 2026 (added draft gating — workflows skip Decap CMS drafts, only run when editor moves to "In Review")_

@@ -201,9 +201,12 @@ Two layers:
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| **Translate Content** | PR opened/updated targeting `main` with content changes | Auto-translate new/changed content within the PR; sync deletions; verify content integrity |
-| **Image QA** *(planned)* | PR opened/updated with changes in `public/images/` | Validate image dimensions, file size, and format. Auto-optimize where possible (resize, compress, convert to WebP). Block merge only for hard limit violations. Uses Pillow — no AI. |
-| **Dependency updates** | Scheduled (Renovate/Dependabot) | Keep npm packages current |
+| **Translate Content** | PR with changes to `src/content/**/*.md` | Auto-translate new/changed content within the PR; sync deletions; verify content integrity |
+| **Image QA** | PR with changes to `public/images/**` | Validate image dimensions, file size, and format. Auto-optimize (resize, compress, convert to WebP). Block merge only for hard limit violations. Uses Pillow — no AI. |
+| **Content Review** | PR with changes to `src/content/**/*.md` | AI review (Gemini Flash) against style guide. Posts advisory PR comments — does not block merge. |
+| **Tests** | PR with changes to code files (`.ts`, `.astro`, `.py`, configs) | Runs Node (vitest) and Python (pytest) test suites in parallel. Does not trigger on content-only PRs. |
+
+All workflows use path filters — they only run when the PR touches relevant files. Only the **Cloudflare Pages** build is a required status check for merging. The other checks are informational. See `docs/github-access-control.md` for rationale.
 
 Deployment is handled by Cloudflare Pages directly (built-in GitHub integration). No GitHub Action needed. Cloudflare also builds deploy previews for every PR, providing a rendered preview URL for admin review.
 
