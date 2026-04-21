@@ -62,7 +62,8 @@ function getMarkdownFiles(dir: string): string[] {
 // separate schema test suite that duplicates what Astro already enforces.
 describe("build smoke test", () => {
   it("astro build completes without errors", () => {
-    const result = execSync("npm run build 2>&1", {
+    // NO_COLOR suppresses ANSI escape codes that break string matching in CI
+    const result = execSync("NO_COLOR=1 npm run build 2>&1", {
       cwd: ROOT,
       timeout: 60_000,
       encoding: "utf-8",
