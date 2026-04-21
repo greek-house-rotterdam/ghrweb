@@ -55,6 +55,7 @@ For non-technical team members who write content through the admin panel.
 **Key points:**
 - Editors never see Git, terminals, or raw files
 - Translations appear automatically — no manual translation step
+- After auto-translation, reviewers can edit individual languages without triggering retranslation (see [Manual Translation Edits](#manual-translation-edits-source-hash-protection))
 - The reviewer checks the actual rendered website, not Markdown
 - **The PR is blocked until a CODEOWNER approves** — this is enforced by the repository ruleset, not just convention
 
@@ -128,7 +129,49 @@ After translation, a second job `verify` runs to ensure that every content file 
 **Files involved:**
 - Workflow: `.github/workflows/translate.yml`
 - Translation script: `.github/scripts/translate.py`
+- Deletion sync: `.github/scripts/sync_deletions.py`
+- Integrity check: `.github/scripts/verify_content.py`
 - DeepL API key: stored as `DEEPL_API_KEY` in repository secrets
+
+### Manual Translation Edits (source hash protection)
+
+After auto-translation, reviewers and editors can safely edit translations in individual languages without those edits being overwritten on the next workflow run.
+
+**How it works:** Every translated file receives a `source_hash` field in its frontmatter — a fingerprint of the source content it was translated from. On subsequent runs, the script compares this hash against the current source. If the source hasn't changed, the translation is skipped, preserving any manual edits.
+
+```
+1. Editor creates Greek post        → workflow translates to NL + EN (with source_hash)
+2. Reviewer fixes a word in NL      → pushes to the PR
+3. Workflow re-runs (synchronize)    → sees source_hash unchanged → skips NL (edit preserved)
+4. Editor later updates the Greek    → source_hash changes → NL is retranslated (expected)
+```
+
+**The `source_hash` field also prevents cascade translation.** When the workflow picks up a translated file (e.g. the Dutch version) as a changed file, it detects `source_hash` in the frontmatter and skips it — only original source files (which lack `source_hash`) trigger translation.
+
+### Locking a Translation (`translation_locked`)
+
+For cases where a translation should **never** be overwritten by auto-translation — even when the source changes — editors can add `translation_locked: true` to a translated file's frontmatter:
+
+```yaml
+---
+title: "Handmatig vertaalde titel"
+description: "Deze vertaling is handmatig geschreven"
+lang: nl
+source_hash: abc123def456
+translation_locked: true
+---
+```
+
+The workflow will skip this file unconditionally. Use this for hand-crafted translations that should be maintained independently of the source.
+
+**When to use `translation_locked`:**
+- A professional translator has provided a high-quality translation that shouldn't be overwritten
+- The translated version has been intentionally adapted (not just translated) for the target audience
+- The source language version changes frequently but the translation should remain stable
+
+**When NOT to use it:**
+- For routine wording fixes — `source_hash` handles this automatically without locking
+- On source files — `translation_locked` is only meaningful on translated files (those with `source_hash`)
 
 ---
 
@@ -291,4 +334,4 @@ npm run build && npx wrangler deploy
 
 ---
 
-_Last updated: March 2026 (added planned Image QA workflow, updated editor workflow steps)_
+_Last updated: April 2026 (added source hash protection for manual translation edits, translation_locked escape hatch)_

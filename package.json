@@ -25,6 +25,7 @@
     "@cloudflare/workers-types": "^4.20260317.1",
     "decap-server": "^3.5.0",
     "vitest": "^4.1.4",
-    "wrangler": "^4.75.0"
+    "wrangler": "^4.75.0",
+    "yaml": "^2.8.3"
   }
 }

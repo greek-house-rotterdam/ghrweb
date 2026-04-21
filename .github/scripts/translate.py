@@ -4,6 +4,15 @@
 Detects the source language from the file path and translates to the other two.
 Works with Decap CMS collections that write to src/content/{collection}/{lang}/.
 
+Translated files receive a `source_hash` frontmatter field — a fingerprint of the
+source content they were derived from. On subsequent runs, the hash is compared:
+if the source hasn't changed, translation is skipped, preserving any manual edits
+made by reviewers. Files with `translation_locked: true` in frontmatter are never
+overwritten, even when the source changes.
+
+Files that already contain `source_hash` are recognized as translations (not sources)
+and are skipped when passed as input, preventing cascade translation.
+
 Usage:
     # Translate specific files (used by GitHub Actions workflow)
     python translate.py src/content/news/gr/welcome.md
@@ -15,6 +24,7 @@ Usage:
 Requires DEEPL_API_KEY environment variable.
 """
 
+import hashlib
 import os
 import re
 import sys
@@ -32,6 +42,20 @@ LANGUAGES = {
 }
 
 TRANSLATABLE_FIELDS = {"title", "description"}
+
+
+def compute_source_hash(frontmatter: dict, body: str) -> str:
+    """Compute a hash of the translatable content from a source file.
+
+    Used to detect whether the source has changed since the last translation,
+    so that manual edits to translated files are not overwritten.
+    """
+    parts = []
+    for field in sorted(TRANSLATABLE_FIELDS):
+        if field in frontmatter and frontmatter[field]:
+            parts.append(f"{field}:{frontmatter[field]}")
+    parts.append(f"body:{body}")
+    return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:12]
 
 
 def get_source_lang(filepath: Path) -> str:
@@ -85,7 +109,13 @@ def translate_text(
 
 
 def translate_file(translator: deepl.Translator, source_path: Path) -> None:
-    """Translate a content file to all other languages."""
+    """Translate a content file to all other languages.
+
+    Skips translation when:
+    - The source file is itself a translation (has source_hash in frontmatter)
+    - The target file has translation_locked: true
+    - The target file's source_hash matches the current source (nothing changed)
+    """
     source_lang = get_source_lang(source_path)
     source_code = LANGUAGES[source_lang]["deepl_source"]
     targets = get_targets(source_lang)
@@ -93,7 +123,32 @@ def translate_file(translator: deepl.Translator, source_path: Path) -> None:
     content = source_path.read_text(encoding="utf-8")
     frontmatter, body = parse_markdown(content)
 
+    # Skip files that are themselves translations, not sources
+    if "source_hash" in frontmatter:
+        print(f"  Skipping (is a translation, not a source)")
+        return
+
+    current_hash = compute_source_hash(frontmatter, body)
+
     for lang, deepl_target in targets.items():
+        target_path = Path(
+            str(source_path).replace(f"/{source_lang}/", f"/{lang}/")
+        )
+
+        # Check if we should skip this target
+        if target_path.exists():
+            existing_content = target_path.read_text(encoding="utf-8")
+            try:
+                existing_fm, _ = parse_markdown(existing_content)
+                if existing_fm.get("translation_locked"):
+                    print(f"  -- {target_path} (locked, skipping)")
+                    continue
+                if existing_fm.get("source_hash") == current_hash:
+                    print(f"  -- {target_path} (source unchanged, skipping)")
+                    continue
+            except ValueError:
+                pass  # Can't parse existing file, retranslate it
+
         translated_fm = dict(frontmatter)
 
         for field in TRANSLATABLE_FIELDS:
@@ -103,12 +158,10 @@ def translate_file(translator: deepl.Translator, source_path: Path) -> None:
                 )
 
         translated_fm["lang"] = lang
+        translated_fm["source_hash"] = current_hash
 
         translated_body = translate_text(translator, body, source_code, deepl_target)
 
-        target_path = Path(
-            str(source_path).replace(f"/{source_lang}/", f"/{lang}/")
-        )
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_text(
             build_markdown(translated_fm, translated_body), encoding="utf-8"

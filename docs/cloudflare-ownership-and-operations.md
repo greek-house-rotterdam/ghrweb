@@ -62,6 +62,42 @@
 
 ---
 
+## CMS Authentication (OAuth Worker)
+
+Decap CMS runs entirely in the browser. To read/write content on the GitHub repo, it needs a GitHub OAuth token. OAuth token exchange requires a server-side secret (`GITHUB_CLIENT_SECRET`) that cannot be exposed in browser code. The Cloudflare Worker at `src/oauth.ts` serves as this server-side middleman.
+
+**How it works:**
+
+1. Admin clicks "Login with GitHub" in Decap CMS (`/admin/`)
+2. CMS opens a popup to the Worker's `/auth` endpoint
+3. Worker sends a handshake message back to CMS, then redirects the popup to GitHub's authorization page
+4. User authorizes the app on GitHub
+5. GitHub redirects back to the Worker's `/callback` endpoint with a temporary code
+6. Worker exchanges the code for an access token (server-side, using the client secret)
+7. Worker sends the token back to CMS via `postMessage` (and `BroadcastChannel` as fallback)
+8. CMS now has a GitHub token and can operate on the repo
+
+**Dependencies:**
+
+| Component | Location | What breaks if it's wrong |
+|-----------|----------|---------------------------|
+| `GITHUB_CLIENT_ID` | Cloudflare Worker env variable (Dashboard → Workers → Settings → Variables) | OAuth redirect fails — login shows GitHub error page |
+| `GITHUB_CLIENT_SECRET` | Cloudflare Worker secret (same location, encrypted) | Token exchange fails — login popup shows "OAuth error" |
+| GitHub OAuth App | Registered under the GitHub Organization (Settings → Developer settings → OAuth Apps) | All of the above — this is where the client ID/secret originate |
+| `config.yml` → `backend.base_url` | `public/admin/config.yml` | CMS sends auth requests to the wrong URL — login fails silently |
+| Worker deployment | Deployed at `ghrweb.enosi-ellinon-ollandias.workers.dev` | CMS login is completely unavailable |
+
+**If CMS login breaks:**
+
+1. Check the Worker is deployed and reachable (visit `https://ghrweb.enosi-ellinon-ollandias.workers.dev/` — should serve the site)
+2. Verify `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` are set in the Cloudflare dashboard
+3. Verify the GitHub OAuth App still exists and the callback URL matches the Worker's `/callback` endpoint
+4. Check `config.yml` → `backend.base_url` points to the correct Worker URL
+
+**Secret rotation:** Generate new credentials in the GitHub OAuth App settings, then update the Worker env variables in the Cloudflare dashboard. No code change or redeployment needed.
+
+---
+
 ## If You Already Started With A Personal Account
 
 - Keep it temporarily to avoid blocking launch.
@@ -80,4 +116,4 @@
 
 ---
 
-_Last updated: Mar 18, 2026 (updated dashboard navigation — Pages is now under Compute → Workers & Pages)_
+_Last updated: Apr 21, 2026 (added CMS Authentication / OAuth Worker section)_

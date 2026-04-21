@@ -3,6 +3,12 @@ import { glob } from "astro/loaders";
 
 const langEnum = z.enum(["gr", "nl", "en"]);
 
+// Fields added by the auto-translation pipeline (translate.py)
+const translationMeta = {
+  source_hash: z.string().optional(),
+  translation_locked: z.boolean().optional(),
+};
+
 const news = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
   schema: z.object({
@@ -11,6 +17,7 @@ const news = defineCollection({
     date: z.coerce.date(),
     image: z.string().optional(),
     lang: langEnum,
+    ...translationMeta,
   }),
 });
 
@@ -31,6 +38,7 @@ const events = defineCollection({
     registrationRequired: z.boolean().default(false),
     image: z.string().optional(),
     lang: langEnum,
+    ...translationMeta,
   }),
 });
 
@@ -44,6 +52,7 @@ const activities = defineCollection({
     schedule: z.string().optional(),
     order: z.number().default(100),
     lang: langEnum,
+    ...translationMeta,
   }),
 });
 
@@ -54,6 +63,7 @@ const faq = defineCollection({
     answer: z.string(),
     order: z.number().default(100),
     lang: langEnum,
+    ...translationMeta,
   }),
 });
 
@@ -65,6 +75,7 @@ const resources = defineCollection({
     category: z.string(),
     order: z.number().default(100),
     lang: langEnum,
+    ...translationMeta,
   }),
 });
 

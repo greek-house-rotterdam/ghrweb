@@ -187,6 +187,8 @@ Two layers:
 
 **Content flow:** Editor/admin creates content in one language → PR is opened (via Decap CMS or git) → translation workflow detects new/changed files → calls DeepL API → commits translations to the same PR → verification script checks for missing files → **PR is blocked until the designated CODEOWNER approves** → admin reviews the deploy preview and merges → Cloudflare deploys.
 
+**Manual edit protection:** Translated files include a `source_hash` in frontmatter — a fingerprint of the source content they were translated from. On subsequent workflow runs, the hash is compared: if the source hasn't changed, the translation is skipped. This allows reviewers to fix individual translations without retranslation overwriting their edits. For translations that should never be auto-overwritten (e.g., professionally translated content), editors can set `translation_locked: true` in frontmatter. See `docs/workflows.md` for the full workflow.
+
 **Deletion flow:** Content is deleted in a PR → translation workflow detects deleted files → removes corresponding files in the other two language folders → commits deletions to the same PR. This prevents "ghost posts" (translations that outlive their source).
 
 **No infinite loops:** The translation workflow commits to the PR branch using `GITHUB_TOKEN`. GitHub's built-in rule ensures these pushes do not trigger new workflow runs.
@@ -245,6 +247,7 @@ Lightweight ADRs — each decision, why it was made, and what was rejected.
 | 15 | Translation review | CODEOWNERS + translators team | Auto-requests translators team on content PRs. Enforced by "Require review from Code Owners" in the ruleset. | Manual reviewer assignment (easy to forget), no review (risks bad translations going live) |
 | 16 | Infrastructure protection | CODEOWNERS + developer review | Auto-requests developer (`@PanoEvJ`) for changes to `.github/`, configs, `src/layouts/`, `src/pages/`, `package.json`. Editors can freely create content but cannot break the site's engine. | No protection (editors could accidentally break deployment), blanket admin review on everything (slows down content publishing unnecessarily) |
 | 17 | UI component approach | Starwind UI + HyperUI (individual components) | Codebase already has i18n, content collections, CMS, workflows — components are additive, not destructive. Both are Astro-native / Tailwind v4 compatible, zero JS by default. | Astro starter templates (would overwrite existing infra), daisyUI (adds plugin layer and its own design system — unnecessary abstraction) |
+| 18 | Translation overwrite protection | Source hash tracking (`source_hash` frontmatter field) | Deterministic, invisible to editors, no workflow changes needed. Translated files store a hash of the source content they were derived from; retranslation is skipped when the source is unchanged. Also prevents cascade translation (translated files passed as input are detected and skipped). `translation_locked: true` serves as an escape hatch for permanently protected translations. | Commit message conventions like `[skip-translate]` (fragile, only protects one push), frontmatter override flag without hash (requires editor action, stale flags accumulate), smart git diff on latest commit only (breaks on rebases and force-pushes), git blame analysis (unreliable in CI shallow checkouts) |
 
 ### Open Decisions
 
