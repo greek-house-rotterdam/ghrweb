@@ -48,7 +48,7 @@ jobs:
         uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
-        run: uv export --no-hashes --extra test | uv pip install --system -r -
+        run: uv export --no-hashes | uv pip install --system -r - && pip install pytest Pillow requests
 
       - name: Run Python tests
         run: pytest -v
