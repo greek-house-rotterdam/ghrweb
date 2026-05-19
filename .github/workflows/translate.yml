@@ -105,7 +105,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for context in translate verify; do
+          for context in translate verify review; do
             gh api repos/${{ github.repository }}/statuses/${{ needs.translate.outputs.new_sha }} \
               -f state=success \
               -f context="$context" \
