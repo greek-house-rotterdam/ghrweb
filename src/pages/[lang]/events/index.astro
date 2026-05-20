@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { t } from "../../../i18n/ui";
-import { getStaticLangPaths, type Lang } from "../../../i18n/utils";
+import { formatDate, getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
 import { Button } from "@/components/starwind/button";
 import BrutCard from "../../../components/BrutCard.astro";
@@ -16,6 +16,9 @@ const events = allEvents
   .sort((a, b) => a.data.date.getTime() - b.data.date.getTime());
 
 const categories = ["all", "workshop", "social", "cultural", "class", "meetup", "other"] as const;
+
+const categoryLabel = (cat: (typeof categories)[number]): string =>
+  cat === "all" ? t(lang, "common.all") : t(lang, `events.category.${cat}` as const);
 ---
 
 <Layout title={t(lang, "nav.events")} lang={lang}>
@@ -37,7 +40,7 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
                 : "bg-white text-black hover:bg-accent-gold",
             ]}
           >
-            {cat === "all" ? t(lang, "common.all") : cat}
+            {categoryLabel(cat)}
           </Button>
         ))}
       </div>
@@ -55,7 +58,7 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
             <div class="p-6">
               <div class="flex flex-wrap gap-2">
                 <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
-                  {event.data.date.toLocaleDateString(lang)}
+                  {formatDate(event.data.date, lang)}
                 </span>
                 {event.data.location && (
                   <span class="inline-block border border-black bg-green-100 px-2 py-0.5 text-xs font-bold">
@@ -64,7 +67,7 @@ const categories = ["all", "workshop", "social", "cultural", "class", "meetup", 
                 )}
                 {event.data.category && event.data.category !== "other" && (
                   <span class="inline-block border border-black bg-accent-gold-light px-2 py-0.5 text-xs font-bold uppercase">
-                    {event.data.category}
+                    {t(lang, `events.category.${event.data.category}` as const)}
                   </span>
                 )}
               </div>

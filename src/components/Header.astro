@@ -12,6 +12,7 @@ const { lang } = Astro.props;
 
 const navItems = [
   { href: `/${lang}`, label: t(lang, "nav.home") },
+  { href: `/${lang}/history`, label: t(lang, "nav.history") },
   { href: `/${lang}/events`, label: t(lang, "nav.events") },
   { href: `/${lang}/teams`, label: t(lang, "nav.activities") },
   { href: `/${lang}/news`, label: t(lang, "nav.news") },
@@ -23,8 +24,11 @@ const navItems = [
 
 <header class="sticky top-0 z-50 border-b-4 border-black bg-white/95 backdrop-blur-sm">
   <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-    <a href={`/${lang}`} class="text-2xl font-extrabold tracking-tight">
-      GHR<span class="text-primary">.</span>
+    <a
+      href={`/${lang}`}
+      class="inline-block border-2 border-black bg-accent-gold px-3 py-1 text-2xl font-extrabold tracking-tight text-primary"
+    >
+      GHR.
     </a>
 
     <div class="hidden lg:flex items-center gap-1">
@@ -57,8 +61,8 @@ const navItems = [
         <SheetContent side="right">
           <SheetHeader>
             <SheetTitle>
-              <span class="text-2xl font-extrabold tracking-tight">
-                GHR<span class="text-primary">.</span>
+              <span class="inline-block border-2 border-black bg-accent-gold px-3 py-1 text-2xl font-extrabold tracking-tight text-primary">
+                GHR.
               </span>
             </SheetTitle>
           </SheetHeader>

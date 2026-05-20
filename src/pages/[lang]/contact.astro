@@ -7,6 +7,12 @@ import BrutCard from "../../components/BrutCard.astro";
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
+
+const ADDRESS = "Van Vollenhovenstraat 18, 3016 BH Rotterdam";
+const MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
+const MAP_LINK = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`;
+const UNION_EMAIL = "enosi.ellinon.ollandias@gmail.com";
+const HOUSE_EMAIL = "het.griekse.huis@gmail.com";
 ---
 
 <Layout title={t(lang, "contact.title")} lang={lang}>
@@ -40,17 +46,27 @@ const { lang } = Astro.params as { lang: Lang };
               <div class="flex items-start gap-3">
                 <span class="text-lg">📍</span>
                 <div>
-                  <p class="font-bold text-sm">Greek House in Rotterdam</p>
-                  <p class="text-sm text-gray-600">Address TBD, Rotterdam, NL</p>
+                  <p class="font-bold text-sm">{t(lang, "contact.address.label")}</p>
+                  <p class="text-sm text-gray-700">{ADDRESS}</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <span class="text-lg">📞</span>
-                <p class="text-sm text-gray-600">+31 (0) XX XXX XXXX</p>
+                <span class="text-lg">✉️</span>
+                <div>
+                  <p class="font-bold text-sm">{t(lang, "contact.email.union")}</p>
+                  <a href={`mailto:${UNION_EMAIL}`} class="text-sm text-gray-700 hover:text-black hover:underline">
+                    {UNION_EMAIL}
+                  </a>
+                </div>
               </div>
               <div class="flex items-start gap-3">
                 <span class="text-lg">✉️</span>
-                <a href="mailto:het.griekse.huis@gmail.com" class="text-sm text-gray-600 hover:text-black hover:underline">het.griekse.huis@gmail.com</a>
+                <div>
+                  <p class="font-bold text-sm">{t(lang, "contact.email.house")}</p>
+                  <a href={`mailto:${HOUSE_EMAIL}`} class="text-sm text-gray-700 hover:text-black hover:underline">
+                    {HOUSE_EMAIL}
+                  </a>
+                </div>
               </div>
             </div>
           </BrutCard>
@@ -59,18 +75,18 @@ const { lang } = Astro.params as { lang: Lang };
             <h2 class="text-xl font-extrabold">{t(lang, "contact.map.title")}</h2>
             <div class="mt-4 aspect-video border-2 border-black overflow-hidden">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2461.0!2d4.47!3d51.92!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTHCsDU1JzEyLjAiTiA0wrAyOCcxMi4wIkU!5e0!3m2!1sen!2snl!4v1"
+                src={MAP_EMBED}
                 width="100%"
                 height="100%"
                 style="border:0;"
                 allowfullscreen=""
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                title="Google Maps - Greek House in Rotterdam"
+                title={`Google Maps - ${ADDRESS}`}
               ></iframe>
             </div>
             <a
-              href="https://maps.app.goo.gl/LnvqPn8nYoRxkfws7"
+              href={MAP_LINK}
               target="_blank"
               rel="noopener noreferrer"
               class="mt-3 inline-block text-sm font-bold text-primary hover:underline"

@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { t } from "../../../i18n/ui";
-import type { Lang } from "../../../i18n/utils";
+import { formatDate, type Lang } from "../../../i18n/utils";
 import { getCollection, render } from "astro:content";
 import BrutButton from "../../../components/BrutButton.astro";
 
@@ -29,7 +29,7 @@ const { Content } = await render(post);
       <div class="mt-8">
         <div class="flex flex-wrap gap-2">
           <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
-            {post.data.date.toLocaleDateString(lang)}
+            {formatDate(post.data.date, lang)}
           </span>
           {post.data.translation_locked && (
             <span class="inline-block border border-black bg-blue-100 px-2 py-0.5 text-xs font-bold uppercase">

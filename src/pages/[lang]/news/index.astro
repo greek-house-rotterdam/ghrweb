@@ -1,7 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { t } from "../../../i18n/ui";
-import { getStaticLangPaths, type Lang } from "../../../i18n/utils";
+import { formatDate, getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../../components/BrutCard.astro";
 
@@ -32,7 +32,7 @@ const news = allNews
             )}
             <div class="p-6">
               <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
-                {post.data.date.toLocaleDateString(lang)}
+                {formatDate(post.data.date, lang)}
               </span>
               <h3 class="mt-3 text-lg font-extrabold leading-snug">{post.data.title}</h3>
               <p class="mt-2 text-sm text-gray-600 line-clamp-2">{post.data.description}</p>

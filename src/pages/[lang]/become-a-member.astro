@@ -9,31 +9,38 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
+const MEMBER_FORM = "https://docs.google.com/forms/d/1yyT6i75639RVY0ivdetlHuD1Uw5VnZ_JROEjgQpgcyo/viewform";
+const CANDIDATE_FORM = "https://docs.google.com/forms/d/15AapoGdWrd1CBh3Osf8XMlFXo5EQtPJylJKIaXY4Z6c/viewform";
+const FRIEND_FORM = "https://docs.google.com/forms/d/1ahSDSU-j9pU8mO5SeOVzg3vAiZu563fqc3T2X918qqU/viewform";
+
 const tiers = [
-  {
-    title: t(lang, "member.friend.title"),
-    desc: t(lang, "member.friend.desc"),
-    color: "bg-green-100",
-    icon: "🤝",
-  },
   {
     title: t(lang, "member.member.title"),
     desc: t(lang, "member.member.desc"),
+    href: MEMBER_FORM,
     color: "bg-primary-light",
     icon: "🏛️",
   },
   {
     title: t(lang, "member.candidate.title"),
     desc: t(lang, "member.candidate.desc"),
+    href: CANDIDATE_FORM,
     color: "bg-accent-gold-light",
     icon: "⭐",
+  },
+  {
+    title: t(lang, "member.friend.title"),
+    desc: t(lang, "member.friend.desc"),
+    href: FRIEND_FORM,
+    color: "bg-green-100",
+    icon: "🤝",
   },
 ];
 ---
 
 <Layout title={t(lang, "member.title")} lang={lang}>
   <section class="py-16">
-    <div class="mx-auto max-w-4xl px-4">
+    <div class="mx-auto max-w-5xl px-4">
       <h1 class="text-4xl font-extrabold text-black">{t(lang, "member.title")}</h1>
       <p class="mt-4 text-lg text-gray-600 max-w-2xl">
         {t(lang, "member.intro")}
@@ -41,22 +48,21 @@ const tiers = [
 
       <div class="mt-12 grid gap-6 sm:grid-cols-3">
         {tiers.map((tier) => (
-          <BrutCard class={`p-6 ${tier.color}`}>
+          <BrutCard class={`flex flex-col p-6 ${tier.color}`}>
             <span class="text-4xl">{tier.icon}</span>
             <h3 class="mt-4 text-xl font-extrabold">{tier.title}</h3>
-            <p class="mt-2 text-sm text-gray-700">{tier.desc}</p>
+            <p class="mt-2 flex-1 text-sm text-gray-700">{tier.desc}</p>
+            <BrutButton
+              href={tier.href}
+              size="sm"
+              class="mt-6 self-start bg-primary text-white"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t(lang, "member.cta")} →
+            </BrutButton>
           </BrutCard>
         ))}
-      </div>
-
-      {/* CTA */}
-      <div class="mt-12 border-4 border-black bg-white p-8 shadow-[6px_6px_0_0_#000] text-center">
-        <h2 class="text-2xl font-extrabold">{t(lang, "home.cta.title")}</h2>
-        <p class="mt-3 text-gray-600">{t(lang, "home.cta.subtitle")}</p>
-        {/* TODO: Replace with actual Google Form link */}
-        <BrutButton href="#" class="mt-6 bg-primary text-white text-lg">
-          {t(lang, "member.cta")}
-        </BrutButton>
       </div>
     </div>
   </section>

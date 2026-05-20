@@ -17,3 +17,18 @@ export function getLangFromSlug(slug: string): Lang {
 export function getStaticLangPaths() {
   return Object.keys(LANGUAGES).map((lang) => ({ params: { lang } }));
 }
+
+// Locales chosen so every language renders dd/mm/yyyy (European style).
+const DATE_LOCALES: Record<Lang, string> = {
+  gr: "el-GR",
+  nl: "nl-NL",
+  en: "en-GB",
+};
+
+export function formatDate(date: Date, lang: Lang): string {
+  return date.toLocaleDateString(DATE_LOCALES[lang], {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}

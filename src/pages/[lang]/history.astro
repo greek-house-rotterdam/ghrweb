@@ -8,30 +8,54 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const milestones: Record<Lang, { year: string; title: string; desc: string }[]> = {
+// Year-only entries — the year is the visual anchor, descriptions are short.
+type Milestone = { year: string; title: string };
+
+const milestones: Record<Lang, Milestone[]> = {
   gr: [
-    { year: "1944", title: "Ίδρυση του Συλλόγου", desc: "Οι πρώτοι Έλληνες μετανάστες στο Ρότερνταμ ιδρύουν τον σύλλογο ως τόπο συνάντησης και πολιτιστικής διατήρησης." },
-    { year: "1960s", title: "Ανάπτυξη της κοινότητας", desc: "Μεγάλο κύμα Ελλήνων μεταναστών φτάνει στην Ολλανδία. Ο σύλλογος γίνεται κέντρο στήριξης και ένταξης." },
-    { year: "1980s", title: "Πολιτιστικές δραστηριότητες", desc: "Ξεκινούν τα μαθήματα ελληνικών χορών, γλώσσας και τέχνης. Το Ελληνικό Σπίτι αποκτά σταθερή παρουσία." },
-    { year: "2000s", title: "Ανανέωση και εκσυγχρονισμός", desc: "Νέα γενιά μελών αναλαμβάνει τη διοίκηση. Ο σύλλογος επεκτείνει τις δραστηριότητές του σε νεότερα μέλη." },
-    { year: "2020s", title: "Ψηφιακή εποχή", desc: "Ο σύλλογος αναπτύσσει ψηφιακή παρουσία, ιστοσελίδα και μέσα κοινωνικής δικτύωσης για να φτάσει σε νεότερες γενιές." },
-    { year: "2026", title: "Νέα ιστοσελίδα", desc: "Λανσάρισμα της νέας τρίγλωσσης ιστοσελίδας — ένα νέο κεφάλαιο στην ψηφιακή μας ιστορία." },
+    { year: "1946", title: "Ίδρυση της Ένωσης Ελλήνων Ολλανδίας (ΕΕΟ)" },
+    { year: "1954", title: "Θεμέλια της εκκλησίας" },
+    { year: "1957", title: "Εγκαίνια της εκκλησίας" },
+    { year: "1959", title: "Πρώτο μονοθέσιο Ελληνικό Σχολείο" },
+    { year: "1961", title: "Αγορά κτιρίου" },
+    { year: "1969", title: "Ελληνικό Σχολείο στην ΕΕΟ" },
+    { year: "1992", title: "Φεστιβάλ στην Schouwburgplein" },
+    { year: "1994", title: "Επίσκεψη Οικουμενικού Πατριάρχη" },
+    { year: "2010", title: "Μεταβίβαση εκκλησίας στη Μητρόπολη" },
+    { year: "2017", title: "Έναρξη πολιτιστικής ομάδας Το Ελληνικό Σπίτι" },
+    { year: "2022", title: "Μερική ανακαίνιση του Ελληνικού Σπιτιού" },
+    { year: "2024", title: "Αποκατάσταση πρόσοψης κτιρίου" },
+    { year: "2026", title: "Εορτασμός των 80 χρόνων από την ίδρυση της ΕΕΟ" },
   ],
   nl: [
-    { year: "1944", title: "Oprichting van de Vereniging", desc: "De eerste Griekse migranten in Rotterdam richten de vereniging op als ontmoetingsplaats en cultureel behoud." },
-    { year: "1960s", title: "Groei van de gemeenschap", desc: "Een grote golf Griekse migranten komt naar Nederland. De vereniging wordt een centrum voor steun en integratie." },
-    { year: "1980s", title: "Culturele activiteiten", desc: "Lessen in Griekse dans, taal en kunst beginnen. Het Grieks Huis krijgt een vaste plek in Rotterdam." },
-    { year: "2000s", title: "Vernieuwing en modernisering", desc: "Een nieuwe generatie leden neemt het bestuur over. De vereniging breidt activiteiten uit naar jongere leden." },
-    { year: "2020s", title: "Digitaal tijdperk", desc: "De vereniging ontwikkelt een online aanwezigheid met website en sociale media om jongere generaties te bereiken." },
-    { year: "2026", title: "Nieuwe website", desc: "Lancering van de nieuwe drietalige website — een nieuw hoofdstuk in onze digitale geschiedenis." },
+    { year: "1946", title: "Oprichting van de Vereniging van Grieken in Nederland (EEO)" },
+    { year: "1954", title: "Fundament van de kerk" },
+    { year: "1957", title: "Inwijding van de kerk" },
+    { year: "1959", title: "Eerste eenklassige Griekse school" },
+    { year: "1961", title: "Aankoop van het gebouw" },
+    { year: "1969", title: "Griekse school bij de EEO" },
+    { year: "1992", title: "Festival op het Schouwburgplein" },
+    { year: "1994", title: "Bezoek van de Oecumenische Patriarch" },
+    { year: "2010", title: "Overdracht van de kerk aan de Metropolis" },
+    { year: "2017", title: "Start van de culturele groep Het Griekse Huis" },
+    { year: "2022", title: "Gedeeltelijke renovatie van het Griekse Huis" },
+    { year: "2024", title: "Restauratie van de gevel van het gebouw" },
+    { year: "2026", title: "Viering van 80 jaar EEO" },
   ],
   en: [
-    { year: "1944", title: "Founding of the Association", desc: "The first Greek migrants in Rotterdam establish the association as a meeting place and cultural preservation hub." },
-    { year: "1960s", title: "Community Growth", desc: "A large wave of Greek migrants arrives in the Netherlands. The association becomes a center for support and integration." },
-    { year: "1980s", title: "Cultural Activities", desc: "Greek dance, language, and art classes begin. The Greek House establishes a permanent presence in Rotterdam." },
-    { year: "2000s", title: "Renewal and Modernization", desc: "A new generation of members takes over leadership. The association expands activities to younger members." },
-    { year: "2020s", title: "Digital Era", desc: "The association develops an online presence with a website and social media to reach younger generations." },
-    { year: "2026", title: "New Website", desc: "Launch of the new trilingual website — a new chapter in our digital history." },
+    { year: "1946", title: "Founding of the Greek Union of the Netherlands (EEO)" },
+    { year: "1954", title: "Foundations of the church" },
+    { year: "1957", title: "Inauguration of the church" },
+    { year: "1959", title: "First single-room Greek school" },
+    { year: "1961", title: "Building purchase" },
+    { year: "1969", title: "Greek school at the EEO" },
+    { year: "1992", title: "Festival at Schouwburgplein" },
+    { year: "1994", title: "Visit of the Ecumenical Patriarch" },
+    { year: "2010", title: "Church transferred to the Metropolis" },
+    { year: "2017", title: "Founding of the cultural group The Greek House" },
+    { year: "2022", title: "Partial renovation of the Greek House" },
+    { year: "2024", title: "Restoration of the building façade" },
+    { year: "2026", title: "Celebration of 80 years since the founding of the EEO" },
   ],
 };
 
@@ -65,7 +89,6 @@ const items = milestones[lang];
                     {item.year}
                   </span>
                   <h3 class="mt-3 text-lg font-extrabold">{item.title}</h3>
-                  <p class="mt-2 text-sm text-gray-600">{item.desc}</p>
                 </BrutCard>
               </div>
             </div>

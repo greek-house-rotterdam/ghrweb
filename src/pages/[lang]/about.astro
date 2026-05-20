@@ -4,6 +4,7 @@ import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { Avatar, AvatarFallback } from "@/components/starwind/avatar";
 import BrutCard from "../../components/BrutCard.astro";
+import BrutButton from "../../components/BrutButton.astro";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -15,18 +16,21 @@ const boardMembers: Record<Lang, { name: string; role: string }[]> = {
     { name: "Αντιπρόεδρος", role: "Αντιπρόεδρος Δ.Σ." },
     { name: "Γραμματέας", role: "Γραμματέας" },
     { name: "Ταμίας", role: "Ταμίας" },
+    { name: "Μέλος", role: "Μέλος Δ.Σ." },
   ],
   nl: [
     { name: "Voorzitter", role: "Voorzitter Bestuur" },
     { name: "Vicevoorzitter", role: "Vicevoorzitter Bestuur" },
     { name: "Secretaris", role: "Secretaris" },
     { name: "Penningmeester", role: "Penningmeester" },
+    { name: "Lid", role: "Bestuurslid" },
   ],
   en: [
     { name: "President", role: "Board President" },
     { name: "Vice President", role: "Board Vice President" },
     { name: "Secretary", role: "Secretary" },
     { name: "Treasurer", role: "Treasurer" },
+    { name: "Member", role: "Board Member" },
   ],
 };
 
@@ -48,12 +52,26 @@ const members = boardMembers[lang];
     </div>
   </section>
 
+  {/* History teaser — full timeline lives on /history */}
+  <section class="border-t-4 border-black bg-white py-16">
+    <div class="mx-auto max-w-4xl px-4">
+      <h2 class="text-3xl font-extrabold text-black">{t(lang, "about.history.title")}</h2>
+      <p class="mt-4 text-lg text-gray-700 max-w-2xl">
+        {t(lang, "about.history.intro")}
+      </p>
+      <BrutButton href={`/${lang}/history`} size="sm" class="mt-6 bg-accent-gold text-black">
+        {t(lang, "about.history.cta")} →
+      </BrutButton>
+    </div>
+  </section>
+
   {/* Board */}
   <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
     <div class="mx-auto max-w-4xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "about.board.title")}</h2>
+      <p class="mt-3 text-gray-700">{t(lang, "about.board.intro")}</p>
 
-      <div class="mt-10 grid gap-6 sm:grid-cols-2">
+      <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {members.map((member) => (
           <BrutCard class="bg-white p-6">
             <Avatar size="lg" class="rounded-none size-16 border-2 border-black bg-gray-200">
@@ -66,6 +84,8 @@ const members = boardMembers[lang];
           </BrutCard>
         ))}
       </div>
+
+      <p class="mt-10 text-sm font-bold text-gray-700">{t(lang, "about.kvk")}</p>
     </div>
   </section>
 </Layout>

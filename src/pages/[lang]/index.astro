@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
-import { getStaticLangPaths, type Lang } from "../../i18n/utils";
+import { formatDate, getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../components/BrutCard.astro";
 import BrutButton from "../../components/BrutButton.astro";
@@ -25,8 +25,11 @@ const events = allEvents
 
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
   {/* Hero */}
-  <section class="border-b-4 border-black bg-primary py-20 sm:py-28">
-    <div class="mx-auto max-w-4xl px-4 text-center">
+  <section
+    class="relative border-b-4 border-black py-20 sm:py-28 bg-primary bg-cover bg-center"
+    style="background-image: linear-gradient(rgba(13, 94, 175, 0.75), rgba(9, 74, 141, 0.85)), url('/images/rotterdam.jpeg');"
+  >
+    <div class="relative mx-auto max-w-4xl px-4 text-center">
       <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
         {t(lang, "home.hero.title")}
       </h1>
@@ -37,12 +40,9 @@ const events = allEvents
         <BrutButton href={`/${lang}/become-a-member`} class="bg-accent-gold text-black text-lg">
           {t(lang, "nav.become-a-member")}
         </BrutButton>
-        <a
-          href={`/${lang}/contact`}
-          class="border-2 border-white bg-transparent px-8 py-4 text-lg font-extrabold text-white hover:bg-white hover:text-primary transition-all"
-        >
+        <BrutButton href={`/${lang}/contact`} class="bg-white text-black text-lg">
           {t(lang, "nav.contact")}
-        </a>
+        </BrutButton>
       </div>
     </div>
   </section>
@@ -55,7 +55,7 @@ const events = allEvents
         {news.map((post) => (
           <BrutCard tag="a" href={`/${lang}/news/${post.id.split("/").pop()}`} interactive class="block bg-white p-6">
             <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
-              {post.data.date.toLocaleDateString(lang)}
+              {formatDate(post.data.date, lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{post.data.title}</h3>
             <p class="mt-2 text-sm text-gray-600 line-clamp-2">{post.data.description}</p>
@@ -80,7 +80,7 @@ const events = allEvents
         {events.map((event) => (
           <BrutCard tag="a" href={`/${lang}/events/${event.id.split("/").pop()}`} interactive class="block bg-white p-6">
             <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
-              {event.data.date.toLocaleDateString(lang)}
+              {formatDate(event.data.date, lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{event.data.title}</h3>
             <p class="mt-2 text-sm text-gray-600 line-clamp-2">{event.data.description}</p>
