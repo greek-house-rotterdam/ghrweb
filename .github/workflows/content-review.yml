@@ -70,27 +70,35 @@ jobs:
         run: |
           REVIEW_FILE="/tmp/content-review.json"
           if [ ! -f "$REVIEW_FILE" ] || [ "$(cat "$REVIEW_FILE")" = "[]" ]; then
-            echo "No findings to report."
+            echo "No comments to post."
             exit 0
           fi
 
-          # Post one comment per file with findings
+          # Post one comment per file: either findings (advisory) or
+          # an "unavailable" notice when the AI reviewer could not run.
           python3 -c "
-          import json, subprocess, sys
+          import json, subprocess
 
           with open('$REVIEW_FILE') as f:
               results = json.load(f)
 
+          findings_footer = '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
+          error_footer = '\n\n---\n*Automated review by Gemini Flash — please notify the site admin.*'
+
           for result in results:
-              if not result.get('findings'):
+              if result.get('error'):
+                  comment = result['comment'] + error_footer
+                  label = 'unavailable'
+              elif result.get('findings'):
+                  comment = result['comment'] + findings_footer
+                  label = 'findings'
+              else:
                   continue
-              comment = result['comment']
-              comment += '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
 
               subprocess.run(
                   ['gh', 'pr', 'comment', '${{ github.event.pull_request.number }}',
                    '--body', comment],
                   check=True,
               )
-              print(f'Posted comment for {result[\"file\"]}')
+              print(f'Posted {label} comment for {result[\"file\"]}')
           "

@@ -78,11 +78,20 @@ def parse_frontmatter(content: str) -> tuple[dict[str, str], str]:
     return fm, match.group(2).strip()
 
 
-def review_content(file_path: str, content: str) -> list[dict]:
-    """Send content to Gemini and get findings."""
+ERROR_MESSAGE_MAX_LEN = 200
+
+
+def review_content(file_path: str, content: str) -> tuple[list[dict], str | None]:
+    """Send content to Gemini and return (findings, error).
+
+    On success, returns the list of findings (possibly empty) and None.
+    On failure, returns an empty list and a truncated error message — the
+    workflow uses this to post a "review unavailable" PR comment so the
+    failure is visible to editors without blocking the merge.
+    """
     if not GEMINI_API_KEY:
         print("Warning: GEMINI_API_KEY not set, skipping AI review", file=sys.stderr)
-        return []
+        return [], None
 
     fm, body = parse_frontmatter(content)
 
@@ -135,12 +144,15 @@ Body:
         findings = json.loads(text)
 
         if not isinstance(findings, list):
-            return []
-        return findings
+            return [], None
+        return findings, None
 
     except Exception as e:
+        message = str(e)
+        if len(message) > ERROR_MESSAGE_MAX_LEN:
+            message = message[:ERROR_MESSAGE_MAX_LEN] + "..."
         print(f"Warning: Gemini API error for {file_path}: {e}", file=sys.stderr)
-        return []
+        return [], message
 
 
 def severity_emoji(severity: str) -> str:
@@ -160,13 +172,25 @@ def format_comment(file_path: str, findings: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def format_unavailable_comment(file_path: str, error: str) -> str:
+    """Format a PR comment for files the AI reviewer could not process."""
+    return (
+        f"### Content Review: `{file_path}`\n"
+        f"\n"
+        f"\u26a0\ufe0f **Content review unavailable** \u2014 "
+        f"the AI reviewer could not process this file. Merge is not blocked.\n"
+        f"\n"
+        f"Error: `{error}`"
+    )
+
+
 def main():
     files = sys.argv[1:]
     if not files:
         print("No files to review.")
         return
 
-    all_findings: dict[str, list[dict]] = {}
+    output: list[dict] = []
 
     for file_path in files:
         path = Path(file_path)
@@ -174,39 +198,48 @@ def main():
             continue
 
         content = path.read_text(encoding="utf-8")
-        findings = review_content(file_path, content)
+        findings, error = review_content(file_path, content)
 
-        if findings:
-            all_findings[file_path] = findings
+        if error:
+            output.append(
+                {
+                    "file": file_path,
+                    "findings": [],
+                    "error": error,
+                    "comment": format_unavailable_comment(file_path, error),
+                }
+            )
+        elif findings:
+            output.append(
+                {
+                    "file": file_path,
+                    "findings": findings,
+                    "error": None,
+                    "comment": format_comment(file_path, findings),
+                }
+            )
 
-    # Output as JSON for the workflow to consume
-    output = []
-    for file_path, findings in all_findings.items():
-        output.append(
-            {
-                "file": file_path,
-                "findings": findings,
-                "comment": format_comment(file_path, findings),
-            }
-        )
-
-    # Write to file for the workflow step
     output_path = Path(os.environ.get("REVIEW_OUTPUT", "/tmp/content-review.json"))
     output_path.write_text(json.dumps(output, ensure_ascii=False, indent=2))
 
-    # Summary to stdout
-    total = sum(len(f["findings"]) for f in output)
+    total_findings = sum(len(f["findings"]) for f in output)
     critical = sum(
         1
         for f in output
         for finding in f["findings"]
         if finding.get("severity") == "critical"
     )
+    errored = sum(1 for f in output if f.get("error"))
 
-    print(f"Reviewed {len(files)} files. {total} findings ({critical} critical).")
+    print(
+        f"Reviewed {len(files)} files. {total_findings} findings ({critical} critical), "
+        f"{errored} unavailable."
+    )
 
     if critical > 0:
         print("Critical findings detected — see PR comments.")
+    if errored > 0:
+        print("Some files could not be reviewed — see PR comments.")
 
 
 if __name__ == "__main__":
