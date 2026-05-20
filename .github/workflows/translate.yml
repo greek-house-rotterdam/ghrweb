@@ -37,7 +37,7 @@ jobs:
 
       - name: Detect and translate changed content
         env:
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           git fetch origin main
           git config core.quotePath false

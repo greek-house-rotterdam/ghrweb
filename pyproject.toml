@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Python dependencies for GHR website scripts (CI & local dev)"
 requires-python = ">=3.12"
 dependencies = [
-    "deepl>=1.28.0",
     "Pillow>=10.0",
     "pyyaml>=6.0.3",
     "requests>=2.31",

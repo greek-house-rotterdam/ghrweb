@@ -1,16 +1,16 @@
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
+import translate as translate_mod
 from translate import (
     build_markdown,
     compute_source_hash,
     get_source_lang,
-    get_targets,
+    get_target_langs,
     parse_markdown,
     translate_file,
-    translate_text,
 )
 
 
@@ -87,31 +87,23 @@ class TestGetSourceLang:
 
 
 # ---------------------------------------------------------------------------
-# get_targets
+# get_target_langs
 # ---------------------------------------------------------------------------
 
 
-class TestGetTargets:
+class TestGetTargetLangs:
     def test_gr_returns_nl_and_en(self):
-        targets = get_targets("gr")
-        assert set(targets.keys()) == {"nl", "en"}
+        assert set(get_target_langs("gr")) == {"nl", "en"}
 
     def test_nl_returns_gr_and_en(self):
-        targets = get_targets("nl")
-        assert set(targets.keys()) == {"gr", "en"}
+        assert set(get_target_langs("nl")) == {"gr", "en"}
 
     def test_en_returns_gr_and_nl(self):
-        targets = get_targets("en")
-        assert set(targets.keys()) == {"gr", "nl"}
-
-    def test_returns_correct_deepl_codes(self):
-        targets = get_targets("gr")
-        assert targets["nl"] == "NL"
-        assert targets["en"] == "EN-US"
+        assert set(get_target_langs("en")) == {"gr", "nl"}
 
     def test_always_returns_two_targets(self):
         for lang in ("gr", "nl", "en"):
-            assert len(get_targets(lang)) == 2
+            assert len(get_target_langs(lang)) == 2
 
 
 # ---------------------------------------------------------------------------
@@ -172,45 +164,18 @@ class TestBuildMarkdown:
 
 
 # ---------------------------------------------------------------------------
-# translate_text
+# translate_file (mocking translate_payload to avoid real API calls)
 # ---------------------------------------------------------------------------
 
 
-class TestTranslateText:
-    def test_empty_string_returns_original(self):
-        translator = MagicMock()
-        assert translate_text(translator, "", "EL", "NL") == ""
-        translator.translate_text.assert_not_called()
-
-    def test_whitespace_only_returns_original(self):
-        translator = MagicMock()
-        assert translate_text(translator, "   ", "EL", "NL") == "   "
-        translator.translate_text.assert_not_called()
-
-    def test_calls_deepl_api_with_correct_args(self):
-        translator = MagicMock()
-        translator.translate_text.return_value = MagicMock(text="Vertaald")
-        result = translate_text(translator, "Hello", "EL", "NL")
-        assert result == "Vertaald"
-        translator.translate_text.assert_called_once_with(
-            "Hello", source_lang="EL", target_lang="NL"
-        )
-
-
-# ---------------------------------------------------------------------------
-# translate_file
-# ---------------------------------------------------------------------------
+def _fake_translation(api_key, source_lang, target_lang, payload, guidelines):
+    """Return a deterministic translation for tests: prefix each value with target lang."""
+    return {k: f"[{target_lang}] {v}" if v else v for k, v in payload.items()}
 
 
 class TestTranslateFile:
-    def _make_source(self, tmp_path, lang, content):
-        """Helper to create a source file in the expected directory structure."""
-        path = tmp_path / "src" / "content" / "news" / lang / "post.md"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(content, encoding="utf-8")
-        return path
-
-    def _make_target(self, tmp_path, lang, content):
+    def _make(self, tmp_path, lang, content):
+        """Create a content file in the expected directory structure."""
         path = tmp_path / "src" / "content" / "news" / lang / "post.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content, encoding="utf-8")
@@ -218,68 +183,71 @@ class TestTranslateFile:
 
     def test_skips_files_that_are_translations(self, tmp_path):
         """Files with source_hash in frontmatter are translations, not sources."""
-        source = self._make_source(
-            tmp_path, "gr",
+        source = self._make(
+            tmp_path,
+            "gr",
             "---\ntitle: Test\nsource_hash: abc123\nlang: gr\n---\nBody",
         )
-        translator = MagicMock()
-        translate_file(translator, source)
-        translator.translate_text.assert_not_called()
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", source, "")
+            mock.assert_not_called()
 
     def test_skips_locked_target(self, tmp_path):
         """Target files with translation_locked: true must not be overwritten."""
-        source = self._make_source(
-            tmp_path, "gr",
-            "---\ntitle: Source\nlang: gr\n---\nBody",
+        source = self._make(
+            tmp_path, "gr", "---\ntitle: Source\nlang: gr\n---\nBody"
         )
-        locked = self._make_target(
-            tmp_path, "nl",
+        locked_path = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
+        locked_path.parent.mkdir(parents=True, exist_ok=True)
+        locked_path.write_text(
             "---\ntitle: Locked\nlang: nl\nsource_hash: old\ntranslation_locked: true\n---\nLocked",
+            encoding="utf-8",
         )
 
-        translator = MagicMock()
-        translator.translate_text.return_value = MagicMock(text="Translated")
-        translate_file(translator, source)
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", source, "")
 
         # Locked target should be untouched
-        assert "Locked" in locked.read_text()
+        assert "Locked" in locked_path.read_text()
 
     def test_skips_when_source_hash_matches(self, tmp_path):
         """If source hasn't changed (hash matches), skip re-translation."""
-        source = self._make_source(
-            tmp_path, "gr",
+        source = self._make(
+            tmp_path,
+            "gr",
             "---\ntitle: Hello\ndescription: Desc\nlang: gr\n---\nBody",
         )
         current_hash = compute_source_hash(
             {"title": "Hello", "description": "Desc"}, "Body"
         )
-        # Set up both targets with the matching hash
-        self._make_target(
-            tmp_path, "nl",
-            f"---\ntitle: Hallo\nlang: nl\nsource_hash: {current_hash}\n---\nLichaam",
-        )
-        self._make_target(
-            tmp_path, "en",
-            f"---\ntitle: Hello\nlang: en\nsource_hash: {current_hash}\n---\nBody",
-        )
+        for lang in ("nl", "en"):
+            p = tmp_path / "src" / "content" / "news" / lang / "post.md"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(
+                f"---\ntitle: x\nlang: {lang}\nsource_hash: {current_hash}\n---\nbody",
+                encoding="utf-8",
+            )
 
-        translator = MagicMock()
-        translate_file(translator, source)
-        translator.translate_text.assert_not_called()
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", source, "")
+            mock.assert_not_called()
 
     def test_translates_when_target_missing(self, tmp_path):
         """New file with no existing translations should be translated."""
-        source = self._make_source(
-            tmp_path, "gr",
+        source = self._make(
+            tmp_path,
+            "gr",
             "---\ntitle: New Post\ndescription: A new post\nlang: gr\n---\nContent here",
         )
 
-        translator = MagicMock()
-        translator.translate_text.return_value = MagicMock(text="Translated")
-        translate_file(translator, source)
-
-        # Should have been called for title, description, and body — twice (nl + en)
-        assert translator.translate_text.call_count >= 4
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ) as mock:
+            translate_file("fake-key", source, "")
+            # Called once per target language (nl, en)
+            assert mock.call_count == 2
 
         # Target files should now exist
         nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
@@ -289,14 +257,14 @@ class TestTranslateFile:
 
     def test_translated_file_has_source_hash(self, tmp_path):
         """Translated files must include source_hash in frontmatter."""
-        source = self._make_source(
-            tmp_path, "gr",
-            "---\ntitle: Test\nlang: gr\n---\nBody",
+        source = self._make(
+            tmp_path, "gr", "---\ntitle: Test\nlang: gr\n---\nBody"
         )
 
-        translator = MagicMock()
-        translator.translate_text.return_value = MagicMock(text="Translated")
-        translate_file(translator, source)
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", source, "")
 
         nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
         content = nl_target.read_text()
@@ -304,15 +272,95 @@ class TestTranslateFile:
 
     def test_translated_file_has_correct_lang(self, tmp_path):
         """Translated files must have lang set to the target language."""
-        source = self._make_source(
-            tmp_path, "gr",
-            "---\ntitle: Test\nlang: gr\n---\nBody",
+        source = self._make(
+            tmp_path, "gr", "---\ntitle: Test\nlang: gr\n---\nBody"
         )
 
-        translator = MagicMock()
-        translator.translate_text.return_value = MagicMock(text="Translated")
-        translate_file(translator, source)
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", source, "")
 
         nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
         fm, _ = parse_markdown(nl_target.read_text())
         assert fm["lang"] == "nl"
+
+    def test_translated_body_uses_returned_value(self, tmp_path):
+        """The body in the output file should come from the translation result."""
+        source = self._make(
+            tmp_path,
+            "gr",
+            "---\ntitle: Title\nlang: gr\n---\nOriginal body content",
+        )
+
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", source, "")
+
+        nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
+        _, body = parse_markdown(nl_target.read_text())
+        assert body == "[nl] Original body content"
+
+
+# ---------------------------------------------------------------------------
+# translate_payload — input/output shape (without hitting the real API)
+# ---------------------------------------------------------------------------
+
+
+class TestTranslatePayload:
+    def test_empty_payload_returns_unchanged(self):
+        """No translatable text → no API call, return as-is."""
+        result = translate_mod.translate_payload(
+            "fake-key", "gr", "nl", {"title": "", "description": "", "body": "  "}, ""
+        )
+        assert result == {"title": "", "description": "", "body": "  "}
+
+    def test_calls_gemini_with_expected_shape(self):
+        """The HTTP request payload contains the source content + system prompt."""
+        captured = {}
+
+        class FakeResponse:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {
+                    "candidates": [
+                        {
+                            "content": {
+                                "parts": [
+                                    {
+                                        "text": '{"title": "Hallo", "body": "Vertaald"}'
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+
+        def fake_post(url, params=None, json=None, timeout=None):
+            captured["url"] = url
+            captured["params"] = params
+            captured["json"] = json
+            return FakeResponse()
+
+        with patch.object(translate_mod.requests, "post", side_effect=fake_post):
+            result = translate_mod.translate_payload(
+                "test-key",
+                "gr",
+                "nl",
+                {"title": "Γεια", "body": "Σώμα"},
+                "tone guidelines text",
+            )
+
+        assert result == {"title": "Hallo", "body": "Vertaald"}
+        assert captured["params"] == {"key": "test-key"}
+        # System prompt includes the guidelines
+        sys_text = captured["json"]["systemInstruction"]["parts"][0]["text"]
+        assert "tone guidelines text" in sys_text
+        assert "Greek to Dutch" in sys_text
+        # User content includes the source payload
+        user_text = captured["json"]["contents"][0]["parts"][0]["text"]
+        assert "Γεια" in user_text
+        assert "Σώμα" in user_text

@@ -17,13 +17,16 @@ from pathlib import Path
 import requests
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-2.0-flash"
+GEMINI_MODEL = "gemini-3-flash-preview"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 STYLE_GUIDE = Path("docs/content-style-guide.md").read_text(encoding="utf-8")
 
+_TONE_PATH = Path("docs/tone-and-voice-guidelines.md")
+TONE_GUIDELINES = _TONE_PATH.read_text(encoding="utf-8") if _TONE_PATH.exists() else ""
+
 SYSTEM_PROMPT = f"""You are a content reviewer for the Greek House in Rotterdam website.
-Review the content below against the style guide. Report findings as a JSON array.
+Review the content below against the style guide AND the tone & voice guidelines. Report findings as a JSON array.
 
 Each finding must have:
 - "severity": "critical" | "major" | "minor"
@@ -38,7 +41,7 @@ Important:
 - Do NOT flag content that is simply short — brevity is fine.
 - DO flag harmful, discriminatory, political, or commercial content (critical).
 - DO flag missing event details like date/time/location (major).
-- DO flag tone issues — overly formal, unwelcoming, exclusionary language (minor).
+- DO flag tone issues — overly formal, distant, exclusionary, or shouty language (minor).
 - The content may be in Greek, Dutch, or English. Apply the same rules regardless of language.
 
 Return ONLY the JSON array, no other text.
@@ -48,6 +51,12 @@ Return ONLY the JSON array, no other text.
 STYLE GUIDE:
 
 {STYLE_GUIDE}
+
+---
+
+TONE & VOICE GUIDELINES:
+
+{TONE_GUIDELINES}
 """
 
 
@@ -114,7 +123,12 @@ Body:
             json=payload,
             timeout=30,
         )
-        resp.raise_for_status()
+        try:
+            resp.raise_for_status()
+        except requests.HTTPError as e:
+            raise RuntimeError(
+                f"Gemini API {resp.status_code} ({GEMINI_MODEL}): {resp.text}"
+            ) from e
         data = resp.json()
 
         text = data["candidates"][0]["content"]["parts"][0]["text"]

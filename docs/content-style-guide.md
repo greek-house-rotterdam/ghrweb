@@ -62,6 +62,6 @@ The automated review runs on every PR that changes content files (`src/content/*
 
 **Configuration:**
 - Requires `GEMINI_API_KEY` secret in GitHub repository settings
-- Model: `gemini-2.0-flash` (or latest Flash variant)
+- Model: `gemini-3-flash-preview` (or latest Flash variant)
 - Workflow: `.github/workflows/content-review.yml`
 - Script: `.github/scripts/content_review.py`
