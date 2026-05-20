@@ -76,6 +76,7 @@ Use this checklist before onboarding editors to avoid the "login works, publish 
 | # | Task | Prerequisite | Details |
 |---|------|-------------|---------|
 | 13 | **Add Cursor AI skills for the project stack** | Active development begins | Find or create Cursor skills (`.cursor/skills/`) for: Astro (priority — primary framework, beginner frontend level), Tailwind CSS, GitHub Actions, Python scripting, and Decap CMS patterns. Better skills = more accurate AI assistance for this specific stack. (e.g. [here](https://github.com/SpillwaveSolutions/publishing-astro-websites-agentic-skill)) |
+| 37 | ~~**Expose `translation_locked` toggle in Decap CMS UI**~~ | ~~None~~ | Done. Added a boolean widget ("Lock translation (do not overwrite)") to the `news`, `events`, and `activities` collections (gr/nl/en) in `public/admin/config.yml`. Editors can now lock a translation against auto-overwrite from the `/admin` UI instead of editing GitHub frontmatter. Schema, translate-script lock-check (`.github/scripts/translate.py:228-231`), and "Manually translated" badge (`src/pages/[lang]/news/[slug].astro:34-38` and matching events/activities pages) were already wired. Admin parity test (`src/__tests__/admin.test.ts`) updated. Not added to FAQ/resources — those collections don't render the badge. |
 
 ## Infrastructure & Limits
 

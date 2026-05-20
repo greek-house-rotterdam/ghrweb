@@ -179,7 +179,7 @@ After auto-translation, reviewers and editors can safely edit translations in in
 
 ### Locking a Translation (`translation_locked`)
 
-For cases where a translation should **never** be overwritten by auto-translation — even when the source changes — editors can add `translation_locked: true` to a translated file's frontmatter:
+For cases where a translation should **never** be overwritten by auto-translation — even when the source changes — editors can tick the **"Lock translation (do not overwrite)"** checkbox in the Decap CMS editor (available on news, events, and activities entries in all three languages), or add `translation_locked: true` directly to a translated file's frontmatter:
 
 ```yaml
 ---

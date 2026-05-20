@@ -65,7 +65,7 @@ const EXPECTED_FIELDS: Record<
 > = {
   news: {
     required: ["title", "description", "date", "lang"],
-    optional: ["image"],
+    optional: ["image", "translation_locked"],
     maxLengths: { title: 100, description: 200 },
   },
   events: {
@@ -77,6 +77,7 @@ const EXPECTED_FIELDS: Record<
       "price",
       "registrationRequired",
       "image",
+      "translation_locked",
     ],
     maxLengths: { title: 100, description: 200 },
     enums: {
@@ -86,7 +87,7 @@ const EXPECTED_FIELDS: Record<
   },
   activities: {
     required: ["title", "description", "lang"],
-    optional: ["image", "emoji", "schedule", "order"],
+    optional: ["image", "emoji", "schedule", "order", "translation_locked"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },

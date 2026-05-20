@@ -25,6 +25,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -38,6 +39,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -51,6 +53,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -75,6 +78,7 @@ collections:
       - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
       - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -97,6 +101,7 @@ collections:
       - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Gratis voor leden' or '€5'" }
       - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -119,6 +124,7 @@ collections:
       - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
       - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
       - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -136,6 +142,7 @@ collections:
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -151,6 +158,7 @@ collections:
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -166,6 +174,7 @@ collections:
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
