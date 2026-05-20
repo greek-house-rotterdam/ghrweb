@@ -287,6 +287,28 @@ This means:
 - When the translation bot pushes NL + EN translations → no new review (bot uses `GITHUB_TOKEN`, which does not trigger workflows)
 - When a reviewer later edits the English translation → only the English file is reviewed
 
+### `review` status on the bot's commit (carry-forward)
+
+GitHub's PR-checks UI shows checks against the latest SHA only. Because the bot's auto-translate commit doesn't trigger workflows (GITHUB_TOKEN recursion prevention, as above), Content Review would naturally be missing from the head SHA — making the PR look incomplete even though the human-authored source was reviewed.
+
+The `translate.yml` "Report status on auto-commit" step closes this gap by **carrying forward the parent commit's `review` conclusion** to the bot's commit:
+
+```
+User commit A → Content Review runs on A → conclusion: success | failure | ...
+                       ↓
+Translate bot commits B (parent=A)
+                       ↓
+verify job reads the review check-run on A and posts the SAME state to B
+                       ↓
+PR shows the actual outcome (not a fake success) on the head SHA
+```
+
+**Why carry-forward and not synthesize success:** if the Content Review workflow legitimately failed on the source commit (e.g. Gemini API outage, script crash), posting an unconditional success on the bot's commit would mask the failure on the PR's head SHA. Carry-forward preserves the real signal.
+
+**What the status describes:** the description on the bot's commit reads `Carried forward from <parent-sha> (translations not separately reviewed)`. This is intentional — the AI review only validates the human-authored source, never the DeepL translations. Treat translation quality as a separate concern (handled today by the translators team during CODEOWNER review).
+
+The same mechanism is **not** applied to `image-qa`: the bot only writes content, never images, so a bot commit never changes the set of images in the PR and image-qa has nothing new to validate.
+
 **Files involved:**
 - Workflow: `.github/workflows/content-review.yml`
 - Review script: `.github/scripts/content_review.py`

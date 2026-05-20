@@ -104,10 +104,46 @@ jobs:
         if: ${{ needs.translate.outputs.new_sha != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NEW_SHA: ${{ needs.translate.outputs.new_sha }}
         run: |
+          # 'translate' and 'verify' ran in *this* workflow and produced NEW_SHA,
+          # so posting success on the bot's commit reflects what actually happened.
           for context in translate verify; do
-            gh api repos/${{ github.repository }}/statuses/${{ needs.translate.outputs.new_sha }} \
+            gh api "repos/$REPO/statuses/$NEW_SHA" \
               -f state=success \
               -f context="$context" \
               -f description="Passed (via auto-translation workflow)"
           done
+
+          # GitHub's GITHUB_TOKEN recursion prevention blocks Content Review from
+          # re-triggering on the bot's commit. Carry forward the conclusion from
+          # the parent (human-authored) commit instead of synthesizing success.
+          PARENT_SHA=$(gh api "repos/$REPO/commits/$NEW_SHA" --jq '.parents[0].sha')
+
+          # Content Review runs in parallel with this workflow — poll briefly.
+          for attempt in 1 2 3 4 5 6; do
+            REVIEW_CONCLUSION=$(gh api "repos/$REPO/commits/$PARENT_SHA/check-runs" \
+              --jq '[.check_runs[] | select(.name=="review")] | .[0].conclusion // empty')
+            if [ -n "$REVIEW_CONCLUSION" ]; then
+              break
+            fi
+            echo "Review check not yet concluded on $PARENT_SHA (attempt $attempt) — waiting 10s..."
+            sleep 10
+          done
+
+          case "$REVIEW_CONCLUSION" in
+            success|neutral|skipped)            STATE=success ;;
+            failure|timed_out|action_required)  STATE=failure ;;
+            cancelled)                          STATE=error ;;
+            "")
+              echo "No 'review' check found on $PARENT_SHA — skipping carry-forward."
+              exit 0
+              ;;
+            *) STATE=success ;;
+          esac
+
+          gh api "repos/$REPO/statuses/$NEW_SHA" \
+            -f state="$STATE" \
+            -f context=review \
+            -f description="Carried forward from ${PARENT_SHA:0:7} (translations not separately reviewed)"
