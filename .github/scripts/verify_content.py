@@ -8,8 +8,9 @@ a corresponding file exists in the other two with the same filename.
 import sys
 from pathlib import Path
 
+from _common import LANGUAGES
+
 CONTENT_DIR = Path("src/content")
-LANGUAGES = {"gr", "nl", "en"}
 
 def get_collections():
     """Return a list of collection directories (e.g. news, events)."""

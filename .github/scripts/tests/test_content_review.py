@@ -41,7 +41,8 @@ class TestParseFrontmatter:
         assert fm["title"] == "Single Quoted"
 
     def test_handles_colons_in_values(self):
-        content = "---\ntitle: Time: 19:00\n---\nBody"
+        # YAML requires quoting when the value contains a colon-space.
+        content = '---\ntitle: "Time: 19:00"\n---\nBody'
         fm, _ = parse_frontmatter(content)
         assert fm["title"] == "Time: 19:00"
 

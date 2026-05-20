@@ -9,7 +9,7 @@ import sys
 import os
 from pathlib import Path
 
-LANGUAGES = {"gr", "nl", "en"}
+from _common import LANGUAGES
 
 def get_counterparts(filepath: Path) -> list[Path]:
     """

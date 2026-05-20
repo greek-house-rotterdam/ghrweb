@@ -10,15 +10,14 @@ Requires: GEMINI_API_KEY environment variable.
 
 import json
 import os
-import re
 import sys
 from pathlib import Path
 
-import requests
+import requests  # re-exported for tests that patch content_review.requests.post
+
+from _common import GeminiClient, parse_markdown
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-3-flash-preview"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 
 STYLE_GUIDE = Path("docs/content-style-guide.md").read_text(encoding="utf-8")
 
@@ -59,23 +58,24 @@ TONE & VOICE GUIDELINES:
 {TONE_GUIDELINES}
 """
 
+SAFETY_SETTINGS = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"},
+]
 
-def parse_frontmatter(content: str) -> tuple[dict[str, str], str]:
-    """Split markdown into frontmatter dict and body."""
-    match = re.match(r"^---\n(.*?)\n---\n?(.*)", content, re.DOTALL)
-    if not match:
+
+def parse_frontmatter(content: str) -> tuple[dict, str]:
+    """Forgiving wrapper around the shared YAML parser.
+
+    Content review should never crash on malformed input — fall back to
+    empty frontmatter so the reviewer can still look at the body.
+    """
+    try:
+        return parse_markdown(content)
+    except ValueError:
         return {}, content
-
-    fm = {}
-    for line in match.group(1).split("\n"):
-        idx = line.find(":")
-        if idx == -1:
-            continue
-        key = line[:idx].strip()
-        val = line[idx + 1 :].strip().strip('"').strip("'")
-        fm[key] = val
-
-    return fm, match.group(2).strip()
 
 
 ERROR_MESSAGE_MAX_LEN = 200
@@ -98,51 +98,22 @@ def review_content(file_path: str, content: str) -> tuple[list[dict], str | None
     user_prompt = f"""File: {file_path}
 
 Frontmatter:
-{json.dumps(fm, ensure_ascii=False, indent=2)}
+{json.dumps(fm, ensure_ascii=False, indent=2, default=str)}
 
 Body:
 {body}
 """
 
-    payload = {
-        "contents": [{"parts": [{"text": user_prompt}]}],
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
-        "generationConfig": {
-            "temperature": 0.1,
-            "responseMimeType": "application/json",
-        },
-        "safetySettings": [
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
-            {
-                "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                "threshold": "BLOCK_ONLY_HIGH",
-            },
-            {
-                "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-                "threshold": "BLOCK_ONLY_HIGH",
-            },
-        ],
-    }
-
     try:
-        resp = requests.post(
-            GEMINI_URL,
-            params={"key": GEMINI_API_KEY},
-            json=payload,
+        text = GeminiClient(GEMINI_API_KEY).generate(
+            system=SYSTEM_PROMPT,
+            user=user_prompt,
+            json_mode=True,
+            temperature=0.1,
             timeout=30,
+            safety_settings=SAFETY_SETTINGS,
         )
-        try:
-            resp.raise_for_status()
-        except requests.HTTPError as e:
-            raise RuntimeError(
-                f"Gemini API {resp.status_code} ({GEMINI_MODEL}): {resp.text}"
-            ) from e
-        data = resp.json()
-
-        text = data["candidates"][0]["content"]["parts"][0]["text"]
         findings = json.loads(text)
-
         if not isinstance(findings, list):
             return [], None
         return findings, None
@@ -177,7 +148,7 @@ def format_unavailable_comment(file_path: str, error: str) -> str:
     return (
         f"### Content Review: `{file_path}`\n"
         f"\n"
-        f"\u26a0\ufe0f **Content review unavailable** \u2014 "
+        f"⚠️ **Content review unavailable** — "
         f"the AI reviewer could not process this file. Merge is not blocked.\n"
         f"\n"
         f"Error: `{error}`"

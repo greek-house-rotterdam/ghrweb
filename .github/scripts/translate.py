@@ -27,24 +27,15 @@ Requires GEMINI_API_KEY environment variable.
 import hashlib
 import json
 import os
-import re
 import sys
 from pathlib import Path
 
-import requests
-import yaml
+import requests  # re-exported for tests that patch translate.requests.post
+
+from _common import LANGUAGES, GeminiClient, build_markdown, parse_markdown
 
 CONTENT_DIR = Path("src/content")
 GUIDELINES_PATH = Path("docs/tone-and-voice-guidelines.md")
-
-GEMINI_MODEL = "gemini-3-flash-preview"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
-
-LANGUAGES = {
-    "gr": "Greek",
-    "nl": "Dutch",
-    "en": "English",
-}
 
 TRANSLATABLE_FIELDS = {"title", "description"}
 
@@ -107,27 +98,6 @@ def get_target_langs(source_lang: str) -> list[str]:
     return [lang for lang in LANGUAGES if lang != source_lang]
 
 
-def parse_markdown(text: str) -> tuple[dict, str]:
-    """Split markdown into frontmatter dict and body string."""
-    match = re.match(r"^---\n(.*?)\n---\n(.*)", text, re.DOTALL)
-    if not match:
-        raise ValueError("No valid YAML frontmatter found")
-    frontmatter = yaml.safe_load(match.group(1))
-    body = match.group(2).strip()
-    return frontmatter, body
-
-
-def build_markdown(frontmatter: dict, body: str) -> str:
-    """Reconstruct markdown file from frontmatter and body."""
-    fm_yaml = yaml.dump(
-        frontmatter,
-        allow_unicode=True,
-        default_flow_style=False,
-        sort_keys=False,
-    )
-    return f"---\n{fm_yaml}---\n\n{body}\n"
-
-
 def translate_payload(
     api_key: str,
     source_lang: str,
@@ -147,46 +117,21 @@ def translate_payload(
     source_name = LANGUAGES[source_lang]
     target_name = LANGUAGES[target_lang]
 
-    body = {
-        "contents": [
-            {
-                "parts": [
-                    {
-                        "text": (
-                            f"Source language: {source_name}\n"
-                            f"Target language: {target_name}\n\n"
-                            f"Source content (JSON):\n"
-                            f"{json.dumps(non_empty, ensure_ascii=False, indent=2)}"
-                        )
-                    }
-                ]
-            }
-        ],
-        "systemInstruction": {
-            "parts": [
-                {"text": build_system_prompt(source_name, target_name, guidelines)}
-            ]
-        },
-        "generationConfig": {
-            "temperature": 0.2,
-            "responseMimeType": "application/json",
-        },
-    }
+    user_text = (
+        f"Source language: {source_name}\n"
+        f"Target language: {target_name}\n\n"
+        f"Source content (JSON):\n"
+        f"{json.dumps(non_empty, ensure_ascii=False, indent=2)}"
+    )
+    system_text = build_system_prompt(source_name, target_name, guidelines)
 
-    resp = requests.post(
-        GEMINI_URL,
-        params={"key": api_key},
-        json=body,
+    text = GeminiClient(api_key).generate(
+        system=system_text,
+        user=user_text,
+        json_mode=True,
+        temperature=0.2,
         timeout=60,
     )
-    try:
-        resp.raise_for_status()
-    except requests.HTTPError as e:
-        raise RuntimeError(
-            f"Gemini API {resp.status_code} ({GEMINI_MODEL}): {resp.text}"
-        ) from e
-    data = resp.json()
-    text = data["candidates"][0]["content"]["parts"][0]["text"]
     translated = json.loads(text)
 
     # Preserve empty fields from the original payload
