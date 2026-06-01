@@ -29,7 +29,15 @@ interface CmsCollection {
 const collections: CmsCollection[] = config.collections;
 
 const LANGUAGES = ["gr", "nl", "en"] as const;
-const CONTENT_TYPES = ["news", "events", "activities", "faq", "resources"] as const;
+const CONTENT_TYPES = [
+  "news",
+  "event-translations",
+  "activities",
+  "faq",
+  "resources",
+  "page-sections",
+  "history-milestones",
+] as const;
 
 function getCollection(type: string, lang: string): CmsCollection {
   return collections.find((c) => c.name === `${type}-${lang}`)!;
@@ -68,22 +76,10 @@ const EXPECTED_FIELDS: Record<
     optional: ["image", "translation_locked"],
     maxLengths: { title: 100, description: 200 },
   },
-  events: {
-    required: ["title", "description", "date", "lang"],
-    optional: [
-      "endDate",
-      "location",
-      "category",
-      "price",
-      "registrationRequired",
-      "image",
-      "translation_locked",
-    ],
+  "event-translations": {
+    required: ["tt_event_id", "title", "description", "lang"],
+    optional: ["translation_locked"],
     maxLengths: { title: 100, description: 200 },
-    enums: {
-      category: ["workshop", "social", "cultural", "class", "meetup", "other"],
-    },
-    defaults: { category: "other", registrationRequired: false },
   },
   activities: {
     required: ["title", "description", "lang"],
@@ -102,6 +98,18 @@ const EXPECTED_FIELDS: Record<
     optional: ["order"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
+  },
+  "page-sections": {
+    required: ["page", "title", "lang"],
+    optional: ["order", "translation_locked"],
+    maxLengths: { title: 120 },
+    enums: { page: ["about", "history", "teams"] },
+    defaults: { order: 100 },
+  },
+  "history-milestones": {
+    required: ["year", "title", "lang"],
+    optional: ["translation_locked"],
+    maxLengths: { title: 140 },
   },
 };
 
@@ -142,8 +150,8 @@ describe("Decap CMS config — collection coverage", () => {
     }
   }
 
-  it("has exactly 15 collections (5 types x 3 languages)", () => {
-    expect(collections).toHaveLength(15);
+  it("has exactly 21 collections (7 types x 3 languages)", () => {
+    expect(collections).toHaveLength(CONTENT_TYPES.length * LANGUAGES.length);
   });
 });
 

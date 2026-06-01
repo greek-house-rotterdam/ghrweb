@@ -57,76 +57,47 @@ collections:
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── Events ────────────────────────────────────────────────────────
+  # ── Event translations (Ticket Tailor is the source of truth for dates,
+  # ── location, prices, tickets — these collections only translate title/description/body.
 
-  - name: events-gr
-    label: "Εκδηλώσεις (Ελληνικά)"
-    folder: src/content/events/gr
+  - name: event-translations-gr
+    label: "Μεταφράσεις Εκδηλώσεων (Ελληνικά)"
+    folder: src/content/event-translations/gr
     create: true
-    slug: "{{slug}}"
+    slug: "{{tt_event_id}}"
     fields:
+      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
-      - { label: "Location", name: "location", widget: "string", required: false }
-      - label: "Category"
-        name: "category"
-        widget: "select"
-        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
-        default: "other"
-      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
-      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
-      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
-  - name: events-nl
-    label: "Evenementen (Nederlands)"
-    folder: src/content/events/nl
+  - name: event-translations-nl
+    label: "Vertalingen Evenementen (Nederlands)"
+    folder: src/content/event-translations/nl
     create: true
-    slug: "{{slug}}"
+    slug: "{{tt_event_id}}"
     fields:
+      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
-      - { label: "Location", name: "location", widget: "string", required: false }
-      - label: "Category"
-        name: "category"
-        widget: "select"
-        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
-        default: "other"
-      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Gratis voor leden' or '€5'" }
-      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
-      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
-  - name: events-en
-    label: "Events (English)"
-    folder: src/content/events/en
+  - name: event-translations-en
+    label: "Event translations (English)"
+    folder: src/content/event-translations/en
     create: true
-    slug: "{{slug}}"
+    slug: "{{tt_event_id}}"
     fields:
+      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "End Date", name: "endDate", widget: "datetime", required: false }
-      - { label: "Location", name: "location", widget: "string", required: false }
-      - label: "Category"
-        name: "category"
-        widget: "select"
-        options: ["workshop", "social", "cultural", "class", "meetup", "other"]
-        default: "other"
-      - { label: "Price", name: "price", widget: "string", required: false, hint: "e.g. 'Free for members' or '€5'" }
-      - { label: "Registration Required", name: "registrationRequired", widget: "boolean", default: false }
-      - { label: "Image", name: "image", widget: "image", required: false }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
   # ── Activities ────────────────────────────────────────────────────
 
@@ -268,3 +239,92 @@ collections:
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── Page sections (long-form prose on /about, /history, /teams) ──
+
+  - name: page-sections-gr
+    label: "Ενότητες σελίδας (Ελληνικά)"
+    folder: src/content/page-sections/gr
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - label: "Page"
+        name: "page"
+        widget: "select"
+        options: ["about", "history", "teams"]
+        hint: "Which static page renders this section."
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
+      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers render first" }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: page-sections-nl
+    label: "Paginasecties (Nederlands)"
+    folder: src/content/page-sections/nl
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - label: "Page"
+        name: "page"
+        widget: "select"
+        options: ["about", "history", "teams"]
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
+      - { label: "Display Order", name: "order", widget: "number", default: 100 }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  - name: page-sections-en
+    label: "Page sections (English)"
+    folder: src/content/page-sections/en
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - label: "Page"
+        name: "page"
+        widget: "select"
+        options: ["about", "history", "teams"]
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
+      - { label: "Display Order", name: "order", widget: "number", default: 100 }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "markdown" }
+
+  # ── History timeline milestones ──
+
+  - name: history-milestones-gr
+    label: "Ορόσημα ιστορίας (Ελληνικά)"
+    folder: src/content/history-milestones/gr
+    create: true
+    slug: "{{year}}"
+    fields:
+      - { label: "Year", name: "year", widget: "string", hint: "e.g. 1946, or a range like 1965-1971" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }
+
+  - name: history-milestones-nl
+    label: "Geschiedenis mijlpalen (Nederlands)"
+    folder: src/content/history-milestones/nl
+    create: true
+    slug: "{{year}}"
+    fields:
+      - { label: "Year", name: "year", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }
+
+  - name: history-milestones-en
+    label: "History milestones (English)"
+    folder: src/content/history-milestones/en
+    create: true
+    slug: "{{year}}"
+    fields:
+      - { label: "Year", name: "year", widget: "string" }
+      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
+      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
+      - { label: "Body", name: "body", widget: "hidden", default: "" }

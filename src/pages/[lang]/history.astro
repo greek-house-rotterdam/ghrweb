@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
@@ -8,58 +9,12 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-// Year-only entries — the year is the visual anchor, descriptions are short.
-type Milestone = { year: string; title: string };
+const items = (await getCollection("historyMilestones", (e) => e.data.lang === lang))
+  .map((e) => e.data)
+  .sort((a, b) => a.year.localeCompare(b.year));
 
-const milestones: Record<Lang, Milestone[]> = {
-  gr: [
-    { year: "1946", title: "Ίδρυση της Ένωσης Ελλήνων Ολλανδίας (ΕΕΟ)" },
-    { year: "1954", title: "Θεμέλια της εκκλησίας" },
-    { year: "1957", title: "Εγκαίνια της εκκλησίας" },
-    { year: "1959", title: "Πρώτο μονοθέσιο Ελληνικό Σχολείο" },
-    { year: "1961", title: "Αγορά κτιρίου" },
-    { year: "1969", title: "Ελληνικό Σχολείο στην ΕΕΟ" },
-    { year: "1992", title: "Φεστιβάλ στην Schouwburgplein" },
-    { year: "1994", title: "Επίσκεψη Οικουμενικού Πατριάρχη" },
-    { year: "2010", title: "Μεταβίβαση εκκλησίας στη Μητρόπολη" },
-    { year: "2017", title: "Έναρξη πολιτιστικής ομάδας Το Ελληνικό Σπίτι" },
-    { year: "2022", title: "Μερική ανακαίνιση του Ελληνικού Σπιτιού" },
-    { year: "2024", title: "Αποκατάσταση πρόσοψης κτιρίου" },
-    { year: "2026", title: "Εορτασμός των 80 χρόνων από την ίδρυση της ΕΕΟ" },
-  ],
-  nl: [
-    { year: "1946", title: "Oprichting van de Vereniging van Grieken in Nederland (EEO)" },
-    { year: "1954", title: "Fundament van de kerk" },
-    { year: "1957", title: "Inwijding van de kerk" },
-    { year: "1959", title: "Eerste eenklassige Griekse school" },
-    { year: "1961", title: "Aankoop van het gebouw" },
-    { year: "1969", title: "Griekse school bij de EEO" },
-    { year: "1992", title: "Festival op het Schouwburgplein" },
-    { year: "1994", title: "Bezoek van de Oecumenische Patriarch" },
-    { year: "2010", title: "Overdracht van de kerk aan de Metropolis" },
-    { year: "2017", title: "Start van de culturele groep Het Griekse Huis" },
-    { year: "2022", title: "Gedeeltelijke renovatie van het Griekse Huis" },
-    { year: "2024", title: "Restauratie van de gevel van het gebouw" },
-    { year: "2026", title: "Viering van 80 jaar EEO" },
-  ],
-  en: [
-    { year: "1946", title: "Founding of the Greek Union of the Netherlands (EEO)" },
-    { year: "1954", title: "Foundations of the church" },
-    { year: "1957", title: "Inauguration of the church" },
-    { year: "1959", title: "First single-room Greek school" },
-    { year: "1961", title: "Building purchase" },
-    { year: "1969", title: "Greek school at the EEO" },
-    { year: "1992", title: "Festival at Schouwburgplein" },
-    { year: "1994", title: "Visit of the Ecumenical Patriarch" },
-    { year: "2010", title: "Church transferred to the Metropolis" },
-    { year: "2017", title: "Founding of the cultural group The Greek House" },
-    { year: "2022", title: "Partial renovation of the Greek House" },
-    { year: "2024", title: "Restoration of the building façade" },
-    { year: "2026", title: "Celebration of 80 years since the founding of the EEO" },
-  ],
-};
-
-const items = milestones[lang];
+const sections = (await getCollection("pageSections", (e) => e.data.lang === lang && e.data.page === "history"))
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout title={t(lang, "history.title")} lang={lang}>
@@ -97,4 +52,22 @@ const items = milestones[lang];
       </div>
     </div>
   </section>
+
+  {sections.length > 0 && (
+    <section class="border-t-4 border-black bg-white py-16">
+      <div class="mx-auto max-w-4xl px-4 space-y-12">
+        {sections.map(async (entry) => {
+          const { Content } = await entry.render();
+          return (
+            <article>
+              <h2 class="text-3xl font-extrabold text-black">{entry.data.title}</h2>
+              <div class="mt-6 prose prose-lg max-w-none">
+                <Content />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
 </Layout>

@@ -67,6 +67,8 @@ jobs:
         if: steps.changed.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
           REVIEW_FILE="/tmp/content-review.json"
           if [ ! -f "$REVIEW_FILE" ] || [ "$(cat "$REVIEW_FILE")" = "[]" ]; then
@@ -74,16 +76,35 @@ jobs:
             exit 0
           fi
 
-          # Post one comment per file: either findings (advisory) or
-          # an "unavailable" notice when the AI reviewer could not run.
-          python3 -c "
-          import json, subprocess
+          # Post one comment per file. Comments embed a `<!-- content-review:<path> -->`
+          # marker so we can find and delete prior comments for the same file
+          # before posting a new one — keeps the PR clean across re-runs.
+          python3 <<'PYEOF'
+          import json, os, subprocess
 
-          with open('$REVIEW_FILE') as f:
+          with open('/tmp/content-review.json') as f:
               results = json.load(f)
+
+          repo = os.environ['REPO']
+          pr = os.environ['PR_NUMBER']
 
           findings_footer = '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
           error_footer = '\n\n---\n*Automated review by Gemini Flash — please notify the site admin.*'
+
+          # Snapshot existing comments once so we don't re-fetch per file.
+          existing = json.loads(subprocess.run(
+              ['gh', 'api', f'repos/{repo}/issues/{pr}/comments', '--paginate'],
+              capture_output=True, text=True, check=True,
+          ).stdout)
+
+          def delete_prior(file_path: str) -> int:
+              marker = f'<!-- content-review:{file_path} -->'
+              ids = [c['id'] for c in existing if marker in (c.get('body') or '')]
+              for cid in ids:
+                  subprocess.run(['gh', 'api', '-X', 'DELETE',
+                                  f'repos/{repo}/issues/comments/{cid}', '--silent'],
+                                 check=False)
+              return len(ids)
 
           for result in results:
               if result.get('error'):
@@ -95,10 +116,14 @@ jobs:
               else:
                   continue
 
+              file_path = result['file']
+              n_deleted = delete_prior(file_path)
+              if n_deleted:
+                  print(f'Replaced {n_deleted} prior comment(s) for {file_path}')
+
               subprocess.run(
-                  ['gh', 'pr', 'comment', '${{ github.event.pull_request.number }}',
-                   '--body', comment],
+                  ['gh', 'pr', 'comment', pr, '--body', comment],
                   check=True,
               )
-              print(f'Posted {label} comment for {result[\"file\"]}')
-          "
+              print(f'Posted {label} comment for {file_path}')
+          PYEOF
