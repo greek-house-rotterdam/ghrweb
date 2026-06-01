@@ -1,5 +1,4 @@
 ---
-page: about
 order: 100
 title: The cultural team — The Greek House in Rotterdam
 lang: en

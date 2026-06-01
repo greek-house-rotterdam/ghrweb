@@ -1,5 +1,4 @@
 ---
-page: history
 order: 400
 title: 1961 — De aankoop van het pand aan de Van Vollenhovenstraat
 lang: nl

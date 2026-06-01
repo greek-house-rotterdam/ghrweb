@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1000
 title: 2010 — De overdracht van de kerk
 lang: nl

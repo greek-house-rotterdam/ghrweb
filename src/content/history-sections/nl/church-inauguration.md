@@ -1,5 +1,4 @@
 ---
-page: history
 order: 200
 title: 1957 — De bouw van de Heilige Nicolaaskerk
 lang: nl

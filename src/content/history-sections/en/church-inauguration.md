@@ -1,5 +1,4 @@
 ---
-page: history
 order: 200
 title: 1957 — The building of the Saint Nicholas Church
 lang: en

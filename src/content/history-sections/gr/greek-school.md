@@ -1,5 +1,4 @@
 ---
-page: history
 order: 300
 title: 1959 — Το πρώτο Ελληνικό Σχολείο
 lang: gr

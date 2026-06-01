@@ -29,8 +29,8 @@ interface CmsCollection {
 const collections: CmsCollection[] = config.collections;
 
 const LANGUAGES = ["gr", "nl", "en"] as const;
-// page-sections is intentionally absent: it's a programmatic-only collection,
-// not exposed in Decap so editors can't touch it from the admin UI.
+// history-sections and about-sections are intentionally absent: they're
+// programmatic-only collections, not exposed in Decap.
 const CONTENT_TYPES = [
   "news",
   "event-translations",
@@ -144,7 +144,7 @@ describe("Decap CMS config — collection coverage", () => {
     }
   }
 
-  it("has exactly 18 collections (6 types x 3 languages, page-sections excluded)", () => {
+  it("has exactly 18 collections (6 types x 3 languages, programmatic ones excluded)", () => {
     expect(collections).toHaveLength(CONTENT_TYPES.length * LANGUAGES.length);
   });
 });

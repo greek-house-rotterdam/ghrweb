@@ -1,5 +1,4 @@
 ---
-page: about
 order: 100
 title: De culturele werkgroep — Het Griekse Huis in Rotterdam
 lang: nl

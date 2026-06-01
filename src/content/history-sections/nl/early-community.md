@@ -1,5 +1,4 @@
 ---
-page: history
 order: 50
 title: De Griekse gemeenschap in Nederland vóór de E.E.O.
 lang: nl

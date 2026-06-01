@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1000
 title: 2010 — Η μεταβίβαση της εκκλησίας
 lang: gr

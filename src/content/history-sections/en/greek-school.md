@@ -1,5 +1,4 @@
 ---
-page: history
 order: 300
 title: 1959 — The first Greek School
 lang: en

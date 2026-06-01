@@ -1,5 +1,4 @@
 ---
-page: history
 order: 100
 title: 1946 — Η ίδρυση της Ένωσης Ελλήνων Ολλανδίας
 lang: gr

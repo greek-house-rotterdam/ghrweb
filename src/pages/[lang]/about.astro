@@ -11,12 +11,12 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-// page-sections is programmatic-only and not exposed in Decap. We list
-// sections with `page === "about"` to render link cards that navigate to
-// the dedicated detail pages — they don't appear inline anymore.
+// about-sections is programmatic-only and not exposed in Decap. We list its
+// entries to render link cards that navigate to the dedicated detail pages —
+// they don't appear inline here.
 const aboutSections = (await getCollection(
-  "pageSections",
-  (e) => e.data.lang === lang && e.data.page === "about",
+  "aboutSections",
+  (e) => e.data.lang === lang,
 ))
   .map((entry) => ({
     title: entry.data.title,

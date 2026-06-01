@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1100
 title: The Association today
 lang: en

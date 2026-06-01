@@ -154,12 +154,22 @@ const resources = defineCollection({
   }),
 });
 
-// Long-form prose sections rendered on the static pages (history, about, teams).
-// Each entry is one section; the page concatenates them ordered by `order` ASC.
-const pageSections = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/page-sections" }),
+// Long-form detail-page content. Each entry is one detail page reached at
+// /<lang>/history/<slug> or /<lang>/about/<slug>. Programmatic-only —
+// not exposed in Decap CMS (see public/admin/config.yml).
+const historySections = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/history-sections" }),
   schema: z.object({
-    page: z.enum(["about", "history", "teams"]),
+    order: z.number().default(100),
+    title: z.string().max(120),
+    lang: langEnum,
+    ...translationMeta,
+  }),
+});
+
+const aboutSections = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/about-sections" }),
+  schema: z.object({
     order: z.number().default(100),
     title: z.string().max(120),
     lang: langEnum,
@@ -170,9 +180,8 @@ const pageSections = defineCollection({
 // Timeline rows on /history. Year is the visual anchor and is locale-agnostic;
 // only `title` is translated. Sorted by `year` ASC at render time.
 //
-// When `linkedSection` is set to a `page-sections` slug (the filename without
-// .md), the card on /history becomes a link that jumps to the matching
-// long-form section further down the page.
+// When `linkedSection` is set to a `history-sections` slug (filename without
+// .md), the card on /history becomes a link to /<lang>/history/<slug>.
 const historyMilestones = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/history-milestones" }),
   schema: z.object({
@@ -191,6 +200,7 @@ export const collections = {
   activities,
   faq,
   resources,
-  pageSections,
+  historySections,
+  aboutSections,
   historyMilestones,
 };

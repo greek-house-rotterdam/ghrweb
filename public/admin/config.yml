@@ -240,11 +240,11 @@ collections:
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── page-sections is intentionally NOT exposed in Decap. ──
-  # ── It's a programmatic-only collection (ingested via the         ──
-  # ── content-pipeline skill from source docs). Editors manage the   ──
-  # ── /history detail pages and /about content pages via PRs, not    ──
-  # ── via the admin UI. See src/content.config.ts for the schema.    ──
+  # ── history-sections and about-sections are intentionally NOT exposed ──
+  # ── in Decap. They're programmatic-only collections (ingested via the   ──
+  # ── content-pipeline skill from source docs). Editors manage the       ──
+  # ── /history/<slug> and /about/<slug> detail pages via PR, not via the  ──
+  # ── admin UI. See src/content.config.ts for the schema.                 ──
 
   # ── History timeline milestones ──
 
