@@ -61,7 +61,7 @@ collections:
   # ── location, prices, tickets — these collections only translate title/description/body.
 
   - name: event-translations-gr
-    label: "Μεταφράσεις Εκδηλώσεων (Ελληνικά)"
+    label: "Εκδηλώσεις (Ελληνικά)"
     folder: src/content/event-translations/gr
     create: true
     slug: "{{tt_event_id}}"
@@ -74,7 +74,7 @@ collections:
       - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
   - name: event-translations-nl
-    label: "Vertalingen Evenementen (Nederlands)"
+    label: "Evenementen (Nederlands)"
     folder: src/content/event-translations/nl
     create: true
     slug: "{{tt_event_id}}"
@@ -87,7 +87,7 @@ collections:
       - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
   - name: event-translations-en
-    label: "Event translations (English)"
+    label: "Events (English)"
     folder: src/content/event-translations/en
     create: true
     slug: "{{tt_event_id}}"
@@ -240,49 +240,9 @@ collections:
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── history-sections and about-sections are intentionally NOT exposed ──
-  # ── in Decap. They're programmatic-only collections (ingested via the   ──
-  # ── content-pipeline skill from source docs). Editors manage the       ──
-  # ── /history/<slug> and /about/<slug> detail pages via PR, not via the  ──
-  # ── admin UI. See src/content.config.ts for the schema.                 ──
-
-  # ── History timeline milestones ──
-
-  - name: history-milestones-gr
-    label: "Ορόσημα ιστορίας (Ελληνικά)"
-    folder: src/content/history-milestones/gr
-    create: true
-    slug: "{{year}}"
-    fields:
-      - { label: "Year", name: "year", widget: "string", hint: "e.g. 1946, or a range like 1965-1971" }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
-      - { label: "Linked section", name: "linkedSection", widget: "string", required: false, hint: "Optional: slug of a page-section (e.g. 'founding') to make this milestone clickable. The section must exist on /history." }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "hidden", default: "" }
-
-  - name: history-milestones-nl
-    label: "Geschiedenis mijlpalen (Nederlands)"
-    folder: src/content/history-milestones/nl
-    create: true
-    slug: "{{year}}"
-    fields:
-      - { label: "Year", name: "year", widget: "string" }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
-      - { label: "Linked section", name: "linkedSection", widget: "string", required: false }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "hidden", default: "" }
-
-  - name: history-milestones-en
-    label: "History milestones (English)"
-    folder: src/content/history-milestones/en
-    create: true
-    slug: "{{year}}"
-    fields:
-      - { label: "Year", name: "year", widget: "string" }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
-      - { label: "Linked section", name: "linkedSection", widget: "string", required: false }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "hidden", default: "" }
+  # ── history-sections, about-sections, and history-milestones are       ──
+  # ── intentionally NOT exposed in Decap. They're programmatic-only       ──
+  # ── collections (ingested via the content-pipeline skill from source    ──
+  # ── docs). Editors manage the /history/<slug> detail pages, the         ──
+  # ── /about/<slug> detail pages, and the timeline-milestone cards via    ──
+  # ── PR, not via the admin UI. See src/content.config.ts for schemas.    ──
