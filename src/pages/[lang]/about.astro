@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
@@ -9,6 +10,9 @@ import BrutButton from "../../components/BrutButton.astro";
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
+
+const sections = (await getCollection("pageSections", (e) => e.data.lang === lang && e.data.page === "about"))
+  .sort((a, b) => a.data.order - b.data.order);
 
 const boardMembers: Record<Lang, { name: string; role: string }[]> = {
   gr: [
@@ -51,6 +55,24 @@ const members = boardMembers[lang];
       </div>
     </div>
   </section>
+
+  {sections.length > 0 && (
+    <section class="border-t-4 border-black bg-white py-16">
+      <div class="mx-auto max-w-4xl px-4 space-y-12">
+        {sections.map(async (entry) => {
+          const { Content } = await entry.render();
+          return (
+            <article>
+              <h2 class="text-3xl font-extrabold text-black">{entry.data.title}</h2>
+              <div class="mt-6 prose prose-lg max-w-none">
+                <Content />
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  )}
 
   {/* History teaser — full timeline lives on /history */}
   <section class="border-t-4 border-black bg-white py-16">

@@ -13,6 +13,11 @@ dependencies = [
 test = [
     "pytest>=8.0",
 ]
+# Local-only tooling used by .claude/skills/* (e.g. docx ingestion).
+# Not installed in CI — keep CI deps minimal.
+skills = [
+    "python-docx>=1.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = [".github/scripts/tests"]

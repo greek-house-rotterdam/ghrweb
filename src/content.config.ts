@@ -21,22 +21,93 @@ const news = defineCollection({
   }),
 });
 
-const eventCategory = z
-  .enum(["workshop", "social", "cultural", "class", "meetup", "other"])
-  .default("other");
+async function fetchTicketTailorEvents() {
+  const key = process.env.TT_API_KEY;
+  if (!key) {
+    throw new Error(
+      "TT_API_KEY is not set. Add it to .env at the project root, " +
+        "e.g. TT_API_KEY=sk_... — get the key from Ticket Tailor → Account → API.",
+    );
+  }
+  const auth = "Basic " + Buffer.from(key).toString("base64");
+  const url =
+    "https://api.tickettailor.com/v1/events?status=published&limit=100";
+  const res = await fetch(url, {
+    headers: { Authorization: auth, Accept: "application/json" },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(
+      `Ticket Tailor API ${res.status}: ${body.slice(0, 300)}`,
+    );
+  }
+  const json = (await res.json()) as { data?: TTEvent[] };
+  const items = Array.isArray(json.data) ? json.data : [];
+  return items.map((e) => {
+    const html = e.description ?? "";
+    const plain = html
+      .replace(/<[^>]+>/g, " ")
+      .replace(/&nbsp;/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    return {
+      id: e.id,
+      name: e.name ?? "",
+      description_html: html,
+      description_text: plain.length > 200 ? plain.slice(0, 197) + "…" : plain,
+      start_iso: e.start?.iso ?? "",
+      end_iso: e.end?.iso ?? undefined,
+      url: e.url ?? "",
+      checkout_url: e.checkout_url ?? e.url ?? "",
+      image_url: e.images?.header ?? e.images?.thumbnail ?? undefined,
+      status: e.status ?? "published",
+      venue: e.venue?.name ?? undefined,
+      sold_out: e.tickets_available === "false" || e.unavailable === "true",
+    };
+  });
+}
+
+interface TTEvent {
+  id: string;
+  name?: string;
+  description?: string;
+  start?: { iso?: string };
+  end?: { iso?: string };
+  url?: string;
+  checkout_url?: string;
+  images?: { header?: string; thumbnail?: string };
+  status?: string;
+  venue?: { name?: string };
+  tickets_available?: string;
+  unavailable?: string;
+}
 
 const events = defineCollection({
-  loader: glob({ pattern: "**/*.md", base: "./src/content/events" }),
+  loader: fetchTicketTailorEvents,
   schema: z.object({
+    name: z.string(),
+    description_html: z.string(),
+    description_text: z.string(),
+    start_iso: z.string(),
+    end_iso: z.string().optional(),
+    url: z.string(),
+    checkout_url: z.string(),
+    image_url: z.string().optional(),
+    status: z.string(),
+    venue: z.string().optional(),
+    sold_out: z.boolean(),
+  }),
+});
+
+const eventTranslations = defineCollection({
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/event-translations",
+  }),
+  schema: z.object({
+    tt_event_id: z.string(),
     title: z.string().max(100),
     description: z.string().max(200),
-    date: z.coerce.date(),
-    endDate: z.coerce.date().optional(),
-    location: z.string().optional(),
-    category: eventCategory,
-    price: z.string().optional(),
-    registrationRequired: z.boolean().default(false),
-    image: z.string().optional(),
     lang: langEnum,
     ...translationMeta,
   }),
@@ -79,4 +150,38 @@ const resources = defineCollection({
   }),
 });
 
-export const collections = { news, events, activities, faq, resources };
+// Long-form prose sections rendered on the static pages (history, about, teams).
+// Each entry is one section; the page concatenates them ordered by `order` ASC.
+const pageSections = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/page-sections" }),
+  schema: z.object({
+    page: z.enum(["about", "history", "teams"]),
+    order: z.number().default(100),
+    title: z.string().max(120),
+    lang: langEnum,
+    ...translationMeta,
+  }),
+});
+
+// Timeline rows on /history. Year is the visual anchor and is locale-agnostic;
+// only `title` is translated. Sorted by `year` ASC at render time.
+const historyMilestones = defineCollection({
+  loader: glob({ pattern: "**/*.md", base: "./src/content/history-milestones" }),
+  schema: z.object({
+    year: z.string(),
+    title: z.string().max(140),
+    lang: langEnum,
+    ...translationMeta,
+  }),
+});
+
+export const collections = {
+  news,
+  events,
+  eventTranslations,
+  activities,
+  faq,
+  resources,
+  pageSections,
+  historyMilestones,
+};

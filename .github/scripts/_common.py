@@ -52,10 +52,34 @@ def parse_markdown(text: str) -> tuple[dict[str, Any], str]:
     return frontmatter, body.strip()
 
 
+_ALWAYS_QUOTED_FIELDS = {"source_hash"}
+
+
+def _str_representer(dumper: yaml.Dumper, data: str) -> yaml.ScalarNode:
+    """Force single-quoting on fields whose values can otherwise be misparsed.
+
+    A hex source_hash like `780186204e18` is valid YAML 1.1 scientific notation
+    and gets loaded as a float — bypassing Zod's string schema and failing the
+    build. Quoting it is the simplest robust fix.
+    """
+    return dumper.represent_scalar("tag:yaml.org,2002:str", data, style="'")
+
+
+class _QuotedStr(str):
+    """Marker subclass that forces single-quote YAML output."""
+
+
+yaml.add_representer(_QuotedStr, _str_representer)
+
+
 def build_markdown(frontmatter: dict[str, Any], body: str) -> str:
     """Reconstruct a markdown file from frontmatter + body."""
+    fm = {
+        k: (_QuotedStr(v) if k in _ALWAYS_QUOTED_FIELDS and isinstance(v, str) else v)
+        for k, v in frontmatter.items()
+    }
     fm_yaml = yaml.dump(
-        frontmatter,
+        fm,
         allow_unicode=True,
         default_flow_style=False,
         sort_keys=False,
