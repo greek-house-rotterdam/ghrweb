@@ -76,6 +76,7 @@ COLLECTION_RULES: dict[str, dict] = {
         "required": {"year", "title", "lang"},
         "max_lengths": {"title": 140},
         "allows_image": False,
+        "optional_known": {"linkedSection"},
     },
 }
 
@@ -240,7 +241,10 @@ def main() -> int:
         print("usage: validate_content.py <file1.md> [<file2.md> ...]", file=sys.stderr)
         return 1
 
-    paths = [Path(a) for a in sys.argv[1:]]
+    paths = [Path(a) for a in sys.argv[1:] if not a.startswith("--")]
+    if not paths:
+        print("usage: validate_content.py [--strict] <file1.md> [<file2.md> ...]", file=sys.stderr)
+        return 1
     repo_root = find_repo_root(paths[0])
 
     all_errs: list[str] = []

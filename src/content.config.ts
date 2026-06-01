@@ -169,11 +169,16 @@ const pageSections = defineCollection({
 
 // Timeline rows on /history. Year is the visual anchor and is locale-agnostic;
 // only `title` is translated. Sorted by `year` ASC at render time.
+//
+// When `linkedSection` is set to a `page-sections` slug (the filename without
+// .md), the card on /history becomes a link that jumps to the matching
+// long-form section further down the page.
 const historyMilestones = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/history-milestones" }),
   schema: z.object({
     year: z.string(),
     title: z.string().max(140),
+    linkedSection: z.string().optional(),
     lang: langEnum,
     ...translationMeta,
   }),
