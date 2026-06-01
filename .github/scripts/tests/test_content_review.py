@@ -5,8 +5,10 @@ from content_review import (
     ERROR_MESSAGE_MAX_LEN,
     format_comment,
     format_unavailable_comment,
+    infer_collection,
     parse_frontmatter,
     review_content,
+    schema_hint,
     severity_emoji,
 )
 
@@ -252,3 +254,48 @@ class TestReviewContent:
         # Truncated form ends with "..." and stays within the cap (+3 for ellipsis).
         assert len(error) <= ERROR_MESSAGE_MAX_LEN + 3
         assert error.endswith("...")
+
+
+# ---------------------------------------------------------------------------
+# infer_collection / schema_hint
+# ---------------------------------------------------------------------------
+
+
+class TestInferCollection:
+    def test_finds_collection_in_standard_path(self):
+        assert infer_collection("src/content/news/gr/welcome.md") == "news"
+
+    def test_finds_collection_in_absolute_path(self):
+        assert (
+            infer_collection("/Users/x/repo/src/content/page-sections/en/intro.md")
+            == "page-sections"
+        )
+
+    def test_returns_none_for_unknown_path(self):
+        assert infer_collection("docs/random.md") is None
+
+
+class TestSchemaHint:
+    def test_includes_required_fields(self):
+        hint = schema_hint("history-milestones")
+        assert "year" in hint
+        assert "title" in hint
+
+    def test_marks_missing_body_collections(self):
+        # history-milestones has no body — the reviewer must know this so it
+        # stops flagging "empty body" as a major finding.
+        hint = schema_hint("history-milestones")
+        assert "NO markdown body" in hint
+
+    def test_marks_body_collections(self):
+        hint = schema_hint("news")
+        assert "HAS a markdown body" in hint
+
+    def test_empty_for_unknown_collection(self):
+        assert schema_hint("not-a-collection") == ""
+        assert schema_hint(None) == ""
+
+    def test_instructs_reviewer_to_ignore_unlisted_fields(self):
+        hint = schema_hint("page-sections")
+        # The reviewer must not invent missing fields outside the schema.
+        assert "Do NOT flag" in hint
