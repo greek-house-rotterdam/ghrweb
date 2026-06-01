@@ -267,8 +267,8 @@ class TestInferCollection:
 
     def test_finds_collection_in_absolute_path(self):
         assert (
-            infer_collection("/Users/x/repo/src/content/page-sections/en/intro.md")
-            == "page-sections"
+            infer_collection("/Users/x/repo/src/content/history-sections/en/intro.md")
+            == "history-sections"
         )
 
     def test_returns_none_for_unknown_path(self):
@@ -296,6 +296,6 @@ class TestSchemaHint:
         assert schema_hint(None) == ""
 
     def test_instructs_reviewer_to_ignore_unlisted_fields(self):
-        hint = schema_hint("page-sections")
+        hint = schema_hint("history-sections")
         # The reviewer must not invent missing fields outside the schema.
         assert "Do NOT flag" in hint

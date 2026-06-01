@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1100
 title: Η Ένωση σήμερα
 lang: gr

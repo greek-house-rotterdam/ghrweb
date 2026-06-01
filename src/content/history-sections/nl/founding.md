@@ -1,5 +1,4 @@
 ---
-page: history
 order: 100
 title: 1946 — De oprichting van de Vereniging van Grieken in Nederland
 lang: nl

@@ -13,11 +13,11 @@ const items = (await getCollection("historyMilestones", (e) => e.data.lang === l
   .map((e) => e.data)
   .sort((a, b) => a.year.localeCompare(b.year));
 
-// Valid linkedSection slugs for /history detail pages — used to decide
-// whether a card becomes a link or stays as a static row.
+// Valid linkedSection slugs — used to decide whether a card becomes a link
+// to /<lang>/history/<slug> or stays as a static row.
 const historySections = await getCollection(
-  "pageSections",
-  (e) => e.data.lang === lang && e.data.page === "history",
+  "historySections",
+  (e) => e.data.lang === lang,
 );
 const sectionSlugs = new Set(
   historySections.map((s) => s.id.split("/").pop()!.replace(/\.md$/, "")),

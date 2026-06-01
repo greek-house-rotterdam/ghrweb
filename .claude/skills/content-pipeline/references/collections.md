@@ -87,25 +87,40 @@ Body: leave empty after the closing `---`. The Decap CMS config defines a hidden
 
 ---
 
-## `page-sections`
+## `history-sections` and `about-sections`
 
-**Programmatic-only — not exposed in Decap CMS.** Editors don't touch this from the admin UI; new entries are created by the content-pipeline skill (or a PR) and never edited piecemeal. Treat each entry as write-once-ish — when source material changes you re-ingest, you don't tweak in the CMS.
+**Programmatic-only — not exposed in Decap CMS.** Editors don't touch these from the admin UI; new entries are created by the content-pipeline skill (or a PR) and never edited piecemeal. Treat each entry as write-once — when source material changes you re-ingest, you don't tweak in the CMS.
 
-Long-form detail pages reachable from the parent listing page. One markdown file = one detail page at `/[lang]/<page>/<slug>`. The parent page (`/history`, `/about`) renders the timeline / mission / etc., and clickable entries jump to the detail page — the section content does NOT appear inline on the parent.
+Long-form detail pages reachable from the parent listing page. One markdown file = one detail page at `/[lang]/history/<slug>` or `/[lang]/about/<slug>`. The parent page (`/history`, `/about`) renders the timeline / mission / etc., and clickable entries jump to the detail page — the section content does NOT appear inline on the parent.
 
-**Path:** `src/content/page-sections/<lang>/<slug>.md`
+The two collections share an identical schema; they differ only by which page renders them. The collection a file belongs to is determined entirely by its directory — no `page` field needed.
+
+**Path:** `src/content/{history-sections,about-sections}/<lang>/<slug>.md`
 **Slug:** kebab-case of the section title (e.g. `founding.md`, `cultural-group.md`).
 
 ```yaml
-page: "about" | "history" | "teams"   # required — which static page renders this section
-order: number                          # default 100 — lower numbers render first
-title: string                          # required, ≤ 120 chars (a bit longer than other collections — these are section H2 headings)
-lang: "gr" | "nl" | "en"               # required
+order: number    # default 100 — lower numbers render first in any listing
+title: string    # required, ≤ 120 chars (these are page H1 headings on the detail view)
+lang: "gr" | "nl" | "en"
 ```
 
-Body: markdown — this is the actual long-form content. Headings (`##`), lists, links, emphasis all work.
+Body: markdown — this is the actual long-form content. Headings (`##`, `###`), lists, links, emphasis, images all render via the `prose prose-lg` Tailwind Typography styles on the detail page.
 
-Use this collection when the content is long enough to want body markdown. For very short labels and intro paragraphs already in `src/i18n/ui.ts`, leave them in i18n.
+Use these collections when the content is long enough to want body markdown and a dedicated URL. For short labels and intro paragraphs already in `src/i18n/ui.ts`, leave them in i18n.
+
+### Linking from a timeline milestone
+
+To make a `history-milestones` card on `/history` clickable, set `linkedSection` on the milestone to the matching `history-sections` slug:
+
+```yaml
+# src/content/history-milestones/gr/1946.md
+year: '1946'
+title: Ίδρυση της Ένωσης Ελλήνων Ολλανδίας (ΕΕΟ)
+linkedSection: founding   # → /<lang>/history/founding
+lang: gr
+```
+
+The card becomes a link to `/<lang>/history/<linkedSection>`. Cards without `linkedSection` stay as static rows.
 
 ---
 

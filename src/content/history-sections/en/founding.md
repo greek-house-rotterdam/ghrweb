@@ -1,5 +1,4 @@
 ---
-page: history
 order: 100
 title: 1946 — The founding of the Association of Greeks in the Netherlands
 lang: en

@@ -1,5 +1,4 @@
 ---
-page: history
 order: 400
 title: 1961 — Purchasing the building on Van Vollenhovenstraat
 lang: en

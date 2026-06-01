@@ -66,11 +66,15 @@ COLLECTION_RULES: dict[str, dict] = {
         "max_lengths": {"title": 100, "description": 200},
         "allows_image": False,
     },
-    "page-sections": {
-        "required": {"page", "title", "lang"},
+    "history-sections": {
+        "required": {"title", "lang"},
         "max_lengths": {"title": 120},
         "allows_image": False,
-        "page_options": {"about", "history", "teams"},
+    },
+    "about-sections": {
+        "required": {"title", "lang"},
+        "max_lengths": {"title": 120},
+        "allows_image": False,
     },
     "history-milestones": {
         "required": {"year", "title", "lang"},
@@ -183,14 +187,6 @@ def validate_file(repo_root: Path, path: Path) -> list[str]:
         if fm["category"] not in opts:
             errs.append(
                 f"{rel}: category='{fm['category']}' is not one of {sorted(opts)}"
-            )
-
-    # page-sections: page must be in the allowed set
-    if collection == "page-sections" and "page" in fm:
-        opts = rules.get("page_options", set())
-        if fm["page"] not in opts:
-            errs.append(
-                f"{rel}: page='{fm['page']}' is not one of {sorted(opts)}"
             )
 
     # event-translations: tt_event_id must equal filename stem

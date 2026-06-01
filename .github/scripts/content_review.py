@@ -108,8 +108,13 @@ COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
         "optional": [],
         "has_body": True,
     },
-    "page-sections": {
-        "required": ["page", "title", "lang"],
+    "history-sections": {
+        "required": ["title", "lang"],
+        "optional": ["order"],
+        "has_body": True,
+    },
+    "about-sections": {
+        "required": ["title", "lang"],
         "optional": ["order"],
         "has_body": True,
     },

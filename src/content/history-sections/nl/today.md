@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1100
 title: De Vereniging vandaag
 lang: nl

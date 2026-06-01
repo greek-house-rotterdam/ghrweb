@@ -1,5 +1,4 @@
 ---
-page: history
 order: 50
 title: The Greek community in the Netherlands before the Association of Greeks in
   the Netherlands (E.E.O.)

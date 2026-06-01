@@ -1,5 +1,4 @@
 ---
-page: history
 order: 1000
 title: 2010 — The transfer of the church
 lang: en

@@ -1,5 +1,4 @@
 ---
-page: history
 order: 400
 title: 1961 — Η αγορά του κτιρίου στην Van Vollenhovenstraat
 lang: gr
