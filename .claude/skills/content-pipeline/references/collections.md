@@ -117,10 +117,11 @@ Year/title pairs rendered as the timeline on `/history`. Each entry is one timel
 ```yaml
 year: string          # required, e.g. "1946" (string, not number — supports ranges like "1965-1971")
 title: string         # required, ≤ 140 chars
+linkedSection: string # optional — slug of a page-sections entry on /history. When set, the card becomes a link that jumps to that section.
 lang: "gr" | "nl" | "en"
 ```
 
-Body: leave empty — the timeline card only renders year + title.
+Body: leave empty — the timeline card only renders year + title (and an optional "read more →" affordance when `linkedSection` is set).
 
 ---
 

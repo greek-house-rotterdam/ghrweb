@@ -115,7 +115,7 @@ COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
     },
     "history-milestones": {
         "required": ["year", "title", "lang"],
-        "optional": [],
+        "optional": ["linkedSection"],
         "has_body": False,
     },
 }

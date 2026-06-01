@@ -301,6 +301,7 @@ collections:
     fields:
       - { label: "Year", name: "year", widget: "string", hint: "e.g. 1946, or a range like 1965-1971" }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Linked section", name: "linkedSection", widget: "string", required: false, hint: "Optional: slug of a page-section (e.g. 'founding') to make this milestone clickable. The section must exist on /history." }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -313,6 +314,7 @@ collections:
     fields:
       - { label: "Year", name: "year", widget: "string" }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Linked section", name: "linkedSection", widget: "string", required: false }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -325,6 +327,7 @@ collections:
     fields:
       - { label: "Year", name: "year", widget: "string" }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,140}$', "Max 140 characters"] }
+      - { label: "Linked section", name: "linkedSection", widget: "string", required: false }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }

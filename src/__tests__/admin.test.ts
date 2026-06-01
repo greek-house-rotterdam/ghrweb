@@ -108,7 +108,7 @@ const EXPECTED_FIELDS: Record<
   },
   "history-milestones": {
     required: ["year", "title", "lang"],
-    optional: ["translation_locked"],
+    optional: ["linkedSection", "translation_locked"],
     maxLengths: { title: 140 },
   },
 };
