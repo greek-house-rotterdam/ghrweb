@@ -78,6 +78,80 @@ def parse_frontmatter(content: str) -> tuple[dict, str]:
         return {}, content
 
 
+# Per-collection schema hints fed to the reviewer so it doesn't flag missing
+# fields that don't exist in the collection (e.g. complaining that a
+# history-milestones entry has no `description` — it shouldn't).
+# Keys are the collection folder names under src/content/.
+COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
+    "news": {
+        "required": ["title", "description", "date", "lang"],
+        "optional": ["image"],
+        "has_body": True,
+    },
+    "activities": {
+        "required": ["title", "description", "lang"],
+        "optional": ["image", "emoji", "schedule", "order"],
+        "has_body": True,
+    },
+    "resources": {
+        "required": ["title", "description", "category", "lang"],
+        "optional": ["order"],
+        "has_body": True,
+    },
+    "faq": {
+        "required": ["question", "answer", "lang"],
+        "optional": ["order"],
+        "has_body": False,
+    },
+    "event-translations": {
+        "required": ["tt_event_id", "title", "description", "lang"],
+        "optional": [],
+        "has_body": True,
+    },
+    "page-sections": {
+        "required": ["page", "title", "lang"],
+        "optional": ["order"],
+        "has_body": True,
+    },
+    "history-milestones": {
+        "required": ["year", "title", "lang"],
+        "optional": [],
+        "has_body": False,
+    },
+}
+
+
+def infer_collection(file_path: str) -> str | None:
+    """Path is src/content/<collection>/<lang>/<slug>.md."""
+    parts = Path(file_path).parts
+    try:
+        i = parts.index("content")
+    except ValueError:
+        return None
+    return parts[i + 1] if i + 1 < len(parts) else None
+
+
+def schema_hint(collection: str | None) -> str:
+    if collection is None or collection not in COLLECTION_FIELDS:
+        return ""
+    s = COLLECTION_FIELDS[collection]
+    req = ", ".join(s["required"]) or "(none)"
+    opt = ", ".join(s["optional"]) or "(none)"
+    body_note = (
+        "This collection HAS a markdown body."
+        if s["has_body"]
+        else "This collection has NO markdown body (the schema renders only frontmatter)."
+    )
+    return (
+        f"\n\nCollection: {collection}. "
+        f"Required frontmatter fields: {req}. "
+        f"Optional frontmatter fields: {opt}. "
+        f"{body_note} "
+        f"Do NOT flag the absence of any field not listed above — those fields "
+        f"do not exist in this collection's schema."
+    )
+
+
 ERROR_MESSAGE_MAX_LEN = 200
 
 
@@ -94,8 +168,9 @@ def review_content(file_path: str, content: str) -> tuple[list[dict], str | None
         return [], None
 
     fm, body = parse_frontmatter(content)
+    hint = schema_hint(infer_collection(file_path))
 
-    user_prompt = f"""File: {file_path}
+    user_prompt = f"""File: {file_path}{hint}
 
 Frontmatter:
 {json.dumps(fm, ensure_ascii=False, indent=2, default=str)}

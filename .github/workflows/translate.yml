@@ -43,7 +43,7 @@ jobs:
           git config core.quotePath false
 
           echo "=== Added/Changed files ==="
-          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' > /tmp/changed.txt
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/changed.txt || true
           cat /tmp/changed.txt
 
           if [ -s /tmp/changed.txt ]; then
@@ -55,7 +55,7 @@ jobs:
 
           echo ""
           echo "=== Deleted files ==="
-          git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/' > /tmp/deleted.txt
+          git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/deleted.txt || true
           cat /tmp/deleted.txt
 
           if [ -s /tmp/deleted.txt ]; then

@@ -24,10 +24,14 @@ const news = defineCollection({
 async function fetchTicketTailorEvents() {
   const key = process.env.TT_API_KEY;
   if (!key) {
-    throw new Error(
-      "TT_API_KEY is not set. Add it to .env at the project root, " +
-        "e.g. TT_API_KEY=sk_... — get the key from Ticket Tailor → Account → API.",
+    // CI builds (test smoke + Cloudflare preview) don't have the secret, and
+    // shouldn't fail on its absence. Local dev sees the warning and remembers
+    // to set it before they need real event data.
+    console.warn(
+      "[content.config] TT_API_KEY not set — returning an empty events list. " +
+        "Set TT_API_KEY in .env to fetch from Ticket Tailor (see docs/events-ticket-tailor.md).",
     );
+    return [];
   }
   const auth = "Basic " + Buffer.from(key).toString("base64");
   const url =
