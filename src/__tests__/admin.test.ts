@@ -29,13 +29,14 @@ interface CmsCollection {
 const collections: CmsCollection[] = config.collections;
 
 const LANGUAGES = ["gr", "nl", "en"] as const;
+// page-sections is intentionally absent: it's a programmatic-only collection,
+// not exposed in Decap so editors can't touch it from the admin UI.
 const CONTENT_TYPES = [
   "news",
   "event-translations",
   "activities",
   "faq",
   "resources",
-  "page-sections",
   "history-milestones",
 ] as const;
 
@@ -99,13 +100,6 @@ const EXPECTED_FIELDS: Record<
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },
-  "page-sections": {
-    required: ["page", "title", "lang"],
-    optional: ["order", "translation_locked"],
-    maxLengths: { title: 120 },
-    enums: { page: ["about", "history", "teams"] },
-    defaults: { order: 100 },
-  },
   "history-milestones": {
     required: ["year", "title", "lang"],
     optional: ["linkedSection", "translation_locked"],
@@ -150,7 +144,7 @@ describe("Decap CMS config — collection coverage", () => {
     }
   }
 
-  it("has exactly 21 collections (7 types x 3 languages)", () => {
+  it("has exactly 18 collections (6 types x 3 languages, page-sections excluded)", () => {
     expect(collections).toHaveLength(CONTENT_TYPES.length * LANGUAGES.length);
   });
 });
@@ -247,11 +241,16 @@ describe("Decap CMS config — max length constraints", () => {
 });
 
 describe("Decap CMS config — enum options", () => {
-  for (const type of CONTENT_TYPES) {
-    const expected = EXPECTED_FIELDS[type];
-    if (!expected.enums) continue;
-
-    for (const [field, options] of Object.entries(expected.enums)) {
+  const enumTypes = CONTENT_TYPES.filter((t) => EXPECTED_FIELDS[t].enums);
+  if (enumTypes.length === 0) {
+    // No enum-bearing fields are currently exposed in Decap. Vitest
+    // requires at least one test per describe block, so this placeholder
+    // keeps the suite passing until an enum field is added back.
+    it.skip("no enum-bearing fields exposed in Decap", () => {});
+    return;
+  }
+  for (const type of enumTypes) {
+    for (const [field, options] of Object.entries(EXPECTED_FIELDS[type].enums!)) {
       it(`${type}.${field} has correct options`, () => {
         const col = getCollection(type, "gr");
         const f = getField(col, field);

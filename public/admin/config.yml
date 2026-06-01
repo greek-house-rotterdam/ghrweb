@@ -240,56 +240,11 @@ collections:
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
-  # ── Page sections (long-form prose on /about, /history, /teams) ──
-
-  - name: page-sections-gr
-    label: "Ενότητες σελίδας (Ελληνικά)"
-    folder: src/content/page-sections/gr
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - label: "Page"
-        name: "page"
-        widget: "select"
-        options: ["about", "history", "teams"]
-        hint: "Which static page renders this section."
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers render first" }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown" }
-
-  - name: page-sections-nl
-    label: "Paginasecties (Nederlands)"
-    folder: src/content/page-sections/nl
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - label: "Page"
-        name: "page"
-        widget: "select"
-        options: ["about", "history", "teams"]
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
-      - { label: "Display Order", name: "order", widget: "number", default: 100 }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown" }
-
-  - name: page-sections-en
-    label: "Page sections (English)"
-    folder: src/content/page-sections/en
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - label: "Page"
-        name: "page"
-        widget: "select"
-        options: ["about", "history", "teams"]
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,120}$', "Max 120 characters"] }
-      - { label: "Display Order", name: "order", widget: "number", default: 100 }
-      - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false }
-      - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown" }
+  # ── page-sections is intentionally NOT exposed in Decap. ──
+  # ── It's a programmatic-only collection (ingested via the         ──
+  # ── content-pipeline skill from source docs). Editors manage the   ──
+  # ── /history detail pages and /about content pages via PRs, not    ──
+  # ── via the admin UI. See src/content.config.ts for the schema.    ──
 
   # ── History timeline milestones ──
 
