@@ -126,6 +126,8 @@ The card becomes a link to `/<lang>/history/<linkedSection>`. Cards without `lin
 
 ## `history-milestones`
 
+**Programmatic-only — not exposed in Decap CMS.** Like `history-sections` and `about-sections`, this collection is ingested via the content-pipeline skill (or a PR) and not editable from the admin UI.
+
 Year/title pairs rendered as the timeline on `/history`. Each entry is one timeline card. Sorted by `year` ascending at render time.
 
 **Path:** `src/content/history-milestones/<lang>/<slug>.md`
@@ -134,7 +136,7 @@ Year/title pairs rendered as the timeline on `/history`. Each entry is one timel
 ```yaml
 year: string          # required, e.g. "1946" (string, not number — supports ranges like "1965-1971")
 title: string         # required, ≤ 140 chars
-linkedSection: string # optional — slug of a page-sections entry on /history. When set, the card becomes a link that jumps to that section.
+linkedSection: string # optional — slug of a history-sections entry. When set, the card becomes a link to /<lang>/history/<slug>.
 lang: "gr" | "nl" | "en"
 ```
 

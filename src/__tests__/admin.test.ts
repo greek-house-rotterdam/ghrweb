@@ -29,15 +29,14 @@ interface CmsCollection {
 const collections: CmsCollection[] = config.collections;
 
 const LANGUAGES = ["gr", "nl", "en"] as const;
-// history-sections and about-sections are intentionally absent: they're
-// programmatic-only collections, not exposed in Decap.
+// history-milestones, history-sections, and about-sections are intentionally
+// absent: they're programmatic-only collections, not exposed in Decap.
 const CONTENT_TYPES = [
   "news",
   "event-translations",
   "activities",
   "faq",
   "resources",
-  "history-milestones",
 ] as const;
 
 function getCollection(type: string, lang: string): CmsCollection {
@@ -100,11 +99,6 @@ const EXPECTED_FIELDS: Record<
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },
-  "history-milestones": {
-    required: ["year", "title", "lang"],
-    optional: ["linkedSection", "translation_locked"],
-    maxLengths: { title: 140 },
-  },
 };
 
 // ---------------------------------------------------------------------------
@@ -144,7 +138,7 @@ describe("Decap CMS config — collection coverage", () => {
     }
   }
 
-  it("has exactly 18 collections (6 types x 3 languages, programmatic ones excluded)", () => {
+  it("has exactly 15 collections (5 types x 3 languages, programmatic ones excluded)", () => {
     expect(collections).toHaveLength(CONTENT_TYPES.length * LANGUAGES.length);
   });
 });

@@ -161,6 +161,18 @@ After opening, report the PR URL to the user and tell them what happens next:
 - **Don't optimize images.** `image-qa.yml` does that on the PR.
 - **Don't write a stylistic review.** `content-review.yml` does that on the PR.
 
+## Don't push content changes directly to `main`
+
+The translation, image-QA, and content-review workflows trigger on `pull_request` events only. A direct push to `main` (even one that touches `src/content/`) skips all of them. That means:
+
+- The Greek source updates, but `nl/<file>.md` and `en/<file>.md` stay on the old translation. Source-hash mismatches sit there silently until the next PR happens to touch the file.
+- Editors who land on `/nl/...` or `/en/...` see stale content.
+- `verify_content.py` still passes (all three language folders exist), so there's no automated alarm.
+
+This has happened in practice (commit `1037c8b` added two images to `founding.md` directly on main and the translations went stale). The recovery is to open a tiny "no-op" PR that re-saves the source file, which re-triggers `translate.yml` and refreshes the translations.
+
+**Always go through a PR, even for one-line content edits.**
+
 ## Reference index
 
 - `references/collections.md` — frontmatter shapes, required fields, length limits, slug rules per collection.
