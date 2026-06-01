@@ -89,7 +89,9 @@ Body: leave empty after the closing `---`. The Decap CMS config defines a hidden
 
 ## `page-sections`
 
-Long-form prose sections rendered on the static pages (`/about`, `/history`, `/teams`). One markdown file = one section. The page concatenates entries filtered by `page === <page>` ordered by `order` ascending.
+**Programmatic-only — not exposed in Decap CMS.** Editors don't touch this from the admin UI; new entries are created by the content-pipeline skill (or a PR) and never edited piecemeal. Treat each entry as write-once-ish — when source material changes you re-ingest, you don't tweak in the CMS.
+
+Long-form detail pages reachable from the parent listing page. One markdown file = one detail page at `/[lang]/<page>/<slug>`. The parent page (`/history`, `/about`) renders the timeline / mission / etc., and clickable entries jump to the detail page — the section content does NOT appear inline on the parent.
 
 **Path:** `src/content/page-sections/<lang>/<slug>.md`
 **Slug:** kebab-case of the section title (e.g. `founding.md`, `cultural-group.md`).

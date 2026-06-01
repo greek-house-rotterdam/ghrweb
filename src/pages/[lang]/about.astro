@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
@@ -11,8 +11,19 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const sections = (await getCollection("pageSections", (e) => e.data.lang === lang && e.data.page === "about"))
-  .sort((a, b) => a.data.order - b.data.order);
+// page-sections is programmatic-only and not exposed in Decap. We list
+// sections with `page === "about"` to render link cards that navigate to
+// the dedicated detail pages — they don't appear inline anymore.
+const aboutSections = (await getCollection(
+  "pageSections",
+  (e) => e.data.lang === lang && e.data.page === "about",
+))
+  .map((entry) => ({
+    title: entry.data.title,
+    slug: entry.id.split("/").pop()!.replace(/\.md$/, ""),
+    order: entry.data.order,
+  }))
+  .sort((a, b) => a.order - b.order);
 
 const boardMembers: Record<Lang, { name: string; role: string }[]> = {
   gr: [
@@ -56,21 +67,21 @@ const members = boardMembers[lang];
     </div>
   </section>
 
-  {sections.length > 0 && (
+  {aboutSections.length > 0 && (
     <section class="border-t-4 border-black bg-white py-16">
-      <div class="mx-auto max-w-4xl px-4 space-y-12">
-        {sections.map(async (entry) => {
-          const { Content } = await render(entry);
-          const anchor = entry.id.split("/").pop()!.replace(/\.md$/, "");
-          return (
-            <article id={anchor} class="scroll-mt-24">
-              <h2 class="text-3xl font-extrabold text-black">{entry.data.title}</h2>
-              <div class="mt-6 prose prose-lg max-w-none">
-                <Content />
-              </div>
-            </article>
-          );
-        })}
+      <div class="mx-auto max-w-4xl px-4">
+        <div class="grid gap-6 sm:grid-cols-2">
+          {aboutSections.map((section) => (
+            <a href={`/${lang}/about/${section.slug}`} class="block no-underline transition-transform hover:-translate-y-0.5">
+              <BrutCard class="bg-white p-6">
+                <h3 class="text-xl font-extrabold text-black">{section.title}</h3>
+                <span class="mt-3 inline-block text-sm font-bold underline">
+                  {t(lang, "common.read-more")} →
+                </span>
+              </BrutCard>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   )}
