@@ -205,9 +205,19 @@ def severity_emoji(severity: str) -> str:
     return {"critical": "🔴", "major": "🟠", "minor": "🟡"}.get(severity, "⚪")
 
 
+def comment_marker(file_path: str) -> str:
+    """Hidden marker embedded in every comment for this file.
+
+    The workflow's posting step looks for this marker on existing PR
+    comments and deletes them before posting a new one, so re-running CI
+    on the same PR doesn't pile up duplicate review comments.
+    """
+    return f"<!-- content-review:{file_path} -->"
+
+
 def format_comment(file_path: str, findings: list[dict]) -> str:
     """Format findings as a markdown PR comment."""
-    lines = [f"### Content Review: `{file_path}`\n"]
+    lines = [comment_marker(file_path), f"### Content Review: `{file_path}`\n"]
 
     for f in sorted(findings, key=lambda x: ["critical", "major", "minor"].index(x.get("severity", "minor"))):
         sev = f.get("severity", "minor")
@@ -221,6 +231,7 @@ def format_comment(file_path: str, findings: list[dict]) -> str:
 def format_unavailable_comment(file_path: str, error: str) -> str:
     """Format a PR comment for files the AI reviewer could not process."""
     return (
+        f"{comment_marker(file_path)}\n"
         f"### Content Review: `{file_path}`\n"
         f"\n"
         f"⚠️ **Content review unavailable** — "
