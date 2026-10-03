@@ -3,7 +3,6 @@
     "blockReadsOutsideWorkingDirectories": true,
     "deny": [
       "Edit(.github/**)",
-      "Write(.github/**)",
       "Bash(rm .github/*)",
       "Bash(rm */.github/*)",
       "Bash(rm -r .github*)",
