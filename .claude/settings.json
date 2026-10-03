@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "blockReadsOutsideWorkingDirectories": true,
+    "deny": [
+      "Edit(.github/**)",
+      "Write(.github/**)",
+      "Bash(rm .github/*)",
+      "Bash(rm */.github/*)",
+      "Bash(rm -r .github*)",
+      "Bash(rm -rf .github*)",
+      "Bash(mv .github/*)",
+      "Bash(mv */.github/*)",
+      "Bash(mv .github *)",
+      "Bash(git rm .github/*)",
+      "Bash(git rm */.github/*)",
+      "Bash(cp * .github/*)",
+      "Bash(tee .github/*)",
+      "Bash(chmod * .github/*)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "filesystem": {
+      "denyWrite": [
+        ".github"
+      ]
+    }
+  }
+}
