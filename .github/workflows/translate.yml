@@ -4,8 +4,6 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, labeled]
-    paths:
-      - "src/content/**/*.md"
 
 permissions:
   contents: write

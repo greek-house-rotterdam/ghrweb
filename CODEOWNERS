@@ -1,34 +1,20 @@
-# CODEOWNERS — auto-request reviewers based on file paths
-# Combined with the ruleset's "Require review from Code Owners" rule,
-# PRs cannot be merged without approval from the specified reviewers.
+# CODEOWNERS — who must approve a pull request, by path.
+# With the ruleset's "Require review from Code Owners" rule and 0 required
+# approvals, a PR needs approval only if it touches a path that has an owner.
+# The last matching pattern wins; a pattern with no owner means no review.
 
 # -----------------------------------------------------------------------------
-# CONTENT — translators team reviews all content changes
-# The translation workflow adds auto-translated files to PRs, which
-# triggers this rule and auto-requests the translators team.
+# DEFAULT — the developer reviews everything else: code, config, workflows,
+# dependencies, the CMS setup (public/admin/) and this file itself.
+# Deny-by-default, so new paths are protected without being listed here.
 # -----------------------------------------------------------------------------
-src/content/ @greek-house-rotterdam/translators
+* @PanoEvJ
 
 # -----------------------------------------------------------------------------
-# INFRASTRUCTURE — developer (PanoEvJ) must review changes to critical paths
-# Editors can freely edit content, but cannot break the site's engine,
-# deployment pipeline, or dependencies without explicit developer approval.
+# CONTENT — no owner, so editors publish directly from the CMS.
+# These are the only paths Decap CMS writes to (collection folders and
+# media_folder in public/admin/config.yml); the translation and image bots
+# also write only here.
 # -----------------------------------------------------------------------------
-
-# GitHub Actions workflows and scripts
-.github/ @PanoEvJ
-
-# Astro and Tailwind configuration
-astro.config.* @PanoEvJ
-tailwind.config.* @PanoEvJ
-
-# Site structure (layouts and pages)
-src/layouts/ @PanoEvJ
-src/pages/ @PanoEvJ
-
-# Dependencies
-package.json @PanoEvJ
-package-lock.json @PanoEvJ
-
-# This file itself — prevent anyone from weakening the protections
-CODEOWNERS @PanoEvJ
+/src/content/
+/public/images/
