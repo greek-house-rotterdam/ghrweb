@@ -18,3 +18,6 @@
 # -----------------------------------------------------------------------------
 /src/content/
 /public/images/
+
+# TEMPORARY probe (test branch only)
+/codeowners-probe.txt @greek-house-rotterdam/codeowners-probe
