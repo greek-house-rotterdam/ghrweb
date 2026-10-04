@@ -4,15 +4,12 @@ The website for the Greek House in Rotterdam (GHR): a sustainable, trilingual hu
 
 ## Documentation
 
+Project documentation is kept out of version control for now. The exceptions are the two guideline files that the translation and content-review workflows read:
+
 | Document | Description |
 | :--- | :--- |
-| [Background](docs/background.md) | Project goals, constraints, and high-level context |
-| [Requirements](docs/requirements.md) | Functional and non-functional requirements |
-| [Tech Stack](docs/tech-stack.md) | Architecture and technology choices |
-| [Pre-Interview PRD](docs/pre_interview_prd.md) | Product requirements before stakeholder interviews |
-| [Post-Interview PRD](docs/post_interview_prd.md) | Detailed requirements from stakeholder interviews |
-| [FAQ & Knowledge Base](docs/faq.md) | Curated insights from development Q&A sessions |
-| [Stakeholder Pitch](docs/stakeholder-pitch.md) | Presentation guide for the prototype walkthrough with the board |
+| [Content Style Guide](docs/content-style-guide.md) | Rules the AI content review checks posts against |
+| [Tone & Voice Guidelines](docs/tone-and-voice-guidelines.md) | Tone and voice used by the translation and review prompts |
 
 ## Commands
 

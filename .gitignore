@@ -38,3 +38,8 @@ data/scrapes/vvgn/records/**/*.json
 
 # tmp files
 .tmp/
+# Project docs are kept out of version control for now (local only), except the
+# two guideline files read by .github/scripts/translate.py and content_review.py.
+/docs/*
+!/docs/content-style-guide.md
+!/docs/tone-and-voice-guidelines.md
