@@ -1,9 +1,18 @@
 name: Translate Content
 
+# Runs on every save, drafts included: `translate` and `verify` are required
+# checks, so they must report on each new commit. Label changes (Decap status
+# changes) don't add commits, so they don't need a run.
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, labeled]
+    types: [opened, synchronize, reopened]
+
+# A newer save supersedes a run still in progress. The new run translates
+# everything that differs from main, so nothing is lost.
+concurrency:
+  group: translate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -20,8 +29,7 @@ env:
 jobs:
   translate:
     # Only run on PRs from the same repository
-    # Skip draft PRs from Decap CMS — only run when editor moves to "In Review"
-    if: github.event.pull_request.head.repo.full_name == github.repository && !contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     outputs:
       new_sha: ${{ steps.push-translations.outputs.new_sha }}
@@ -84,6 +92,9 @@ jobs:
             echo "new_sha=" >> "$GITHUB_OUTPUT"
           else
             git commit -m "chore: auto-translate and sync content"
+            # Image QA may have pushed to this branch meanwhile; it only
+            # touches public/images/, so the rebase can't conflict.
+            git pull --rebase origin "${{ github.head_ref }}"
             git push
             echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi

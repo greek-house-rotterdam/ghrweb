@@ -1,11 +1,19 @@
 name: Image QA
 
+# Runs on every save, drafts included. Label changes (Decap status changes)
+# don't add commits, so they don't need a run.
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, labeled]
+    types: [opened, synchronize, reopened]
     paths:
       - "public/images/**"
+
+# A newer save supersedes a run still in progress. The new run checks every
+# image that differs from main, so nothing is lost.
+concurrency:
+  group: image-qa-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -13,8 +21,7 @@ permissions:
 jobs:
   image-qa:
     # Only run on PRs from the same repository
-    # Skip draft PRs from Decap CMS — only run when editor moves to "In Review"
-    if: github.event.pull_request.head.repo.full_name == github.repository && !contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -59,5 +66,8 @@ jobs:
             echo "No images were optimized."
           else
             git commit -m "chore: auto-optimize images"
+            # Translation may have pushed to this branch meanwhile; it only
+            # touches src/content/, so the rebase can't conflict.
+            git pull --rebase origin "${{ github.head_ref }}"
             git push
           fi

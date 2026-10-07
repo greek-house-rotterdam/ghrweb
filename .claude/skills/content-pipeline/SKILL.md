@@ -1,7 +1,7 @@
 ---
 name: content-pipeline
 description: |
-  Programmatically add or update content for the Greek House Rotterdam website (`src/content/{news,activities,faq,resources,event-translations}`), and open a PR that the auto-translation pipeline picks up. Use this skill whenever the user wants to ingest content from any source — Greek/Dutch/English text pasted into chat, files in `docs/archive/` (`.docx`, `.txt`, `.md`, scanned docs), bulk-import a list of activities, add an event translation by Ticket Tailor ID, copy historical material, fix a typo in an existing article, or update a description — and have it land on the site in all three languages. Trigger even when the user doesn't explicitly say "skill" or "pipeline": phrases like "add this as a news post", "let's get this into FAQ", "draft an activity for X", "translate this article", "import the contents of that docx", "update the welcome post", or "publish this" should all invoke it. Don't try to write to `src/content/` by hand or open a translation PR without this skill — there are non-obvious rules (no `decap-cms/draft` label, no `source_hash` on source files, 100/200 char limits, image path conventions, Ticket Tailor coupling for event-translations) that the skill enforces end-to-end.
+  Programmatically add or update content for the Greek House Rotterdam website (`src/content/{news,activities,faq,resources,event-translations}`), and open a PR that the auto-translation pipeline picks up. Use this skill whenever the user wants to ingest content from any source — Greek/Dutch/English text pasted into chat, files in `docs/archive/` (`.docx`, `.txt`, `.md`, scanned docs), bulk-import a list of activities, add an event translation by Ticket Tailor ID, copy historical material, fix a typo in an existing article, or update a description — and have it land on the site in all three languages. Trigger even when the user doesn't explicitly say "skill" or "pipeline": phrases like "add this as a news post", "let's get this into FAQ", "draft an activity for X", "translate this article", "import the contents of that docx", "update the welcome post", or "publish this" should all invoke it. Don't try to write to `src/content/` by hand or open a translation PR without this skill — there are non-obvious rules (no `source_hash` on source files, 100/200 char limits, image path conventions, Ticket Tailor coupling for event-translations) that the skill enforces end-to-end.
 ---
 
 # Content pipeline — ingest, write, review, PR
@@ -31,7 +31,7 @@ You are only writing the **source** file (typically Greek, but Dutch or English 
 
 ## Hard rules (these break things if you miss them)
 
-1. **No `decap-cms/draft` label on the PR.** Every workflow has `if: !contains(...labels...'decap-cms/draft')`. With the label, *nothing runs* — no translation, no review. Default `gh pr create` doesn't apply labels, so just don't pass `--label decap-cms/draft`.
+1. **No `decap-cms/draft` label on the PR.** The workflows no longer check labels (they run on every push), but with the label Decap lists the post as a Draft. Default `gh pr create` doesn't apply labels, so just don't pass `--label decap-cms/draft`.
 2. **Source files must not have `source_hash` in frontmatter.** Files with `source_hash` are treated as translations and skipped by `translate.py`. You're writing the source, so omit it.
 3. **Title ≤ 100, description ≤ 200, FAQ question ≤ 200 characters.** Enforced by Zod schema and Decap CMS validation pattern. Truncate or rewrite before saving, not after.
 4. **Image path is `/images/<name>.<ext>`** in frontmatter. The file itself goes to `public/images/<name>.<ext>`. Keep filenames URL-safe (ASCII kebab-case is safest, though Greek/Cyrillic names do work).
@@ -148,7 +148,7 @@ EOF
 )"
 ```
 
-**Crucial:** do not pass `--label decap-cms/draft`. Do not pass `--draft` either (that's a separate GitHub-native concept and won't block our workflows — but the user's reviewers expect non-draft PRs unless told otherwise; ask if unsure).
+Don't pass `--label decap-cms/draft` (it no longer blocks the workflows, but Decap would list the post as a Draft). Do not pass `--draft` either (that's a separate GitHub-native concept and won't block our workflows — but the user's reviewers expect non-draft PRs unless told otherwise; ask if unsure).
 
 After opening, report the PR URL to the user and tell them what happens next:
 

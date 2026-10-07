@@ -1,9 +1,12 @@
 name: Content Review
 
+# Runs on every save, drafts included. "opened" reviews all content in the PR;
+# each later push reviews only the files it changed (see below). Label changes
+# carry no push, so a "labeled" run had nothing to review.
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, labeled]
+    types: [opened, synchronize]
     paths:
       - "src/content/**/*.md"
 
@@ -21,8 +24,7 @@ env:
 jobs:
   review:
     # Only run on PRs from the same repository
-    # Skip draft PRs from Decap CMS — only run when editor moves to "In Review"
-    if: github.event.pull_request.head.repo.full_name == github.repository && !contains(github.event.pull_request.labels.*.name, 'decap-cms/draft')
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

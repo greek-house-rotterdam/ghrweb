@@ -83,7 +83,7 @@ EOF
 ```
 
 **Critical:**
-- **Do not pass `--label decap-cms/draft`.** That label blocks every content workflow. The whole point of this skill is to open a PR *without* it so the pipeline runs.
+- **Do not pass `--label decap-cms/draft`.** Decap would list the post as a Draft. (It used to block every content workflow; the workflows now run on every push regardless of labels.)
 - **Do not pass `--draft`.** GitHub's "draft PR" state is separate from the Decap label, but it signals "not ready for review" and the codeowners team will ignore it. If the user explicitly says they want to land it later, prefer keeping the PR open and ready and just not merging yourself.
 
 ## After opening
