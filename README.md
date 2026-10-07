@@ -4,12 +4,13 @@ The website for the Greek House in Rotterdam (GHR): a sustainable, trilingual hu
 
 ## Documentation
 
-Project documentation is kept out of version control for now. The exceptions are the two guideline files that the translation and content-review workflows read:
+Project documentation is kept out of version control for now. The exceptions are the two guideline files that the translation and content-review workflows read, and the list of known limitations:
 
 | Document | Description |
 | :--- | :--- |
 | [Content Style Guide](docs/content-style-guide.md) | Rules the AI content review checks posts against |
 | [Tone & Voice Guidelines](docs/tone-and-voice-guidelines.md) | Tone and voice used by the translation and review prompts |
+| [Known Limitations](docs/known-limitations.md) | Gaps in the publishing pipeline we accept for now, with workarounds |
 
 ## Commands
 

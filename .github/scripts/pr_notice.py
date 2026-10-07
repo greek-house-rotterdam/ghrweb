@@ -12,8 +12,11 @@ Mentions name users, not a team: a team @-mention posted with the workflow's
 GITHUB_TOKEN does not notify anyone.
 
 Usage:
-    pr_notice.py set <topic>
+    pr_notice.py set <topic> [details-file]
     pr_notice.py clear <topic>
+
+A details file (markdown) is added below the text, e.g. the list of images
+that can't be published.
 
 Environment:
     GH_TOKEN        token for the gh CLI (the workflow's github.token)
@@ -28,6 +31,7 @@ import os
 import subprocess
 import sys
 from collections.abc import Callable
+from pathlib import Path
 
 # topic -> (heading, Greek text for the editor, English text)
 NOTICES = {
@@ -48,9 +52,23 @@ NOTICES = {
         "The AI content review could not check this post. This does not "
         "block publishing. The site admin has been notified.",
     ),
+    "images": (
+        "⚠️ Πρόβλημα με εικόνα / Image problem",
+        "Κάποια εικόνα δεν μπορεί να χρησιμοποιηθεί (δες παρακάτω), οπότε η "
+        "ανάρτηση δεν μπορεί να δημοσιευτεί ακόμα. Ανέβασε στη θέση της μια "
+        "εικόνα JPEG, PNG ή WebP, έως 5 MB, και αποθήκευσε ξανά. Ο "
+        "διαχειριστής ενημερώθηκε και θα βοηθήσει αν το μήνυμα δεν φύγει.",
+        "An image can't be used (see below), so this post can't be published "
+        "yet. Upload a JPEG, PNG or WebP image of up to 5 MB in its place and "
+        "save again. The site admin has been notified and will help if this "
+        "message doesn't go away.",
+    ),
 }
 
-USAGE = f"usage: pr_notice.py set|clear <topic>   (topics: {', '.join(NOTICES)})"
+USAGE = (
+    "usage: pr_notice.py set <topic> [details-file] | clear <topic>"
+    f"   (topics: {', '.join(NOTICES)})"
+)
 
 Runner = Callable[..., str]
 
@@ -66,10 +84,12 @@ def marker(topic: str) -> str:
     return f"<!-- pr-notice:{topic} -->"
 
 
-def build_body(topic: str, mentions: str, run_url: str) -> str:
+def build_body(topic: str, mentions: str, run_url: str, details: str = "") -> str:
     """Render the notice comment for a topic."""
     heading, greek, english = NOTICES[topic]
     lines = [marker(topic), f"### {heading}", "", greek, "", f"*{english}*"]
+    if details.strip():
+        lines += ["", details.strip()]
 
     footer = []
     if mentions.strip():
@@ -130,17 +150,33 @@ def clear_notice(repo: str, pr: str, topic: str, run: Runner = gh) -> int:
 
 def main(argv: list[str] | None = None, run: Runner = gh) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    if len(argv) != 2 or argv[0] not in ("set", "clear") or argv[1] not in NOTICES:
+    valid = (
+        len(argv) in (2, 3)
+        and argv[0] in ("set", "clear")
+        and argv[1] in NOTICES
+        and (len(argv) == 2 or argv[0] == "set")
+    )
+    if not valid:
         print(USAGE, file=sys.stderr)
         return 2
 
-    action, topic = argv
+    action, topic = argv[:2]
     repo = os.environ["REPO"]
     pr = os.environ["PR_NUMBER"]
 
     if action == "set":
+        # A missing details file still posts the notice, just without the list.
+        details_path = Path(argv[2]) if len(argv) == 3 else None
+        details = (
+            details_path.read_text(encoding="utf-8")
+            if details_path and details_path.is_file()
+            else ""
+        )
         body = build_body(
-            topic, os.environ.get("ADMIN_MENTIONS", ""), os.environ.get("RUN_URL", "")
+            topic,
+            os.environ.get("ADMIN_MENTIONS", ""),
+            os.environ.get("RUN_URL", ""),
+            details,
         )
         result = set_notice(repo, pr, topic, body, run)
         print(f"Notice '{topic}' {result} on PR #{pr}")

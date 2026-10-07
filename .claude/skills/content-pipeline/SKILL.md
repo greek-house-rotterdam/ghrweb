@@ -19,12 +19,13 @@ PR opens on main, without the `decap-cms/draft` label
 .github/workflows/translate.yml runs:
   - generates src/content/{collection}/nl/<slug>.md  (with source_hash)
   - generates src/content/{collection}/en/<slug>.md  (with source_hash)
+  - shrinks oversized images in public/images/ (same name and format)
   - commits back to the PR branch
+  - verify job: blocks images the site can't use (not JPEG/PNG/WebP, unreadable, >5 MB)
                           ↓
 .github/workflows/content-review.yml posts advisory comments
-.github/workflows/image-qa.yml validates/optimizes any new images
                           ↓
-CODEOWNERS (translators team / @PanoEvJ) approval → merge → Cloudflare deploys
+required checks pass (no approval needed for content) → merge → Cloudflare deploys
 ```
 
 You are only writing the **source** file (typically Greek, but Dutch or English work too). Everything else happens automatically once the PR opens without the draft label.
@@ -83,7 +84,7 @@ Read `references/collections.md` for the exact frontmatter shape and validation 
 
 **Images** — if the user supplied images and they're relevant:
 
-1. Copy/move the image into `public/images/<kebab-name>.<ext>` (preserve extension; `image-qa.yml` will optimize it).
+1. Copy/move the image into `public/images/<kebab-name>.<ext>` (JPEG, PNG or WebP; preserve extension; the translate workflow shrinks it if needed).
 2. Set `image: /images/<kebab-name>.<ext>` in frontmatter (collections that support `image`: news, activities).
 3. Include the image inline in the body only if it adds value beyond the hero image — most don't need it.
 
@@ -143,7 +144,7 @@ gh pr create \
 ## Test plan
 - [ ] Translation workflow opens auto-commit on this PR
 - [ ] Preview deploy renders all three languages
-- [ ] CODEOWNERS approval received
+- [ ] Required checks pass (translate, verify)
 EOF
 )"
 ```
@@ -152,18 +153,18 @@ Don't pass `--label decap-cms/draft` (it no longer blocks the workflows, but Dec
 
 After opening, report the PR URL to the user and tell them what happens next:
 
-> Opened PR #N. The translation workflow will push translated `nl` and `en` files within a few minutes. After CODEOWNERS approval, merge → Cloudflare deploys.
+> Opened PR #N. The translation workflow will push translated `nl` and `en` files within a few minutes. Once the required checks pass, merge → Cloudflare deploys.
 
 ## What you don't need to do
 
 - **Don't pre-translate.** The Gemini-backed workflow handles `nl` and `en` from the source. Pre-translating creates inconsistencies and gets overwritten.
 - **Don't write `source_hash` yourself.** Only `translate.py` writes that field.
-- **Don't optimize images.** `image-qa.yml` does that on the PR.
+- **Don't optimize images.** The translate workflow does that on the PR.
 - **Don't write a stylistic review.** `content-review.yml` does that on the PR.
 
 ## Don't push content changes directly to `main`
 
-The translation, image-QA, and content-review workflows trigger on `pull_request` events only. A direct push to `main` (even one that touches `src/content/`) skips all of them. That means:
+The Content Pipeline (`translate.yml`, which also shrinks and checks images) and content-review workflows trigger on `pull_request` events only. A direct push to `main` (even one that touches `src/content/`) skips all of them. That means:
 
 - The Greek source updates, but `nl/<file>.md` and `en/<file>.md` stay on the old translation. Source-hash mismatches sit there silently until the next PR happens to touch the file.
 - Editors who land on `/nl/...` or `/en/...` see stale content.

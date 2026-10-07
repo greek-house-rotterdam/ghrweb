@@ -1,8 +1,16 @@
-name: Translate Content
+name: Content Pipeline
 
 # Runs on every save, drafts included: `translate` and `verify` are required
 # checks, so they must report on each new commit. Label changes (Decap status
 # changes) don't add commits, so they don't need a run.
+#
+# Also handles images in public/images/: the translate job shrinks oversized
+# ones and the verify job blocks ones the site can't use.
+#
+# The job ids `translate` and `verify` are the required check names in the
+# `main-protected` ruleset, and the verify job posts statuses under those
+# names. Renaming a job (or giving it a `name:`) blocks every PR until the
+# ruleset is updated to match.
 on:
   pull_request:
     branches: [main]
@@ -80,20 +88,36 @@ jobs:
             echo "No content files deleted."
           fi
 
-      - name: Commit and push translations
+      # Shrinks oversized images in place (same name and format). This runs
+      # here, not in its own workflow, so the result lands in the same bot
+      # commit as the translations: a second bot commit would become the PR
+      # head without `translate`/`verify` statuses and block publishing.
+      # Problems it can't fix are reported by the verify job.
+      - name: Optimize changed images
+        run: |
+          git config core.quotePath false
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'public/images/' > /tmp/changed_images.txt
+          cat /tmp/changed_images.txt
+          if [ -s /tmp/changed_images.txt ]; then
+            xargs -d '\n' python .github/scripts/image_qa.py --fix < /tmp/changed_images.txt
+          else
+            echo "No images changed."
+          fi
+
+      - name: Commit and push translations and images
         id: push-translations
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add src/content/
+          git add src/content/ public/images/
 
           if git diff --staged --quiet; then
             echo "No changes to commit."
             echo "new_sha=" >> "$GITHUB_OUTPUT"
           else
-            git commit -m "chore: auto-translate and sync content"
-            # Image QA may have pushed to this branch meanwhile; it only
-            # touches public/images/, so the rebase can't conflict.
+            git commit -m "chore: auto-translate content and optimize images"
+            # The editor may have saved again meanwhile. That save starts a
+            # new run, which redoes this work on the newer content.
             git pull --rebase origin "${{ github.head_ref }}"
             git push
             echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
@@ -129,6 +153,21 @@ jobs:
 
       - name: Verify content integrity
         run: python .github/scripts/verify_content.py
+
+      # Blocks publishing for an image the site can't use: wrong format,
+      # unreadable, or still over 5 MB after the translate job shrank it.
+      - name: Check images
+        id: images
+        run: |
+          git fetch origin main
+          git config core.quotePath false
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'public/images/' > /tmp/changed_images.txt
+          cat /tmp/changed_images.txt
+          if [ -s /tmp/changed_images.txt ]; then
+            xargs -d '\n' python .github/scripts/image_qa.py --report /tmp/image_problems.md < /tmp/changed_images.txt
+          else
+            echo "No images changed."
+          fi
 
       - name: Report status on auto-commit
         if: ${{ needs.translate.outputs.new_sha != '' }}
@@ -179,14 +218,22 @@ jobs:
             -f description="Carried forward from ${PARENT_SHA:0:7} (translations not separately reviewed)"
 
       - name: Tell the editor and admins
-        if: failure()
+        if: failure() && steps.images.outcome != 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 .github/scripts/pr_notice.py set translate
 
-      # A later run that succeeds removes the earlier failure notice.
-      - name: Clear failure notice
+      - name: Tell the editor which images to replace
+        if: failure() && steps.images.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py set images /tmp/image_problems.md
+
+      # A later run that succeeds removes the earlier failure notices.
+      - name: Clear failure notices
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py clear translate
+        run: |
+          python3 .github/scripts/pr_notice.py clear translate
+          python3 .github/scripts/pr_notice.py clear images

@@ -77,24 +77,23 @@ gh pr create \
 - [ ] Translation workflow runs and pushes auto-translated `nl` and `en` files
 - [ ] AI content review posts no Critical or Major findings
 - [ ] Cloudflare preview deploy renders all three languages
-- [ ] CODEOWNERS (translators team / @PanoEvJ for infra) approves
+- [ ] Required checks pass (translate, verify, Workers Builds)
 EOF
 )"
 ```
 
 **Critical:**
 - **Do not pass `--label decap-cms/draft`.** Decap would list the post as a Draft. (It used to block every content workflow; the workflows now run on every push regardless of labels.)
-- **Do not pass `--draft`.** GitHub's "draft PR" state is separate from the Decap label, but it signals "not ready for review" and the codeowners team will ignore it. If the user explicitly says they want to land it later, prefer keeping the PR open and ready and just not merging yourself.
+- **Do not pass `--draft`.** GitHub's "draft PR" state is separate from the Decap label, but it signals "not ready" and a draft PR can't be merged until it is marked ready. If the user explicitly says they want to land it later, prefer keeping the PR open and ready and just not merging yourself.
 
 ## After opening
 
 Print the PR URL to the user and tell them what will happen next:
 
 > Opened PR <URL>. Within a few minutes:
-> - The translation workflow will commit `nl` and `en` versions back to the branch.
-> - The image QA workflow will optimize any new images.
+> - The translation workflow will commit `nl` and `en` versions back to the branch, and shrink any oversized images.
 > - The content review workflow will post advisory comments.
-> Once translators approve, merge and Cloudflare will deploy.
+> Once the required checks pass, merge and Cloudflare will deploy.
 
 Then **stop**. Don't merge the PR yourself. Don't try to manually run the translation script — the workflow does that. Don't push more commits unless the user asks.
 
@@ -116,6 +115,7 @@ A `synchronize` event will fire and the workflows re-run on the new files only.
 ## Gotchas
 
 - **The translation bot will push to your branch.** If you have local commits the bot doesn't have, you'll need `git pull --rebase` before pushing again. This is normal.
-- **CODEOWNERS blocks merge.** Even your own PR needs approval from `@greek-house-rotterdam/translators` (for content) or `@PanoEvJ` (for infra). The skill produces content-only PRs, so it's the translators team.
+- **Content needs no approval; code does.** Changes under `src/content/` and `public/images/` merge once the required checks pass. Anything else needs `@PanoEvJ`'s review (CODEOWNERS). The skill produces content-only PRs, so no review is needed.
+- **An image in another format blocks publishing.** The `verify` job fails on images that aren't JPEG, PNG or WebP, can't be read, or are over 5 MB after the bot shrank them, and the PR gets an "Image problem" notice listing them.
 - **`verify_content.py` runs after translation.** If the bot fails to translate (e.g. Gemini outage), the PR will end up with the source file present but `nl`/`en` missing. The `verify` job fails the build until the translation completes. Re-running the workflow usually fixes transient failures.
 - **Don't rename a file after it's been translated.** The `nl` and `en` filenames mirror the source; renaming the source orphans the translations. If you must rename, delete the old triple and recreate.

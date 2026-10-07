@@ -24,7 +24,7 @@ collections:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -38,7 +38,7 @@ collections:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -52,7 +52,7 @@ collections:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -111,7 +111,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -127,7 +127,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -143,7 +143,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Lock translation (do not overwrite)", name: "translation_locked", widget: "boolean", default: false, required: false, hint: "Check this if this is a hand-crafted translation that should not be regenerated when the source changes." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }

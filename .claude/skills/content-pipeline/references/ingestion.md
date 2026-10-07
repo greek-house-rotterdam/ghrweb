@@ -29,7 +29,7 @@ Output is plain text with paragraph breaks. After extraction:
 **Source-of-truth path:** `public/images/<kebab-name>.<ext>`
 
 - Always rename to ASCII kebab-case before copying in. Unicode filenames technically work (a couple already exist), but they break cleanly in URLs and confuse some tooling.
-- Don't resize or optimize — `.github/workflows/image-qa.yml` runs `image_qa.py` on the PR and handles that.
+- Don't resize or optimize — `.github/workflows/translate.yml` runs `image_qa.py` on the PR and handles that. Use JPEG, PNG or WebP; any other format blocks publishing.
 - Frontmatter reference is `image: /images/<name>.<ext>` (note the leading slash and no `public/`).
 - Per-collection support:
   - `news`, `activities`, `resources` (via Decap config) → `image` field accepted.

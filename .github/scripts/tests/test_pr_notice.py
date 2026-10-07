@@ -54,6 +54,16 @@ class TestBuildBody:
         # The review check is advisory; editors must not think they're stuck.
         assert "does not block publishing" in build_body("review", "", "")
 
+    def test_adds_details_below_the_text(self):
+        body = build_body("images", "@PanoEvJ", "", "- `a.heic`: Unsupported format\n")
+        assert body.index("*An image can't be used") < body.index("- `a.heic`") < body.index("cc @PanoEvJ")
+
+    def test_images_notice_tells_the_editor_what_to_do(self):
+        # Unlike the other notices, the editor can fix this one themselves.
+        body = build_body("images", "", "")
+        assert "Ανέβασε" in body
+        assert "JPEG, PNG or WebP" in body
+
 
 # ---------------------------------------------------------------------------
 # set_notice / clear_notice
@@ -125,9 +135,27 @@ class TestMain:
         monkeypatch.setenv("ADMIN_MENTIONS", "@PanoEvJ")
         monkeypatch.setenv("RUN_URL", "https://run/1")
 
-    @pytest.mark.parametrize("argv", [[], ["set"], ["post", "translate"], ["set", "nope"]])
+    @pytest.mark.parametrize("argv", [
+        [], ["set"], ["post", "translate"], ["set", "nope"],
+        ["clear", "images", "details.md"], ["set", "images", "a.md", "b.md"],
+    ])
     def test_rejects_bad_arguments(self, argv):
         assert main(argv, FakeGh()) == 2
+
+    def test_set_includes_details_file(self, tmp_path):
+        details = tmp_path / "problems.md"
+        details.write_text("- `public/images/a.heic`: Unsupported format\n", encoding="utf-8")
+        gh = FakeGh()
+        assert main(["set", "images", str(details)], gh) == 0
+        (call,) = gh.writes()
+        assert "- `public/images/a.heic`: Unsupported format" in call[3]
+
+    def test_set_without_details_file_still_posts(self, tmp_path):
+        # A crash before the report was written must not hide the notice.
+        gh = FakeGh()
+        assert main(["set", "images", str(tmp_path / "missing.md")], gh) == 0
+        (call,) = gh.writes()
+        assert call[3].removeprefix("body=") == build_body("images", "@PanoEvJ", "https://run/1")
 
     def test_set_posts_full_notice(self):
         gh = FakeGh()
