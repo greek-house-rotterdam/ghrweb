@@ -6,6 +6,10 @@ backend:
   repo: greek-house-rotterdam/ghrweb
   branch: main
   base_url: https://ghrweb.enosi-ellinon-ollandias.workers.dev
+  # The main-protected ruleset allows only squash merges. Without this,
+  # Decap's Publish asks for a merge commit and GitHub rejects it for anyone
+  # who can't bypass the ruleset, i.e. every editor.
+  squash_merges: true
 
 publish_mode: editorial_workflow
 
