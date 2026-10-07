@@ -62,6 +62,13 @@ First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review run
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
 
+### Local CMS works in file mode only
+
+`package.json` pins `simple-git` to 4.x through `overrides`, because 3.x has security advisories with no 3.x fix. `decap-server` (even 3.11.3) still expects simple-git 3, and its **git mode** (`MODE=git npx decap-server`) crashes on start with "`(0, l.default) is not a function`". The default **file mode**, which `npm run dev:cms` uses, works: local edits are written straight to `src/content/`.
+
+- **What to do:** use `npm run dev:cms` as documented. Drop the pin once `decap-server` supports simple-git 4.
+- **Status:** both modes tested on 2026-10-07.
+
 ### Pushing straight to `main` skips every check
 
 All workflows run on pull requests only. Content pushed straight to `main` isn't translated and its translations go stale, with no alarm. To recover, open a small PR that saves the source file again.
