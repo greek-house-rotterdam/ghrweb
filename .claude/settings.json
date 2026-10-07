@@ -1,9 +1,6 @@
 {
   "permissions": {
     "blockReadsOutsideWorkingDirectories": true,
-    "ask": [
-      "Edit(.github/**)"
-    ],
     "deny": [
       "Bash(rm .github/*)",
       "Bash(rm */.github/*)",
