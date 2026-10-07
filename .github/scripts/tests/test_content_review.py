@@ -210,6 +210,19 @@ class TestReviewContent:
         assert len(findings) == 1
         assert findings[0]["severity"] == "minor"
 
+    def test_request_sends_no_sampling_parameters(self):
+        # Newer Gemini models reject temperature/topP/topK (400), and
+        # thinking_budget is replaced by thinking_level. Send none of them.
+        with patch.object(content_review_mod, "GEMINI_API_KEY", "fake-key"), patch.object(
+            content_review_mod.requests,
+            "post",
+            return_value=_FakeResponse(200, _GEMINI_OK),
+        ) as post:
+            review_content("test.md", "---\ntitle: T\n---\nBody")
+
+        config = post.call_args.kwargs["json"]["generationConfig"]
+        assert config == {"responseMimeType": "application/json"}
+
     def test_http_error_returns_error_message(self):
         # On HTTP failure (e.g. model deprecation, 5xx, quota), the function
         # must surface the error so the workflow can post a comment.

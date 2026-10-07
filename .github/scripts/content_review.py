@@ -192,7 +192,6 @@ Body:
             system=SYSTEM_PROMPT,
             user=user_prompt,
             json_mode=True,
-            temperature=0.1,
             timeout=30,
             safety_settings=SAFETY_SETTINGS,
         )

@@ -129,7 +129,6 @@ def translate_payload(
         system=system_text,
         user=user_text,
         json_mode=True,
-        temperature=0.2,
         timeout=60,
     )
     translated = json.loads(text)

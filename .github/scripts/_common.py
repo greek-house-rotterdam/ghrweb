@@ -109,7 +109,6 @@ class GeminiClient:
         system: str,
         user: str,
         json_mode: bool = False,
-        temperature: float = 0.2,
         timeout: int = 60,
         safety_settings: list[dict] | None = None,
     ) -> str:
@@ -117,14 +116,17 @@ class GeminiClient:
 
         On HTTP failure raises RuntimeError with the status and body so the
         caller can surface it to the user (PR comment, CI log, etc.).
+
+        Sends no sampling parameters (temperature, topP, topK): Gemini has
+        ignored custom values since 3.6 Flash, and newer models reject them
+        with 400 INVALID_ARGUMENT. Thinking level is left at the model default.
         """
         body: dict[str, Any] = {
             "contents": [{"parts": [{"text": user}]}],
             "systemInstruction": {"parts": [{"text": system}]},
-            "generationConfig": {"temperature": temperature},
         }
         if json_mode:
-            body["generationConfig"]["responseMimeType"] = "application/json"
+            body["generationConfig"] = {"responseMimeType": "application/json"}
         if safety_settings:
             body["safetySettings"] = safety_settings
 
