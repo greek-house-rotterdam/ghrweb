@@ -167,10 +167,13 @@ def review_content(file_path: str, content: str) -> tuple[list[dict], str | None
     On failure, returns an empty list and a truncated error message — the
     workflow uses this to post a "review unavailable" PR comment so the
     failure is visible to editors without blocking the merge.
+
+    A missing API key is a failure too: in CI it means the secret is gone,
+    and treating it as "no findings" would show a green check for a review
+    that never ran.
     """
     if not GEMINI_API_KEY:
-        print("Warning: GEMINI_API_KEY not set, skipping AI review", file=sys.stderr)
-        return [], None
+        return [], "GEMINI_API_KEY is not set"
 
     fm, body = parse_frontmatter(content)
     hint = schema_hint(infer_collection(file_path))
@@ -301,7 +304,10 @@ def main():
     if critical > 0:
         print("Critical findings detected — see PR comments.")
     if errored > 0:
+        # Fail the check so a review that didn't run is never green. The
+        # check is not required, so this flags the problem without blocking.
         print("Some files could not be reviewed — see PR comments.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

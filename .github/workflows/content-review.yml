@@ -11,6 +11,13 @@ permissions:
   contents: read
   pull-requests: write
 
+# Used by pr_notice.py, which tells the editor and admins when this fails.
+env:
+  REPO: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
+
 jobs:
   review:
     # Only run on PRs from the same repository
@@ -64,8 +71,10 @@ jobs:
           REVIEW_OUTPUT: /tmp/content-review.json
         run: xargs -d '\n' python .github/scripts/content_review.py < /tmp/changed_content.txt
 
+      # always(): the review step fails when a file couldn't be reviewed, and
+      # its "review unavailable" comments must still be posted.
       - name: Post PR comments
-        if: steps.changed.outputs.has_changes == 'true'
+        if: always() && steps.changed.outputs.has_changes == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -90,7 +99,7 @@ jobs:
           pr = os.environ['PR_NUMBER']
 
           findings_footer = '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
-          error_footer = '\n\n---\n*Automated review by Gemini Flash — please notify the site admin.*'
+          error_footer = '\n\n---\n*Automated review by Gemini Flash — the site admin has been notified.*'
 
           # Snapshot existing comments once so we don't re-fetch per file.
           existing = json.loads(subprocess.run(
@@ -128,3 +137,16 @@ jobs:
               )
               print(f'Posted {label} comment for {file_path}')
           PYEOF
+
+      - name: Tell the editor and admins
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py set review
+
+      # A later run that succeeds removes the earlier failure notice.
+      - name: Clear failure notice
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py clear review

@@ -8,6 +8,14 @@ on:
 permissions:
   contents: write
   statuses: write
+  pull-requests: write  # failure notice comments (pr_notice.py)
+
+# Used by pr_notice.py, which tells the editor and admins when this fails.
+env:
+  REPO: ${{ github.repository }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
 
 jobs:
   translate:
@@ -79,6 +87,12 @@ jobs:
             git push
             echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Tell the editor and admins
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py set translate
 
   verify:
     needs: translate
@@ -152,3 +166,16 @@ jobs:
             -f state="$STATE" \
             -f context=review \
             -f description="Carried forward from ${PARENT_SHA:0:7} (translations not separately reviewed)"
+
+      - name: Tell the editor and admins
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py set translate
+
+      # A later run that succeeds removes the earlier failure notice.
+      - name: Clear failure notice
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/pr_notice.py clear translate

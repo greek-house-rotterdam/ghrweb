@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 import content_review as content_review_mod
 from content_review import (
     ERROR_MESSAGE_MAX_LEN,
@@ -187,13 +189,13 @@ class TestReviewContent:
     comment in the workflow, so it must be present whenever the API call
     could not be completed."""
 
-    def test_returns_empty_tuple_when_api_key_missing(self):
-        # No API key configured = skip review entirely. Treated as a
-        # successful no-op (not an error) so no PR comment is posted.
+    def test_missing_api_key_is_an_error(self):
+        # In CI a missing key means the secret is gone. Reporting it as
+        # "no findings" would show a green check for a review that never ran.
         with patch.object(content_review_mod, "GEMINI_API_KEY", ""):
             findings, error = review_content("test.md", "---\ntitle: T\n---\nBody")
         assert findings == []
-        assert error is None
+        assert error == "GEMINI_API_KEY is not set"
 
     def test_returns_findings_on_success(self):
         # Happy path: API responds 200 with a JSON array of findings.
@@ -299,3 +301,33 @@ class TestSchemaHint:
         hint = schema_hint("history-sections")
         # The reviewer must not invent missing fields outside the schema.
         assert "Do NOT flag" in hint
+
+
+# ---------------------------------------------------------------------------
+# main — exit status
+# ---------------------------------------------------------------------------
+
+
+class TestMainExitStatus:
+    """A file the reviewer couldn't process must turn the check red, so a
+    review that never ran is never reported as passing."""
+
+    def _run(self, tmp_path, monkeypatch, result):
+        post = tmp_path / "post.md"
+        post.write_text("---\ntitle: T\n---\nBody", encoding="utf-8")
+        monkeypatch.setenv("REVIEW_OUTPUT", str(tmp_path / "out.json"))
+        monkeypatch.setattr("sys.argv", ["content_review.py", str(post)])
+        with patch.object(content_review_mod, "review_content", return_value=result):
+            content_review_mod.main()
+
+    def test_exits_nonzero_when_a_file_could_not_be_reviewed(self, tmp_path, monkeypatch):
+        with pytest.raises(SystemExit) as exc:
+            self._run(tmp_path, monkeypatch, ([], "Gemini API 429"))
+        assert exc.value.code == 1
+        # The "review unavailable" comment is still written for the workflow.
+        assert "Gemini API 429" in (tmp_path / "out.json").read_text(encoding="utf-8")
+
+    def test_returns_normally_when_review_ran(self, tmp_path, monkeypatch):
+        findings = [{"severity": "critical", "field": "body", "message": "x"}]
+        # Findings, even critical ones, are advice: the check stays green.
+        self._run(tmp_path, monkeypatch, (findings, None))
