@@ -37,7 +37,10 @@ from _common import LANGUAGES, GeminiClient, build_markdown, parse_markdown
 CONTENT_DIR = Path("src/content")
 GUIDELINES_PATH = Path("docs/tone-and-voice-guidelines.md")
 
-TRANSLATABLE_FIELDS = {"title", "description"}
+# Frontmatter fields holding text to translate, besides the body. FAQ entries
+# keep their text in question/answer and have an empty body. Everything else
+# (date, order, image, emoji, category, …) is copied from the source as is.
+TRANSLATABLE_FIELDS = {"title", "description", "question", "answer", "schedule"}
 
 
 def load_guidelines() -> str:
@@ -60,7 +63,7 @@ Translation rules:
 - Match the warmth and approachability of the source — do not make it more formal.
 - For Dutch/English: avoid sounding like a literal translation from Greek.
 
-Return ONLY a JSON object with this exact shape (omit any field that is missing or empty in the source):
+Return ONLY a JSON object with exactly the keys of the source content JSON, each value translated. For example:
 {{"title": "...", "description": "...", "body": "..."}}
 
 ---
@@ -107,7 +110,7 @@ def translate_payload(
 ) -> dict[str, str]:
     """Send the translatable fields to Gemini in one call, return translated fields.
 
-    `payload` keys are field names (title, description, body); values are source text.
+    `payload` keys are field names (TRANSLATABLE_FIELDS and body); values are source text.
     Empty values are kept empty without calling the API.
     """
     non_empty = {k: v for k, v in payload.items() if v and v.strip()}

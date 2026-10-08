@@ -4,6 +4,7 @@ description: Word met Pasen een familiester
 image: /images/kokoretsi.jpg
 date: 2026-04-05 20:00:00+03:00
 lang: nl
+source_hash: '187ff7bb8990'
 ---
 
 Kom voor een geweldige avond voor een workshop wikkelen & roosteren

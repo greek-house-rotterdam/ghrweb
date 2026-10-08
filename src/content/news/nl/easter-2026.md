@@ -3,6 +3,7 @@ title: Paasfeest 2026
 description: We vieren samen Pasen in het Greek House in Rotterdam.
 date: 2026-04-12
 lang: nl
+source_hash: '68d156790546'
 ---
 
 Hellenic House Rotterdam nodigt je uit voor onze jaarlijkse paasviering.
