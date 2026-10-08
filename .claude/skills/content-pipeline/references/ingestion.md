@@ -49,14 +49,16 @@ When the user points at a folder like `docs/archive/ποιοι_ειμαστε/`:
 2. For each group, decide which collection it belongs to. Historical "who we are" material usually fits `news` (one post per topic) or a long-form `resources` entry if the user wants it on the about page — ask.
 3. Process one item at a time. Don't try to batch the whole folder into one PR unless the user explicitly says so — smaller PRs are easier to review and roll back.
 
-## When the source language isn't obvious
+## When the material isn't in Greek
+
+Greek is the only source language, so the source always goes under `gr/`.
 
 Heuristics:
-- Greek script (Ελ, Ολ, Σπ…) → `gr`.
+- Greek script (Ελ, Ολ, Σπ…) → use it as the source.
 - Dutch / English: look for `ij`, `aa`, `oe`, `het/de/een/zijn` (Dutch) vs. `the/of/and/that` (English).
-- Mixed → split into separate files per language.
+- Mixed → the Greek part is the source.
 
-When in doubt, ask the user once: "this looks bilingual — should I split it, or pick one as the source and let the workflow translate the others?"
+If there's no Greek, tell the user and offer to draft the Greek source from the material, for a Greek speaker to check. To keep a hand-written Dutch or English version word for word, put its text into the generated file after the bot has translated. Keep the file's `source_hash` (without it the file counts as a source) and add `translation_locked: true`.
 
 ## Length compliance
 

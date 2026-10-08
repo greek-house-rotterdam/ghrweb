@@ -56,7 +56,7 @@ Identify what the user has given you:
 | `.pdf` | Use the `Read` tool with `pages: "1-N"`. |
 | A folder (e.g. `docs/archive/<thing>/`) | List it, then ingest each file. Group images with the text they belong to. |
 
-Greek House content is most often Greek source. If the source language isn't obvious, ask the user once. Save the source under the language folder it's actually written in (`gr`/`nl`/`en`); the workflow will translate the other two.
+Greek is the only source language. Save the source under `gr/`; the workflow translates NL and EN. If the material is in Dutch or English, tell the user and offer to draft the Greek source from it, for a Greek speaker to check. Don't save a Dutch or English file as the source: the CMS only creates entries in Greek and treats NL/EN entries as translations of the Greek.
 
 ### 2. Classify (which collection?)
 
@@ -90,7 +90,7 @@ Read `references/collections.md` for the exact frontmatter shape and validation 
 
 **Updating existing content** — if the user is editing an existing post:
 
-- Find the source file (the one without `source_hash`) by grepping `src/content/<collection>/<lang>/`.
+- The source is the Greek file, `src/content/<collection>/gr/<slug>.md`. It's the one without `source_hash`.
 - Edit it in place. Do **not** touch the translated counterparts; the workflow will regenerate them because the source hash changes.
 - Exception: if the user explicitly wants to *only* change the English (or Dutch) version without affecting the Greek source, edit that language's file and add `translation_locked: true` to its frontmatter so the next source change won't overwrite it.
 

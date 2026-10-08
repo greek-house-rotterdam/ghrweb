@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-07_
+_Last updated: 2026-10-08_
 
 ## Images
 
@@ -39,6 +39,24 @@ Animated WebP and PNG files are skipped by the shrinking step, because re-saving
 ### Only images the PR adds or changes are checked
 
 Images already on `main` are not checked again. To check all of them locally, run `python .github/scripts/image_qa.py` from the repo root (with the dependencies in `pyproject.toml` installed).
+
+## Translations
+
+Editors write every entry in Greek; `/admin` only offers new entries in the Greek collections. Dutch and English are generated from the Greek, and editors can still open them to fix a translation.
+
+### A fixed translation is replaced when the Greek changes
+
+When an editor changes the Greek text of an entry, its Dutch and English versions are translated again, and any fixes made to them by hand are lost. This also applies to the original hand-written Dutch and English of the older activities, FAQs, resources and news posts.
+
+- **What to do:** to keep a hand-written translation for good, tick "Lock translation" on it (news, events, activities and resources), or ask the admin to add `translation_locked: true`. A locked translation is no longer updated when the Greek changes.
+- **Possible fix:** detect hand edits and flag them instead of overwriting (A9 in the plan).
+
+### Changing only the image, date or order doesn't reach Dutch and English
+
+Each language has its own file. Translation only runs when the Greek *text* changes, so a new image, date or display order on the Greek entry alone leaves the Dutch and English pages as they were.
+
+- **What to do:** make the same change in the Dutch and English entries, or change some Greek text in the same save.
+- **Possible fix:** copy these fields from the Greek on every run (A3 in the plan).
 
 ## Checks and notices
 

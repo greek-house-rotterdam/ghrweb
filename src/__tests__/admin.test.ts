@@ -285,10 +285,14 @@ describe("Decap CMS config — language defaults", () => {
   }
 });
 
-describe("Decap CMS config — all collections allow creation", () => {
+// Greek is the only source language: new entries are written in Greek and
+// NL/EN are generated from it. NL/EN entries can still be edited, to fix a
+// translation, but not created.
+describe("Decap CMS config — only Greek collections allow creation", () => {
   for (const col of collections) {
-    it(`${col.name} has create: true`, () => {
-      expect(col.create).toBe(true);
+    const isGreek = col.name.endsWith("-gr");
+    it(`${col.name} has create: ${isGreek}`, () => {
+      expect(col.create).toBe(isGreek);
     });
   }
 });
