@@ -56,6 +56,18 @@ class TestComputeSourceHash:
         h2 = compute_source_hash({"title": "T", "description": ""}, "body")
         assert h1 == h2
 
+    def test_changes_with_faq_question_and_answer(self):
+        """FAQ text lives in question/answer and the body is empty."""
+        h1 = compute_source_hash({"question": "Q1", "answer": "A"}, "")
+        h2 = compute_source_hash({"question": "Q2", "answer": "A"}, "")
+        h3 = compute_source_hash({"question": "Q1", "answer": "B"}, "")
+        assert len({h1, h2, h3}) == 3
+
+    def test_changes_with_schedule(self):
+        h1 = compute_source_hash({"title": "T", "schedule": "Κάθε Πέμπτη"}, "body")
+        h2 = compute_source_hash({"title": "T", "schedule": "Κάθε Παρασκευή"}, "body")
+        assert h1 != h2
+
     def test_field_order_does_not_matter(self):
         h1 = compute_source_hash({"title": "T", "description": "D"}, "body")
         h2 = compute_source_hash({"description": "D", "title": "T"}, "body")
@@ -301,6 +313,46 @@ class TestTranslateFile:
         nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
         _, body = parse_markdown(nl_target.read_text())
         assert body == "[nl] Original body content"
+
+    def test_translates_faq_question_and_answer(self, tmp_path):
+        """FAQ text is in frontmatter; it must be translated, not copied."""
+        source = tmp_path / "src" / "content" / "faq" / "gr" / "q.md"
+        source.parent.mkdir(parents=True)
+        source.write_text(
+            "---\nquestion: Ερώτηση\nanswer: Απάντηση\norder: 3\nlang: gr\n---\n",
+            encoding="utf-8",
+        )
+
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ) as mock:
+            translate_file("fake-key", source, "")
+            payload = mock.call_args.args[3]
+            assert payload["question"] == "Ερώτηση"
+            assert payload["answer"] == "Απάντηση"
+
+        nl_target = tmp_path / "src" / "content" / "faq" / "nl" / "q.md"
+        fm, _ = parse_markdown(nl_target.read_text())
+        assert fm["question"] == "[nl] Ερώτηση"
+        assert fm["answer"] == "[nl] Απάντηση"
+        assert fm["order"] == 3
+
+    def test_translates_activity_schedule(self, tmp_path):
+        source = self._make(
+            tmp_path,
+            "gr",
+            "---\ntitle: Χορός\nschedule: Κάθε Πέμπτη 19:00\nemoji: 💃\nlang: gr\n---\nBody",
+        )
+
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", source, "")
+
+        nl_target = tmp_path / "src" / "content" / "news" / "nl" / "post.md"
+        fm, _ = parse_markdown(nl_target.read_text())
+        assert fm["schedule"] == "[nl] Κάθε Πέμπτη 19:00"
+        assert fm["emoji"] == "💃"
 
 
 # ---------------------------------------------------------------------------
