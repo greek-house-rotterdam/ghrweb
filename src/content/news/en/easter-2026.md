@@ -3,6 +3,7 @@ title: Easter 2026
 description: We celebrate Easter together at the Greek House in Rotterdam.
 date: 2026-04-12
 lang: en
+source_hash: '68d156790546'
 ---
 
 Hellenic House Rotterdam invites you to our annual Easter celebration.
