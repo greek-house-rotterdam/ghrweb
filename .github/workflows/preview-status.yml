@@ -1,0 +1,46 @@
+name: Preview Status
+
+# Gives Decap CMS its "View Preview" button. Decap reads a commit status whose
+# context contains "deploy"; Cloudflare only posts a check-run and a PR comment.
+# This copies the preview URL from Cloudflare's comment into a `deploy/preview`
+# status on the PR head.
+#
+# Triggered by the comment, not by Cloudflare's check-run: GitHub skips
+# check_run / check_suite workflows when the commit was pushed by GitHub
+# Actions, and the translation bot's commits are exactly that.
+#
+# issue_comment runs the workflow from the default branch, never from PR code.
+# It checks out main only to get preview_status.py.
+on:
+  issue_comment:
+    types: [created, edited]
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: preview-status-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  status:
+    # Only Cloudflare's own comment on a pull request.
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.user.login == 'cloudflare-workers-and-pages[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Post deploy/preview status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: python .github/scripts/preview_status.py
