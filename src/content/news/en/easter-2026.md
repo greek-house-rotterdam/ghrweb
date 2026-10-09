@@ -6,7 +6,7 @@ lang: en
 source_hash: '68d156790546'
 ---
 
-Hellenic House Rotterdam invites you to our annual Easter celebration.
+The Greek House in Rotterdam invites you to our annual Easter celebration.
 
 We roast lamb on a spit, break red eggs and celebrate with traditional music and dance.
 

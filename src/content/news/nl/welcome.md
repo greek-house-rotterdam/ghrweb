@@ -6,6 +6,6 @@ lang: nl
 source_hash: '825b7ce50406'
 ---
 
-We zijn verheugd de lancering van de nieuwe website van het Hellenic House in Rotterdam te kunnen aankondigen.
+We zijn verheugd de lancering van de nieuwe website van het Griekse Huis in Rotterdam te kunnen aankondigen.
 
 Blijf op de hoogte van nieuws, evenementen en meer!
