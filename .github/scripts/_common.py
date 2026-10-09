@@ -28,7 +28,8 @@ LANGUAGES: dict[str, str] = {
     "en": "English",
 }
 
-GEMINI_MODEL_DEFAULT = "gemini-3-flash-preview"
+# A stable model: preview models can be shut down at short notice.
+GEMINI_MODEL_DEFAULT = "gemini-3.8-flash"
 MAX_RETRIES = 3
 RETRY_BACKOFF_BASE = 1.0
 
