@@ -17,6 +17,18 @@
         }
       });
     </script>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <!--
+      Decap CMS is pinned to an exact version and checked with Subresource
+      Integrity, so the editor only changes when we choose. To upgrade: bump the
+      version in the URL below, then recompute the hash:
+        curl -sL https://unpkg.com/decap-cms@<version>/dist/decap-cms.js \
+          | openssl dgst -sha384 -binary | openssl base64 -A
+      and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview.
+    -->
+    <script
+      src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"
+      integrity="sha384-A/Gdn928CNLufmnGWGs9RM4Q9o8bSNLeJERqBFrBjwzL7FRpoLT3MPF8Tl0+Wd2p"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
