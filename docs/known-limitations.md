@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-08_
+_Last updated: 2026-10-09_
 
 ## Images
 
@@ -51,12 +51,14 @@ When an editor changes the Greek text of an entry, its Dutch and English version
 - **What to do:** to keep a hand-written translation for good, tick "Lock translation" on it (news, events, activities and resources), or ask the admin to add `translation_locked: true`. A locked translation is no longer updated when the Greek changes.
 - **Possible fix:** detect hand edits and flag them instead of overwriting (A9 in the plan).
 
-### Changing only the image, date or order doesn't reach Dutch and English
+### A hand-written Dutch or English file without `source_hash` stops the job
 
-Each language has its own file. Translation only runs when the Greek *text* changes, so a new image, date or display order on the Greek entry alone leaves the Dutch and English pages as they were.
+On every run the Greek entry's image, date, order and other non-text fields are copied to its Dutch and English files, locked or not. The lock only protects the translated text. The text itself is translated again only when the Greek text changes.
 
-- **What to do:** make the same change in the Dutch and English entries, or change some Greek text in the same save.
-- **Possible fix:** copy these fields from the Greek on every run (A3 in the plan).
+A Dutch or English file that has no `source_hash` and no `translation_locked: true` counts as hand-written. Instead of overwriting it, the "translate" job fails with a message naming the file. The PR shows the "Translation failed" notice, which doesn't say why: the reason is in the job log.
+
+- **What to do:** the admin reads the job log, then either adds `translation_locked: true` to the file to keep it as it is, or deletes the file (or adds the `source_hash` from the log message) to have it generated again from the Greek.
+- **Possible fix:** show the reason in the PR notice.
 
 ## Checks and notices
 
