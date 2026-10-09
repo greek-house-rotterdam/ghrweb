@@ -296,3 +296,32 @@ describe("Decap CMS config — only Greek collections allow creation", () => {
     });
   }
 });
+
+// The editor is loaded from a CDN, so it must be pinned to an exact version
+// and integrity-checked; otherwise it changes unreviewed on every upstream
+// release.
+describe("Decap CMS admin page — pinned script", () => {
+  const html = readFileSync(join(ROOT, "public/admin/index.html"), "utf-8");
+  const tags = [...html.matchAll(/<script\b[^>]*\bsrc="[^"]*"[^>]*>/g)].map(
+    (m) => m[0],
+  );
+  const decap = tags.find((t) => /decap-cms/.test(t));
+
+  it("loads decap-cms from an external script tag", () => {
+    expect(decap).toBeDefined();
+  });
+
+  it("pins decap-cms to an exact version (no ^, ~ or latest)", () => {
+    expect(decap).toMatch(
+      /src="https:\/\/unpkg\.com\/decap-cms@\d+\.\d+\.\d+\/dist\/decap-cms\.js"/,
+    );
+  });
+
+  it("has an SRI hash and anonymous CORS on every external script", () => {
+    expect(tags.length).toBeGreaterThan(0);
+    for (const t of tags) {
+      expect(t).toMatch(/integrity="sha384-[A-Za-z0-9+/]+=*"/);
+      expect(t).toMatch(/crossorigin="anonymous"/);
+    }
+  });
+});
