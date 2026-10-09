@@ -391,9 +391,10 @@ class TestTranslatePayload:
                     ]
                 }
 
-        def fake_post(url, params=None, json=None, timeout=None):
+        def fake_post(url, params=None, headers=None, json=None, timeout=None):
             captured["url"] = url
             captured["params"] = params
+            captured["headers"] = headers
             captured["json"] = json
             return FakeResponse()
 
@@ -407,7 +408,10 @@ class TestTranslatePayload:
             )
 
         assert result == {"title": "Hallo", "body": "Vertaald"}
-        assert captured["params"] == {"key": "test-key"}
+        assert captured["headers"] == {"x-goog-api-key": "test-key"}
+        # The key must never be in the URL: requests errors print the URL.
+        assert captured["params"] is None
+        assert "key=" not in captured["url"]
         # System prompt includes the guidelines
         sys_text = captured["json"]["systemInstruction"]["parts"][0]["text"]
         assert "tone guidelines text" in sys_text
