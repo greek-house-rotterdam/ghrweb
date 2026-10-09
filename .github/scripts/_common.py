@@ -135,7 +135,10 @@ class GeminiClient:
             try:
                 resp = requests.post(
                     self.url,
-                    params={"key": self.api_key},
+                    # Header, not a ?key= query parameter: requests error
+                    # messages embed the URL, and this repo's Actions logs
+                    # are public.
+                    headers={"x-goog-api-key": self.api_key},
                     json=body,
                     timeout=timeout,
                 )
