@@ -52,6 +52,9 @@ jobs:
         id: changed
         run: |
           git fetch origin main
+          # List Greek filenames as they are, not as quoted escapes
+          # ("\316\272…md"), which the '\.md$' filter would silently drop.
+          git config core.quotePath false
 
           if [ "${{ github.event.action }}" = "opened" ]; then
             # PR just opened — review all new content in the PR
