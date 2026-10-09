@@ -154,6 +154,38 @@ describe("Decap CMS config — folder paths", () => {
   }
 });
 
+// "View Preview" in the editorial workflow. Decap takes the base URL from the
+// `deploy/preview` commit status (see .github/workflows/preview-status.yml)
+// and appends preview_path.
+const PREVIEW_PATH: Record<string, (lang: string) => string> = {
+  news: (lang) => `${lang}/news/{{slug}}`,
+  "event-translations": (lang) => `${lang}/events/{{slug}}`,
+  activities: (lang) => `${lang}/activities/{{slug}}`,
+  faq: (lang) => `${lang}/faq`,
+  resources: (lang) => `${lang}/resources`,
+};
+
+describe("Decap CMS config — preview", () => {
+  it("sets site_url and display_url to the production URL", () => {
+    const url = "https://ghrweb.enosi-ellinon-ollandias.workers.dev";
+    expect(config.site_url).toBe(url);
+    expect(config.display_url).toBe(url);
+  });
+
+  for (const type of CONTENT_TYPES) {
+    for (const lang of LANGUAGES) {
+      it(`${type}-${lang} has preview_path ${PREVIEW_PATH[type](lang)}`, () => {
+        const col = getCollection(type, lang) as CmsCollection & {
+          preview_path?: string;
+          editor?: { preview?: boolean };
+        };
+        expect(col.preview_path).toBe(PREVIEW_PATH[type](lang));
+        expect(col.editor?.preview).toBe(false);
+      });
+    }
+  }
+});
+
 describe("Decap CMS config — all language variants are consistent", () => {
   for (const type of CONTENT_TYPES) {
     it(`all ${type} collections have identical field names`, () => {

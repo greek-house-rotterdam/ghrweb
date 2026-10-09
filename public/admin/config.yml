@@ -13,6 +13,13 @@ backend:
 
 publish_mode: editorial_workflow
 
+# Production URL (Cloudflare Workers). The "View Preview" link in the editorial
+# workflow uses the per-commit preview URL from the `deploy/preview` commit
+# status (see .github/workflows/preview-status.yml) plus each collection's
+# preview_path.
+site_url: https://ghrweb.enosi-ellinon-ollandias.workers.dev
+display_url: https://ghrweb.enosi-ellinon-ollandias.workers.dev
+
 media_folder: public/images
 public_folder: /images
 
@@ -25,6 +32,8 @@ collections:
     folder: src/content/news/gr
     create: true
     slug: "{{slug}}"
+    preview_path: "gr/news/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -39,6 +48,8 @@ collections:
     folder: src/content/news/nl
     create: false
     slug: "{{slug}}"
+    preview_path: "nl/news/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -53,6 +64,8 @@ collections:
     folder: src/content/news/en
     create: false
     slug: "{{slug}}"
+    preview_path: "en/news/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -70,6 +83,8 @@ collections:
     folder: src/content/event-translations/gr
     create: true
     slug: "{{tt_event_id}}"
+    preview_path: "gr/events/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
@@ -83,6 +98,8 @@ collections:
     folder: src/content/event-translations/nl
     create: false
     slug: "{{tt_event_id}}"
+    preview_path: "nl/events/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
@@ -96,6 +113,8 @@ collections:
     folder: src/content/event-translations/en
     create: false
     slug: "{{tt_event_id}}"
+    preview_path: "en/events/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
@@ -111,6 +130,8 @@ collections:
     folder: src/content/activities/gr
     create: true
     slug: "{{slug}}"
+    preview_path: "gr/activities/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -127,6 +148,8 @@ collections:
     folder: src/content/activities/nl
     create: false
     slug: "{{slug}}"
+    preview_path: "nl/activities/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -143,6 +166,8 @@ collections:
     folder: src/content/activities/en
     create: false
     slug: "{{slug}}"
+    preview_path: "en/activities/{{slug}}"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -161,6 +186,8 @@ collections:
     folder: src/content/faq/gr
     create: true
     slug: "{{slug}}"
+    preview_path: "gr/faq"
+    editor: { preview: false }
     fields:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
@@ -174,6 +201,8 @@ collections:
     folder: src/content/faq/nl
     create: false
     slug: "{{slug}}"
+    preview_path: "nl/faq"
+    editor: { preview: false }
     fields:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
@@ -187,6 +216,8 @@ collections:
     folder: src/content/faq/en
     create: false
     slug: "{{slug}}"
+    preview_path: "en/faq"
+    editor: { preview: false }
     fields:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
@@ -202,6 +233,8 @@ collections:
     folder: src/content/resources/gr
     create: true
     slug: "{{slug}}"
+    preview_path: "gr/resources"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -220,6 +253,8 @@ collections:
     folder: src/content/resources/nl
     create: false
     slug: "{{slug}}"
+    preview_path: "nl/resources"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
@@ -238,6 +273,8 @@ collections:
     folder: src/content/resources/en
     create: false
     slug: "{{slug}}"
+    preview_path: "en/resources"
+    editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
       - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
