@@ -17,7 +17,7 @@ Rules for writing and reviewing content published on the website. Used by editor
 - **No political statements or partisan content** — the association is a cultural organization, not a political one.
 - **No commercial promotion** — events may have sponsors, but posts should not read as advertisements.
 - **Factual accuracy** — dates, times, locations, and prices must be verifiable. Do not publish speculative or unconfirmed information.
-- **Consistent terminology** — use "Greek House" (en), "Grieks Huis" (nl), "Ελληνικό Σπίτι" (gr). Not "Greek Association", "Griekse Vereniging", etc. unless referring to the legal entity name specifically.
+- **Consistent terminology** — use "Greek House" (en), "het Griekse Huis" (nl), "Ελληνικό Σπίτι" (gr). Not "Greek Association", "Griekse Vereniging", etc. unless referring to the legal entity name specifically.
 
 ## Structure Rules
 

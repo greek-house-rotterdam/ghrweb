@@ -6,6 +6,6 @@ lang: en
 source_hash: '825b7ce50406'
 ---
 
-We are pleased to announce the launch of the new website of the Hellenic House in Rotterdam.
+We are pleased to announce the launch of the new website of the Greek House in Rotterdam.
 
 Stay tuned for news, events and more!

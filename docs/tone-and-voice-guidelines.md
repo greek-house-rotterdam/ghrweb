@@ -111,6 +111,21 @@ Greek texts can feel warmer, more conversational, and more expressive. We prefer
 Translated texts should sound natural and international, not necessarily like direct translations from Greek.
 Keep translated copy simple, clear and easy to follow. If a Greek phrase does not translate naturally, adapt it instead of translating it word for word.
 
+# Terminology / Glossary
+
+Use these names exactly as written, in every language.
+
+| | GR | NL | EN |
+|---|---|---|---|
+| The house | Το Ελληνικό Σπίτι (στο Ρότερνταμ) | Het Griekse Huis (in Rotterdam) | The Greek House (in Rotterdam) |
+| The association | Ένωση Ελλήνων Ολλανδίας | Vereniging van Grieken in Nederland | Association of Greeks in the Netherlands |
+| Membership type: friend | Φίλος | Vriend | Friend |
+| Membership type: full | Τακτικό Μέλος | Vast Lid | Full Member |
+| Membership type: candidate | Υποψήφιο Μέλος | Kandidaat-lid | Candidate Member |
+| Membership page | Γίνε Μέλος | Word Lid | Become a Member |
+
+In Dutch, always address the reader with the informal "je/jij/jouw", never "u/uw". Never use "Grieks Huis" or "Hellenic House".
+
 # Do’s and Don’ts through examples
 
 These indicative examples show the kind of language that fits our communication style and the kind that should be avoided (some might be strict but you get the point). The goal is not to make every post sound indifferent, but to keep communication consistent, clear, and recognisable.
