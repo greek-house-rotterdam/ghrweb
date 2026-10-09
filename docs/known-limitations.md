@@ -48,7 +48,7 @@ Editors write every entry in Greek; `/admin` only offers new entries in the Gree
 
 When an editor changes the Greek text of an entry, its Dutch and English versions are translated again, and any fixes made to them by hand are lost. This also applies to the original hand-written Dutch and English of the older activities, FAQs, resources and news posts.
 
-- **What to do:** to keep a hand-written translation for good, tick "Lock translation" on it (news, events, activities and resources), or ask the admin to add `translation_locked: true`. A locked translation is no longer updated when the Greek changes.
+- **What to do:** to keep a hand-written translation for good, ask the admin to add `translation_locked: true` to the file's frontmatter (there is no checkbox for it in the CMS). A locked translation is no longer updated when the Greek changes.
 - **Possible fix:** detect hand edits and flag them instead of overwriting (A9 in the plan).
 
 ### Changing only the image, date or order doesn't reach Dutch and English

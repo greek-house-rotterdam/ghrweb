@@ -73,17 +73,17 @@ const EXPECTED_FIELDS: Record<
 > = {
   news: {
     required: ["title", "description", "date", "lang"],
-    optional: ["image", "translation_locked"],
+    optional: ["image"],
     maxLengths: { title: 100, description: 200 },
   },
   "event-translations": {
     required: ["tt_event_id", "title", "description", "lang"],
-    optional: ["translation_locked"],
+    optional: [],
     maxLengths: { title: 100, description: 200 },
   },
   activities: {
     required: ["title", "description", "lang"],
-    optional: ["image", "emoji", "schedule", "order", "translation_locked"],
+    optional: ["image", "emoji", "schedule", "order"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },
