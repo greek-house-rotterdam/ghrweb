@@ -1,8 +1,12 @@
 ---
-question: "Wat is het verschil tussen de lidmaatschapstypen?"
-answer: "Er zijn drie typen: Vriend (steun en informatie), Lid (volledige toegang tot activiteiten met stemrecht) en Kandidaat-lid (proefperiode van drie maanden met volledige toegang). Zie de pagina Word Lid voor details."
+question: Wat is het verschil tussen de soorten lidmaatschap?
+answer: 'Er zijn drie types: Vriend (filhellenen van niet-Griekse afkomst), Vast Lid
+  (van Griekse afkomst, minstens 2 jaar in Nederland en met stemrecht) en Kandidaat-lid
+  (van Griekse afkomst, minder dan 2 jaar in Nederland). Bekijk de pagina Word Lid
+  voor alle details.'
 order: 12
 lang: nl
-source_hash: '6790a3001655'
+source_hash: '1ad51f7a9d65'
 ---
+
 
