@@ -91,8 +91,8 @@ Read `references/collections.md` for the exact frontmatter shape and validation 
 **Updating existing content** — if the user is editing an existing post:
 
 - The source is the Greek file, `src/content/<collection>/gr/<slug>.md`. It's the one without `source_hash`.
-- Edit it in place. Do **not** touch the translated counterparts; the workflow will regenerate them because the source hash changes.
-- Exception: if the user explicitly wants to *only* change the English (or Dutch) version without affecting the Greek source, edit that language's file and add `translation_locked: true` to its frontmatter so the next source change won't overwrite it.
+- Edit it in place. Do **not** touch the translated counterparts; the workflow will regenerate them when the text changes, and on every run it copies the non-text fields (image, date, order, …) from the Greek to them, locked or not.
+- Exception: if the user explicitly wants to *only* change the English (or Dutch) version without affecting the Greek source, edit that language's file and add `translation_locked: true` to its frontmatter so the next source change won't overwrite it. A Dutch or English file with neither `source_hash` nor `translation_locked: true` is treated as hand-written and makes the translate job fail, so never leave one like that.
 
 ### 4. Review your own work
 

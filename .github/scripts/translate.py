@@ -8,7 +8,11 @@ Translated files receive a `source_hash` frontmatter field — a fingerprint of 
 source content they were derived from. On subsequent runs, the hash is compared:
 if the source hasn't changed, translation is skipped, preserving any manual edits
 made by reviewers. Files with `translation_locked: true` in frontmatter are never
-overwritten, even when the source changes.
+overwritten, even when the source changes. A target with neither `source_hash` nor
+the lock was written by hand: the job fails instead of overwriting it.
+
+On every run each existing target also gets the source's shared fields (image,
+date, order, ...), locked or not, without an API call.
 
 Files that already contain `source_hash` are recognized as translations (not sources)
 and are skipped when passed as input, preventing cascade translation.
@@ -41,6 +45,18 @@ GUIDELINES_PATH = Path("docs/tone-and-voice-guidelines.md")
 # keep their text in question/answer and have an empty body. Everything else
 # (date, order, image, emoji, category, …) is copied from the source as is.
 TRANSLATABLE_FIELDS = {"title", "description", "question", "answer", "schedule"}
+
+# Frontmatter keys a translation owns. Every other key of the source is a shared
+# field and is kept equal to the source on every run (see sync_shared_fields).
+TRANSLATION_OWN_FIELDS = TRANSLATABLE_FIELDS | {
+    "lang",
+    "source_hash",
+    "translation_locked",
+}
+
+
+class HandWrittenTargetError(Exception):
+    """A target file has no source_hash and isn't locked: a human wrote it."""
 
 
 def load_guidelines() -> str:
@@ -144,6 +160,27 @@ def translate_payload(
     return result
 
 
+def sync_shared_fields(source_fm: dict, target_fm: dict) -> dict:
+    """Return target_fm with its shared fields made equal to the source's.
+
+    Shared fields are all source keys except TRANSLATION_OWN_FIELDS. Existing
+    keys keep their position, new ones are appended, and shared keys the source
+    no longer has are removed. The translation's own fields are never touched.
+    """
+    shared = {k: v for k, v in source_fm.items() if k not in TRANSLATION_OWN_FIELDS}
+    synced = {}
+    for k, v in target_fm.items():
+        if k in TRANSLATION_OWN_FIELDS:
+            synced[k] = v
+        elif k in shared:
+            synced[k] = shared[k]
+        # else: the source dropped this shared field, so drop it here too
+    for k, v in shared.items():
+        if k not in synced:
+            synced[k] = v
+    return synced
+
+
 def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
     """Translate a content file to all other languages.
 
@@ -151,6 +188,14 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
     - The source file is itself a translation (has source_hash in frontmatter)
     - The target file has translation_locked: true
     - The target file's source_hash matches the current source (nothing changed)
+
+    Skipped or not, every existing target gets the source's shared fields (image,
+    date, order, ...) so they never drift. That needs no API call, and it also
+    applies to locked targets: the lock protects the text, not the image.
+
+    Raises HandWrittenTargetError, before writing anything, when a target exists,
+    isn't locked and has no source_hash: it was written by hand, and translating
+    would overwrite it.
     """
     source_lang = get_source_lang(source_path)
     target_langs = get_target_langs(source_lang)
@@ -164,23 +209,51 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
 
     current_hash = compute_source_hash(frontmatter, body)
 
+    # Check every target first, so a hand-written one stops the run before
+    # anything is written for this source.
+    plan = []  # (target_lang, target_path, existing_fm or None, up_to_date)
     for target_lang in target_langs:
         target_path = Path(
             str(source_path).replace(f"/{source_lang}/", f"/{target_lang}/")
         )
-
+        existing_fm = existing_body = None
+        up_to_date = False
         if target_path.exists():
-            existing_content = target_path.read_text(encoding="utf-8")
             try:
-                existing_fm, _ = parse_markdown(existing_content)
-                if existing_fm.get("translation_locked"):
-                    print(f"  -- {target_path} (locked, skipping)")
-                    continue
-                if existing_fm.get("source_hash") == current_hash:
-                    print(f"  -- {target_path} (source unchanged, skipping)")
-                    continue
+                existing_fm, existing_body = parse_markdown(
+                    target_path.read_text(encoding="utf-8")
+                )
             except ValueError:
                 pass  # Can't parse existing file, retranslate it
+            else:
+                if existing_fm.get("translation_locked"):
+                    up_to_date = True
+                elif "source_hash" not in existing_fm:
+                    raise HandWrittenTargetError(
+                        f"{target_path} was written by hand (it has no source_hash) "
+                        f"and is not locked, so translating {source_path} would "
+                        f"overwrite it. To keep it as it is, add "
+                        f"`translation_locked: true` to its frontmatter. To let it "
+                        f"be regenerated from the Greek, delete the file or add "
+                        f"`source_hash: '{current_hash}'` to it."
+                    )
+                elif existing_fm.get("source_hash") == current_hash:
+                    up_to_date = True
+        plan.append((target_lang, target_path, existing_fm, existing_body, up_to_date))
+
+    for target_lang, target_path, existing_fm, existing_body, up_to_date in plan:
+        if up_to_date:
+            synced_fm = sync_shared_fields(frontmatter, existing_fm)
+            if synced_fm != existing_fm:
+                target_path.write_text(
+                    build_markdown(synced_fm, existing_body), encoding="utf-8"
+                )
+                print(f"  ~~ {target_path} (shared fields synced)")
+            elif existing_fm.get("translation_locked"):
+                print(f"  -- {target_path} (locked, skipping)")
+            else:
+                print(f"  -- {target_path} (source unchanged, skipping)")
+            continue
 
         # Build the payload for one Gemini call
         source_payload = {
@@ -250,6 +323,11 @@ def main() -> None:
         print(f"Translating: {filepath} ({get_source_lang(filepath)})")
         try:
             translate_file(api_key, filepath, guidelines)
+        except HandWrittenTargetError as e:
+            # ::error:: shows up as an annotation on the workflow run
+            print(f"::error title=Hand-written translation::{e}")
+            print(f"Error translating {filepath}: {e}")
+            sys.exit(1)
         except Exception as e:
             print(f"Error translating {filepath}: {e}")
             sys.exit(1)

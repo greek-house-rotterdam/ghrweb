@@ -355,6 +355,199 @@ class TestTranslateFile:
         assert fm["emoji"] == "💃"
 
 
+class TestSharedFieldSync:
+    """Shared fields (image, date, order, ...) follow the Greek on every run."""
+
+    def _setup(self, tmp_path, source_fm, target_fm, locked=False, hash_matches=True):
+        base = tmp_path / "src" / "content" / "news"
+        gr, nl = base / "gr" / "post.md", base / "nl" / "post.md"
+        gr.parent.mkdir(parents=True)
+        nl.parent.mkdir(parents=True)
+        gr.write_text(f"---\n{source_fm}---\nBody", encoding="utf-8")
+        h = compute_source_hash({"title": "Hello"}, "Body")
+        extra = "translation_locked: true\n" if locked else ""
+        sh = h if hash_matches else "stale"
+        nl.write_text(
+            f"---\ntitle: Hallo\n{target_fm}lang: nl\nsource_hash: '{sh}'\n{extra}---\n\nTekst\n",
+            encoding="utf-8",
+        )
+        # an English target that is already in sync, so only NL is under test
+        shared = source_fm.replace("title: Hello\n", "").replace("lang: gr\n", "")
+        en = base / "en" / "post.md"
+        en.parent.mkdir(parents=True)
+        en.write_text(
+            f"---\ntitle: Hi\n{shared}lang: en\nsource_hash: '{h}'\n---\n\nText\n",
+            encoding="utf-8",
+        )
+        return gr, nl
+
+    def test_image_and_order_change_syncs_without_api_call(self, tmp_path, capsys):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\nimage: /images/new.jpg\norder: 5\nlang: gr\n",
+            "image: /images/old.jpg\norder: 1\n",
+        )
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        fm, body = parse_markdown(nl.read_text())
+        assert fm["image"] == "/images/new.jpg"
+        assert fm["order"] == 5
+        assert fm["title"] == "Hallo"  # text untouched
+        assert body == "Tekst"
+        assert list(fm)[:3] == ["title", "image", "order"]  # key order kept
+        assert "shared fields synced" in capsys.readouterr().out
+
+    def test_locked_target_is_synced_but_text_kept(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\norder: 7\nlang: gr\n",
+            "order: 1\n",
+            locked=True,
+            hash_matches=False,
+        )
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        fm, body = parse_markdown(nl.read_text())
+        assert fm["order"] == 7
+        assert fm["title"] == "Hallo"
+        assert fm["translation_locked"] is True
+        assert fm["source_hash"] == "stale"
+        assert body == "Tekst"
+
+    def test_key_removed_from_source_is_removed_from_target(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\nlang: gr\n",
+            "image: /images/old.jpg\n",
+        )
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        fm, _ = parse_markdown(nl.read_text())
+        assert "image" not in fm
+        assert fm["title"] == "Hallo"
+        assert fm["lang"] == "nl"
+        assert "source_hash" in fm
+
+    def test_new_source_key_is_added(self, tmp_path):
+        gr, nl = self._setup(tmp_path, "title: Hello\nemoji: 🎉\nlang: gr\n", "")
+        translate_file("fake-key", gr, "")
+        fm, _ = parse_markdown(nl.read_text())
+        assert fm["emoji"] == "🎉"
+
+    def test_nothing_written_when_nothing_changed(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\ndate: 2026-05-01\nlang: gr\n",
+            "date: 2026-05-01\n",
+        )
+        # odd formatting that a rewrite would normalise
+        nl.write_text(
+            nl.read_text().replace("title: Hallo", "title:   Hallo"), encoding="utf-8"
+        )
+        before = nl.read_bytes()
+        mtime = nl.stat().st_mtime_ns
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        assert nl.read_bytes() == before
+        assert nl.stat().st_mtime_ns == mtime
+
+    def test_equal_datetime_is_not_a_change(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\ndate: 2026-05-01T10:00:00Z\nlang: gr\n",
+            "date: 2026-05-01T10:00:00Z\n",
+        )
+        nl.write_text(
+            nl.read_text().replace("title: Hallo", "title:   Hallo"), encoding="utf-8"
+        )
+        before = nl.read_bytes()
+        translate_file("fake-key", gr, "")
+        assert nl.read_bytes() == before
+
+    def test_retranslation_keeps_shared_fields_from_source(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\nimage: /images/a.jpg\norder: 2\nlang: gr\n",
+            "image: /images/old.jpg\n",
+            hash_matches=False,
+        )
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", gr, "")
+        fm, _ = parse_markdown(nl.read_text())
+        assert fm["image"] == "/images/a.jpg"
+        assert fm["order"] == 2
+        assert fm["lang"] == "nl"
+        assert fm["source_hash"] == compute_source_hash({"title": "Hello"}, "Body")
+
+
+class TestHandWrittenTarget:
+    """A4: a target without source_hash that isn't locked is never overwritten."""
+
+    def _setup(self, tmp_path, target_text):
+        base = tmp_path / "src" / "content" / "news"
+        gr, nl = base / "gr" / "post.md", base / "nl" / "post.md"
+        gr.parent.mkdir(parents=True)
+        nl.parent.mkdir(parents=True)
+        gr.write_text(
+            "---\ntitle: Hello\nimage: /images/x.jpg\nlang: gr\n---\nBody",
+            encoding="utf-8",
+        )
+        nl.write_text(target_text, encoding="utf-8")
+        return gr, nl
+
+    def test_fails_and_leaves_file_untouched(self, tmp_path):
+        text = "---\ntitle: Handgeschreven\nlang: nl\n---\n\nMijn tekst\n"
+        gr, nl = self._setup(tmp_path, text)
+        with patch.object(translate_mod, "translate_payload") as mock:
+            with pytest.raises(translate_mod.HandWrittenTargetError) as exc:
+                translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        assert nl.read_text() == text
+        msg = str(exc.value)
+        assert str(nl) in msg
+        assert "translation_locked: true" in msg
+        assert "source_hash" in msg and "delete" in msg
+
+    def test_other_targets_are_not_written_first(self, tmp_path):
+        """The check runs before any target is translated."""
+        gr, nl = self._setup(
+            tmp_path, "---\ntitle: Handgeschreven\nlang: nl\n---\n\nTekst\n"
+        )
+        with pytest.raises(translate_mod.HandWrittenTargetError):
+            translate_file("fake-key", gr, "")
+        assert not (tmp_path / "src" / "content" / "news" / "en" / "post.md").exists()
+
+    def test_locked_hand_written_file_is_fine(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "---\ntitle: Handgeschreven\nlang: nl\ntranslation_locked: true\n---\n\nTekst\n",
+        )
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", gr, "")
+        fm, body = parse_markdown(nl.read_text())
+        assert fm["title"] == "Handgeschreven"
+        assert fm["image"] == "/images/x.jpg"  # shared field synced
+        assert body == "Tekst"
+
+    def test_unparseable_target_is_still_retranslated(self, tmp_path):
+        gr, nl = self._setup(tmp_path, "no frontmatter here")
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_file("fake-key", gr, "")
+        fm, _ = parse_markdown(nl.read_text())
+        assert fm["lang"] == "nl"
+        assert "source_hash" in fm
+
+
 # ---------------------------------------------------------------------------
 # translate_payload — input/output shape (without hitting the real API)
 # ---------------------------------------------------------------------------
