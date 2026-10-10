@@ -1,11 +1,11 @@
 ---
-title: Test reactiestatus
-description: Tijdelijk bericht om de reactiestatus te testen.
+title: Test statusopmerking
+description: Tijdelijk bericht om de statusopmerking te testen.
 date: 2026-10-10
 lang: nl
 image: /images/c3-test.jpg
-source_hash: '13bce261f481'
-translation_hash: '8354c2cfc314'
+source_hash: '61951ec2b1e9'
+translation_hash: '6223b902ebee'
 ---
 
-Dit is een tijdelijk testbericht. Het wordt verwijderd.
+Dit is een tijdelijk testbericht. Het wordt binnenkort verwijderd. Tweede tekstwijziging.
