@@ -22,12 +22,11 @@ concurrency:
   group: translate-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
-permissions:
-  contents: write
-  statuses: write
-  pull-requests: write  # failure notice comments (pr_notice.py)
+# No token rights by default: each job asks for what it needs.
+permissions: {}
 
-# Used by pr_notice.py, which tells the editor and admins when this fails.
+# Used by pr_status.py, which keeps the PR's one status comment up to date
+# and @-mentions the admins when something fails.
 env:
   REPO: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -39,6 +38,9 @@ jobs:
     # Only run on PRs from the same repository
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write       # pushes the translations
+      pull-requests: write  # the status comment (pr_status.py)
     outputs:
       new_sha: ${{ steps.push-translations.outputs.new_sha }}
 
@@ -59,10 +61,13 @@ jobs:
         run: uv export --no-hashes | uv pip install --system -r -
 
       - name: Detect and translate changed content
+        id: translate
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          # translate.py lists translations it kept (corrected by hand) here
+          # translate.py lists translations it kept (corrected by hand) here,
+          # and says why it failed when an editor can understand the reason
           KEPT_REPORT: /tmp/kept.md
+          TRANSLATE_REPORT: /tmp/translate_failure.json
         run: |
           git fetch origin main
           git config core.quotePath false
@@ -91,19 +96,15 @@ jobs:
           fi
 
       # Information, not a failure: translations corrected by hand were kept
-      # when the Greek changed. Posted before the push, so a run cancelled
+      # when the Greek changed. Recorded before the push, so a run cancelled
       # mid-way still leaves it (the next run flags the file again, and the
-      # notice merges the lists). Later runs never clear it: they wouldn't flag
-      # the file again, because its source_hash is current by then.
-      - name: Tell the editor about kept translations
+      # lists merge). Later runs never clear it: they wouldn't flag the file
+      # again, because its source_hash is current by then.
+      - name: Record kept translations
+        continue-on-error: true  # the comment is a courtesy, never a blocker
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          if [ -s /tmp/kept.md ]; then
-            python3 .github/scripts/pr_notice.py set kept /tmp/kept.md
-          else
-            echo "No hand-corrected translations were kept."
-          fi
+        run: python3 .github/scripts/pr_status.py kept --file /tmp/kept.md
 
       # Shrinks oversized images in place (same name and format). This runs
       # here, not in its own workflow, so the result lands in the same bot
@@ -111,6 +112,7 @@ jobs:
       # head without `translate`/`verify` statuses and block publishing.
       # Problems it can't fix are reported by the verify job.
       - name: Optimize changed images
+        id: optimize
         run: |
           git config core.quotePath false
           git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'public/images/' > /tmp/changed_images.txt
@@ -127,6 +129,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add src/content/ public/images/
+          # shown in the status comment
+          git diff --staged --name-only -- src/content/ > /tmp/written.txt
 
           if git diff --staged --quiet; then
             echo "No changes to commit."
@@ -140,15 +144,33 @@ jobs:
             echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Tell the editor and admins
-        if: failure()
+      # !cancelled(): a failed run reports too, a superseded one does not.
+      - name: Update the status comment
+        if: ${{ !cancelled() }}
+        continue-on-error: true  # the comment is a courtesy, never a blocker
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py set translate
+        run: |
+          SHA=$(git rev-parse HEAD)
+          if [ "${{ steps.translate.outcome }}" = "success" ] \
+             && [ "${{ steps.optimize.outcome }}" = "success" ] \
+             && [ "${{ steps.push-translations.outcome }}" = "success" ]; then
+            NOTHING=""
+            if [ ! -s /tmp/changed.txt ] && [ ! -s /tmp/deleted.txt ]; then NOTHING="--nothing"; fi
+            python3 .github/scripts/pr_status.py translation --state ok --sha "$SHA" \
+              --written /tmp/written.txt $NOTHING
+          else
+            python3 .github/scripts/pr_status.py translation --state fail --sha "$SHA" \
+              --report /tmp/translate_failure.json
+          fi
 
   verify:
     needs: translate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read        # checkout
+      statuses: write       # translate/verify/review statuses on the bot commit
+      pull-requests: write  # the status comment (pr_status.py)
     steps:
       - uses: actions/checkout@v5
         with:
@@ -169,12 +191,18 @@ jobs:
         run: uv export --no-hashes | uv pip install --system -r -
 
       - name: Verify content integrity
+        id: content
+        env:
+          VERIFY_REPORT: /tmp/missing.md
         run: python .github/scripts/verify_content.py
 
       # Blocks publishing for an image the site can't use: wrong format,
       # unreadable, or still over 5 MB after the translate job shrank it.
+      # !cancelled(): also runs when the content check failed, so both
+      # problems are reported at once.
       - name: Check images
         id: images
+        if: ${{ !cancelled() }}
         run: |
           git fetch origin main
           git config core.quotePath false
@@ -234,23 +262,26 @@ jobs:
             -f context=review \
             -f description="Carried forward from ${PARENT_SHA:0:7} (translations not separately reviewed)"
 
-      - name: Tell the editor and admins
-        if: failure() && steps.images.outcome != 'failure'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py set translate
-
-      - name: Tell the editor which images to replace
-        if: failure() && steps.images.outcome == 'failure'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py set images /tmp/image_problems.md
-
-      # A later run that succeeds removes the earlier failure notices.
-      - name: Clear failure notices
-        if: success()
+      # Each result replaces its section of the status comment, so a failure
+      # clears itself when a later run passes. The translation section is only
+      # touched here when the content check fails; a pass was reported by the
+      # translate job.
+      - name: Update the status comment
+        if: ${{ !cancelled() }}
+        continue-on-error: true  # the comment is a courtesy, never a blocker
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python3 .github/scripts/pr_notice.py clear translate
-          python3 .github/scripts/pr_notice.py clear images
+          SHA=$(git rev-parse HEAD)
+          if [ "${{ steps.content.outcome }}" = "failure" ]; then
+            python3 .github/scripts/pr_status.py translation --state fail --sha "$SHA" \
+              --missing /tmp/missing.md
+          fi
+          if [ "${{ steps.images.outcome }}" = "failure" ]; then
+            python3 .github/scripts/pr_status.py images --state fail --sha "$SHA" \
+              --problems /tmp/image_problems.md
+          elif [ "${{ steps.images.outcome }}" = "success" ]; then
+            COUNT=0
+            if [ -f /tmp/changed_images.txt ]; then COUNT=$(grep -c . /tmp/changed_images.txt || true); fi
+            python3 .github/scripts/pr_status.py images --state ok --sha "$SHA" --count "$COUNT"
+          fi

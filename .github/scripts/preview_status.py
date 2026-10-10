@@ -5,7 +5,8 @@ Copy Cloudflare's per-commit preview URL into a `deploy/preview` commit status.
 Decap CMS shows its "View Preview" button for an unpublished entry when the
 PR's head commit has a commit status whose context contains "deploy"
 (check-runs are ignored). Cloudflare Workers Builds only posts a check-run and
-a PR comment, so this script reads the comment and posts the status.
+a PR comment, so this script reads the comment and posts the status. It also
+puts the link into the PR's status comment (pr_status.py), where editors read it.
 
 Why the comment and not the check-run: GitHub does not start `check_run` /
 `check_suite` workflows when the commit was pushed by GitHub Actions, and our
@@ -13,7 +14,8 @@ translation bot pushes to most CMS branches that way. Cloudflare's PR comment
 is written by the Cloudflare app, so `issue_comment` always fires.
 
 Environment:
-    GH_TOKEN      token for the gh CLI (needs statuses: write)
+    GH_TOKEN      token for the gh CLI (needs statuses: write, pull-requests: write)
+    RUN_URL       link to the workflow run, shown in the status comment
     REPO          owner/name
     PR_NUMBER     pull request number
     COMMENT_BODY  body of the Cloudflare comment (from the event payload)
@@ -51,8 +53,15 @@ def parse_comment(body: str) -> tuple[str, str] | None:
     return sha.group(1), url.group(1)
 
 
-def sync(repo: str, pr_number: str, body: str, gh: Callable[..., str]) -> str:
-    """Post the status if needed. Returns a one-line outcome for the log."""
+def sync(
+    repo: str,
+    pr_number: str,
+    body: str,
+    gh: Callable[..., str],
+    show_link: Callable[[str, str], str] | None = None,
+) -> str:
+    """Post the status if needed, then show the link in the PR's status comment
+    through `show_link(head sha, url)`. Returns a one-line outcome for the log."""
     parsed = parse_comment(body)
     if not parsed:
         return "skip: no finished preview in this comment"
@@ -67,22 +76,32 @@ def sync(repo: str, pr_number: str, body: str, gh: Callable[..., str]) -> str:
     if not head.startswith(short_sha):
         return f"skip: comment is for {short_sha}, PR head is {head[:8]}"
 
+    outcome = None
     existing = json.loads(gh("api", f"repos/{repo}/commits/{head}/statuses"))
     for s in existing:
         if s["context"] == CONTEXT:
             # Statuses are newest first; only the newest one counts.
             if s["state"] == "success" and s["target_url"] == url:
-                return f"skip: {head[:8]} already has {CONTEXT} -> {url}"
+                outcome = f"skip: {head[:8]} already has {CONTEXT} -> {url}"
             break
 
-    gh(
-        "api", "-X", "POST", f"repos/{repo}/statuses/{head}",
-        "-f", "state=success",
-        "-f", f"target_url={url}",
-        "-f", "description=Cloudflare preview",
-        "-f", f"context={CONTEXT}",
-    )
-    return f"posted {CONTEXT} on {head[:8]} -> {url}"
+    if outcome is None:
+        gh(
+            "api", "-X", "POST", f"repos/{repo}/statuses/{head}",
+            "-f", "state=success",
+            "-f", f"target_url={url}",
+            "-f", "description=Cloudflare preview",
+            "-f", f"context={CONTEXT}",
+        )
+        outcome = f"posted {CONTEXT} on {head[:8]} -> {url}"
+
+    if show_link:
+        # Also when the status already exists: the comment may lack the link.
+        try:
+            outcome += f"; {show_link(head, url)}"
+        except Exception as e:  # the status above is what matters; this is a courtesy
+            outcome += f"; status comment not updated ({e})"
+    return outcome
 
 
 def run_gh(*args: str) -> str:
@@ -92,14 +111,18 @@ def run_gh(*args: str) -> str:
 
 
 def main() -> int:
-    print(
-        sync(
-            os.environ["REPO"],
-            os.environ["PR_NUMBER"],
-            os.environ["COMMENT_BODY"],
-            run_gh,
+    import pr_status
+
+    repo, pr = os.environ["REPO"], os.environ["PR_NUMBER"]
+
+    def show_link(head: str, url: str) -> str:
+        data = {"state": "ok", "sha": head, "url": url, "run": pr_status.run_stamp()}
+        return pr_status.update(
+            pr_status.Api(repo, pr, run_gh), "preview", data,
+            run_url=os.environ.get("RUN_URL", ""),
         )
-    )
+
+    print(sync(repo, pr, os.environ["COMMENT_BODY"], run_gh, show_link))
     return 0
 
 
