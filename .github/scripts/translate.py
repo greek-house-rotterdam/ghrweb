@@ -11,6 +11,14 @@ made by reviewers. Files with `translation_locked: true` in frontmatter are neve
 overwritten, even when the source changes. A target with neither `source_hash` nor
 the lock was written by hand: the job fails instead of overwriting it.
 
+Besides `source_hash`, the bot stores `translation_hash`: the same hash over the
+translation's own text, as the bot wrote it. If a target's current text no longer
+matches it, someone corrected it by hand. When the Greek then changes, that
+translation is kept (not re-translated), its `source_hash` is brought up to date
+so it is flagged once, and it is listed in the file named by $KEPT_REPORT for the
+PR notice. A target without `translation_hash` is re-translated as before; remove
+the field (or delete the file) to hand a translation back to the bot.
+
 On every run each existing target also gets the source's shared fields (image,
 date, order, ...), locked or not, without an API call.
 
@@ -36,7 +44,7 @@ from pathlib import Path
 
 import requests  # re-exported for tests that patch translate.requests.post
 
-from _common import LANGUAGES, GeminiClient, build_markdown, parse_markdown
+from _common import LANGUAGES, GeminiClient, _QuotedStr, build_markdown, parse_markdown
 
 CONTENT_DIR = Path("src/content")
 GUIDELINES_PATH = Path("docs/tone-and-voice-guidelines.md")
@@ -51,12 +59,17 @@ TRANSLATABLE_FIELDS = {"title", "description", "question", "answer", "schedule"}
 TRANSLATION_OWN_FIELDS = TRANSLATABLE_FIELDS | {
     "lang",
     "source_hash",
+    "translation_hash",
     "translation_locked",
 }
 
 
 class HandWrittenTargetError(Exception):
     """A target file has no source_hash and isn't locked: a human wrote it."""
+
+
+class NonGreekSourceError(Exception):
+    """A Dutch or English file without source_hash was passed as a source."""
 
 
 def load_guidelines() -> str:
@@ -102,6 +115,18 @@ def compute_source_hash(frontmatter: dict, body: str) -> str:
             parts.append(f"{field}:{frontmatter[field]}")
     parts.append(f"body:{body}")
     return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:12]
+
+
+def is_hand_edited(frontmatter: dict, body: str) -> bool:
+    """True when a translation's text differs from what the bot wrote.
+
+    Needs `translation_hash`; without it the history is unknown, so the file
+    counts as not hand-edited.
+    """
+    recorded = frontmatter.get("translation_hash")
+    if not recorded:
+        return False
+    return compute_source_hash(frontmatter, body) != str(recorded)
 
 
 def get_source_lang(filepath: Path) -> str:
@@ -181,13 +206,29 @@ def sync_shared_fields(source_fm: dict, target_fm: dict) -> dict:
     return synced
 
 
-def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
+def _quote_hashes(frontmatter: dict) -> dict:
+    """Force quoting of translation_hash (a hex string like 780186204e18 can
+    otherwise be read back as a number). source_hash is quoted by _common."""
+    fm = dict(frontmatter)
+    if isinstance(fm.get("translation_hash"), str):
+        fm["translation_hash"] = _QuotedStr(fm["translation_hash"])
+    return fm
+
+
+def translate_file(
+    api_key: str, source_path: Path, guidelines: str
+) -> list[tuple[Path, str]]:
     """Translate a content file to all other languages.
+
+    Returns the targets kept because they were corrected by hand, as
+    (path, label) pairs; the label is the Greek title or question.
 
     Skips translation when:
     - The source file is itself a translation (has source_hash in frontmatter)
     - The target file has translation_locked: true
     - The target file's source_hash matches the current source (nothing changed)
+    - The Greek changed, but the target was corrected by hand (its text no longer
+      matches its translation_hash). It is kept, and its source_hash is updated.
 
     Skipped or not, every existing target gets the source's shared fields (image,
     date, order, ...) so they never drift. That needs no API call, and it also
@@ -196,6 +237,10 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
     Raises HandWrittenTargetError, before writing anything, when a target exists,
     isn't locked and has no source_hash: it was written by hand, and translating
     would overwrite it.
+
+    Raises NonGreekSourceError for a Dutch or English file without source_hash
+    that isn't locked: entries are written in Greek. A locked one is a
+    hand-written translation and is skipped.
     """
     source_lang = get_source_lang(source_path)
     target_langs = get_target_langs(source_lang)
@@ -203,9 +248,26 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
     content = source_path.read_text(encoding="utf-8")
     frontmatter, body = parse_markdown(content)
 
+    kept: list[tuple[Path, str]] = []
+
     if "source_hash" in frontmatter:
         print("  Skipping (is a translation, not a source)")
-        return
+        return kept
+
+    if source_lang != "gr":
+        if frontmatter.get("translation_locked"):
+            print("  Skipping (a locked, hand-written translation)")
+            return kept
+        raise NonGreekSourceError(
+            f"{source_path} is a {LANGUAGES[source_lang]} file without source_hash, "
+            f"so it looks like a source, but entries are written in Greek. Create "
+            f"the entry in the Greek collection instead (src/content/.../gr/), and "
+            f"the {LANGUAGES[source_lang]} version is generated from it. To keep "
+            f"this file as a hand-written translation, ask the admin to add "
+            f"`translation_locked: true` to its frontmatter."
+        )
+
+    label = str(frontmatter.get("title") or frontmatter.get("question") or "")
 
     current_hash = compute_source_hash(frontmatter, body)
 
@@ -218,6 +280,7 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
         )
         existing_fm = existing_body = None
         up_to_date = False
+        keep = False
         if target_path.exists():
             try:
                 existing_fm, existing_body = parse_markdown(
@@ -239,14 +302,37 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
                     )
                 elif existing_fm.get("source_hash") == current_hash:
                     up_to_date = True
-        plan.append((target_lang, target_path, existing_fm, existing_body, up_to_date))
+                elif is_hand_edited(existing_fm, existing_body):
+                    keep = True
+        plan.append(
+            (target_lang, target_path, existing_fm, existing_body, up_to_date, keep)
+        )
 
-    for target_lang, target_path, existing_fm, existing_body, up_to_date in plan:
+    for target_lang, target_path, existing_fm, existing_body, up_to_date, keep in plan:
+        if keep:
+            # Greek changed, but a human corrected this translation: keep the
+            # text. source_hash moves to the current one so it is flagged once;
+            # translation_hash stays, so the file still counts as hand-edited.
+            synced_fm = sync_shared_fields(frontmatter, existing_fm)
+            synced_fm["source_hash"] = current_hash
+            target_path.write_text(
+                build_markdown(_quote_hashes(synced_fm), existing_body),
+                encoding="utf-8",
+            )
+            print(
+                f"::warning title=Kept a hand-corrected translation::{target_path} "
+                f"was corrected by hand, so it was not re-translated although "
+                f"{source_path} changed. Check it."
+            )
+            kept.append((target_path, label))
+            continue
+
         if up_to_date:
             synced_fm = sync_shared_fields(frontmatter, existing_fm)
             if synced_fm != existing_fm:
                 target_path.write_text(
-                    build_markdown(synced_fm, existing_body), encoding="utf-8"
+                    build_markdown(_quote_hashes(synced_fm), existing_body),
+                    encoding="utf-8",
                 )
                 print(f"  ~~ {target_path} (shared fields synced)")
             elif existing_fm.get("translation_locked"):
@@ -277,16 +363,43 @@ def translate_file(api_key: str, source_path: Path, guidelines: str) -> None:
 
         translated_body = translated.get("body", body)
 
+        # Hash the text as it will read back from the file (the body is
+        # stripped on parse), so the hash matches until someone edits it.
+        written, written_body = parse_markdown(
+            build_markdown(translated_fm, translated_body)
+        )
+        translated_fm["translation_hash"] = compute_source_hash(written, written_body)
+
         target_path.parent.mkdir(parents=True, exist_ok=True)
         target_path.write_text(
-            build_markdown(translated_fm, translated_body), encoding="utf-8"
+            build_markdown(_quote_hashes(translated_fm), translated_body),
+            encoding="utf-8",
         )
         print(f"  -> {target_path}")
+
+    return kept
 
 
 def collect_all_content_files() -> list[Path]:
     """Find all content markdown files across all languages."""
     return sorted(CONTENT_DIR.glob("*/*/*.md"))
+
+
+def kept_report_lines(kept: list[tuple[Path, str]]) -> str:
+    """Markdown bullets for the PR notice, one per kept translation."""
+    lines = []
+    for path, label in kept:
+        lang = get_source_lang(path).upper()
+        name = f"«{label}» " if label else ""
+        lines.append(f"- {name}({lang}): `{path}`")
+    return "\n".join(lines) + "\n" if lines else ""
+
+
+def write_kept_report(kept: list[tuple[Path, str]]) -> None:
+    """Write the kept list to $KEPT_REPORT, for the workflow's PR notice step."""
+    report = os.environ.get("KEPT_REPORT")
+    if report and kept:
+        Path(report).write_text(kept_report_lines(kept), encoding="utf-8")
 
 
 def main() -> None:
@@ -316,13 +429,18 @@ def main() -> None:
         print("No files to translate.")
         return
 
+    kept: list[tuple[Path, str]] = []
     for filepath in files:
         if not filepath.exists():
             print(f"Skipping (not found): {filepath}")
             continue
         print(f"Translating: {filepath} ({get_source_lang(filepath)})")
         try:
-            translate_file(api_key, filepath, guidelines)
+            kept += translate_file(api_key, filepath, guidelines)
+        except NonGreekSourceError as e:
+            print(f"::error title=Entry not in Greek::{e}")
+            print(f"Error translating {filepath}: {e}")
+            sys.exit(1)
         except HandWrittenTargetError as e:
             # ::error:: shows up as an annotation on the workflow run
             print(f"::error title=Hand-written translation::{e}")
@@ -332,6 +450,7 @@ def main() -> None:
             print(f"Error translating {filepath}: {e}")
             sys.exit(1)
 
+    write_kept_report(kept)
     print("Done.")
 
 

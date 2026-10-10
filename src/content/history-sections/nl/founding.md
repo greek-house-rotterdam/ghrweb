@@ -3,6 +3,7 @@ order: 100
 title: 1946 — De oprichting van de Vereniging van Grieken in Nederland
 lang: nl
 source_hash: '81892bcf1898'
+translation_hash: 'cce264f3d160'
 ---
 
 ![Het Griekse Huis in Rotterdam](/images/eeo-clubhouse.jpg)

@@ -3,6 +3,7 @@ order: 400
 title: 1961 — Purchasing the building on Van Vollenhovenstraat
 lang: en
 source_hash: 'ac5ae734be75'
+translation_hash: '4529e5cd9009'
 ---
 
 ![The Association's building since 1961, at Van Vollenhovenstraat 18](/images/eeo-building-1961.jpg)

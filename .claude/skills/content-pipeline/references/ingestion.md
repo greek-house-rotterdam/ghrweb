@@ -58,7 +58,7 @@ Heuristics:
 - Dutch / English: look for `ij`, `aa`, `oe`, `het/de/een/zijn` (Dutch) vs. `the/of/and/that` (English).
 - Mixed → the Greek part is the source.
 
-If there's no Greek, tell the user and offer to draft the Greek source from the material, for a Greek speaker to check. To keep a hand-written Dutch or English version word for word, put its text into the generated file after the bot has translated. Keep the file's `source_hash` (without it the file counts as a source) and add `translation_locked: true`.
+If there's no Greek, tell the user and offer to draft the Greek source from the material, for a Greek speaker to check. To keep a hand-written Dutch or English version word for word, put its text into the generated file after the bot has translated. Keep the file's `source_hash` and add `translation_locked: true`. Without `source_hash` a Dutch or English file counts as a source and the translate job fails on it (entries are written in Greek), unless it is locked. Without the lock, a hand-edited file is kept only while it still has its `translation_hash`, and is flagged on the PR whenever the Greek changes.
 
 ## Length compliance
 

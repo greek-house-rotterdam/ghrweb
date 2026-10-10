@@ -3,6 +3,7 @@ order: 100
 title: De culturele werkgroep — Het Griekse Huis in Rotterdam
 lang: nl
 source_hash: '1ea94f13f173'
+translation_hash: '956b04908517'
 ---
 
 Het *Griekse Huis in Rotterdam* is de culturele werkgroep van de Vereniging van Grieken in Nederland. We staan bekend om onze vele artistieke en maatschappelijke activiteiten.

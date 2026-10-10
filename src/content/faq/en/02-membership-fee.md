@@ -4,5 +4,6 @@ answer: "The annual fee depends on the membership type. Feel free to get in touc
 order: 2
 lang: en
 source_hash: '3e7c8cb4b58f'
+translation_hash: '7c91f19e4528'
 ---
 

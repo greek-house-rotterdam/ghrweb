@@ -4,5 +4,6 @@ answer: "It depends on the event. Many events are open to everyone, while some a
 order: 10
 lang: en
 source_hash: '1abedc27376a'
+translation_hash: '9cd0f43dc116'
 ---
 

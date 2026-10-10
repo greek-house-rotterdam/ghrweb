@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
@@ -609,3 +610,246 @@ class TestTranslatePayload:
         user_text = captured["json"]["contents"][0]["parts"][0]["text"]
         assert "Γεια" in user_text
         assert "Σώμα" in user_text
+
+
+# ---------------------------------------------------------------------------
+# A9: hand-corrected translations are kept and flagged
+# ---------------------------------------------------------------------------
+
+
+class TestKeepHandFixedTranslations:
+    GR = "---\ntitle: Γεια\nimage: /images/a.jpg\nlang: gr\n---\nΚείμενο"
+
+    def _setup(self, tmp_path, gr_text=None):
+        base = tmp_path / "src" / "content" / "news"
+        for lang in ("gr", "nl", "en"):
+            (base / lang).mkdir(parents=True)
+        gr = base / "gr" / "post.md"
+        gr.write_text(gr_text or self.GR, encoding="utf-8")
+        return gr, base / "nl" / "post.md", base / "en" / "post.md"
+
+    def _translate_all(self, gr):
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            return translate_file("k", gr, "")
+
+    def _change_greek(self, gr, new="Αλλαγμένο κείμενο"):
+        gr.write_text(self.GR.replace("Κείμενο", new), encoding="utf-8")
+
+    def _hand_edit(self, nl):
+        nl.write_text(
+            nl.read_text(encoding="utf-8").replace("[nl] Κείμενο", "Mijn correctie"),
+            encoding="utf-8",
+        )
+
+    def test_bot_writes_translation_hash_matching_its_text(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        fm, body = parse_markdown(nl.read_text())
+        assert fm["translation_hash"] == compute_source_hash(fm, body)
+        assert "translation_hash: '" in nl.read_text()  # quoted, stays a string
+        assert not translate_mod.is_hand_edited(fm, body)
+
+    def test_hash_is_consistent_for_multiline_and_quoted_text(self, tmp_path):
+        gr, nl, _ = self._setup(
+            tmp_path,
+            "---\ntitle: Χορός\nschedule: 'Κάθε: Πέμπτη'\nlang: gr\n---\nA\n\n- β: γ\n",
+        )
+
+        def fake(api_key, s, t, payload, g):
+            return {
+                k: f"  «{t}»: {v}\n\nline2 # not a comment " for k, v in payload.items()
+            }
+
+        with patch.object(translate_mod, "translate_payload", side_effect=fake):
+            translate_file("k", gr, "")
+        fm, body = parse_markdown(nl.read_text())
+        assert not translate_mod.is_hand_edited(fm, body)
+
+    def test_hand_edited_target_is_kept_when_greek_changes(self, tmp_path, capsys):
+        gr, nl, en = self._setup(tmp_path)
+        self._translate_all(gr)
+        original = parse_markdown(nl.read_text())[0]
+        self._hand_edit(nl)
+        self._change_greek(gr)
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ) as mock:
+            kept = translate_file("k", gr, "")
+        assert [c.args[2] for c in mock.call_args_list] == ["en"]  # no call for nl
+        fm, body = parse_markdown(nl.read_text())
+        assert body == "Mijn correctie"
+        assert fm["source_hash"] == compute_source_hash(
+            {"title": "Γεια"}, "Αλλαγμένο κείμενο"
+        )
+        assert fm["translation_hash"] == original["translation_hash"]
+        assert kept == [(nl, "Γεια")]
+        out = capsys.readouterr().out
+        assert "::warning title=Kept a hand-corrected translation::" in out
+
+    def test_kept_target_still_gets_shared_fields(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        gr.write_text(
+            self.GR.replace("Κείμενο", "Νέο").replace("a.jpg", "b.jpg"),
+            encoding="utf-8",
+        )
+        self._translate_all(gr)
+        fm, body = parse_markdown(nl.read_text())
+        assert fm["image"] == "/images/b.jpg"
+        assert body == "Mijn correctie"
+
+    def test_flagged_once_then_flagged_again_on_next_greek_change(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        self._change_greek(gr, "Δεύτερο")
+        assert len(self._translate_all(gr)) == 1
+        assert self._translate_all(gr) == []  # same Greek again: not flagged
+        self._change_greek(gr, "Τρίτο")
+        assert len(self._translate_all(gr)) == 1  # still hand-edited
+        assert parse_markdown(nl.read_text())[1] == "Mijn correctie"
+
+    def test_unedited_target_is_retranslated_with_new_hash(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        old = parse_markdown(nl.read_text())[0]["translation_hash"]
+        self._change_greek(gr)
+        assert self._translate_all(gr) == []
+        fm, body = parse_markdown(nl.read_text())
+        assert body == "[nl] Αλλαγμένο κείμενο"
+        assert fm["translation_hash"] != old
+        assert fm["translation_hash"] == compute_source_hash(fm, body)
+
+    def test_no_translation_hash_means_retranslate(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        lines = nl.read_text(encoding="utf-8").splitlines()
+        nl.write_text(
+            "\n".join(l for l in lines if not l.startswith("translation_hash")) + "\n",
+            encoding="utf-8",
+        )
+        self._hand_edit(nl)
+        self._change_greek(gr)
+        assert self._translate_all(gr) == []
+        fm, body = parse_markdown(nl.read_text())
+        assert body == "[nl] Αλλαγμένο κείμενο"
+        assert "translation_hash" in fm
+
+    def test_locked_target_unchanged(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        nl.write_text(
+            nl.read_text(encoding="utf-8").replace(
+                "lang: nl\n", "lang: nl\ntranslation_locked: true\n"
+            ),
+            encoding="utf-8",
+        )
+        before = parse_markdown(nl.read_text())
+        self._change_greek(gr)
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ) as mock:
+            kept = translate_file("k", gr, "")
+        assert [c.args[2] for c in mock.call_args_list] == ["en"]
+        assert kept == []  # locked is not "kept"
+        assert parse_markdown(nl.read_text()) == before  # source_hash not touched
+
+    def test_hand_edit_and_greek_change_in_one_run_keeps_the_edit(self, tmp_path):
+        # The editor's PR contains both the NL fix and the new Greek.
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        self._change_greek(gr)
+        kept = self._translate_all(gr)
+        assert len(kept) == 1
+        assert parse_markdown(nl.read_text())[1] == "Mijn correctie"
+
+    def test_unchanged_greek_with_hand_edit_writes_nothing(self, tmp_path):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        before = nl.read_bytes()
+        with patch.object(translate_mod, "translate_payload") as mock:
+            assert translate_file("k", gr, "") == []
+            mock.assert_not_called()
+        assert nl.read_bytes() == before
+
+    def test_kept_list_is_written_for_the_pr_notice(self, tmp_path, monkeypatch):
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        self._hand_edit(nl)
+        self._change_greek(gr)
+        report = tmp_path / "kept.md"
+        monkeypatch.setenv("GEMINI_API_KEY", "k")
+        monkeypatch.setenv("KEPT_REPORT", str(report))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(
+            sys, "argv", ["translate.py", str(gr.relative_to(tmp_path))]
+        )
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_mod.main()
+        assert report.read_text(encoding="utf-8") == (
+            f"- «Γεια» (NL): `{nl.relative_to(tmp_path)}`\n"
+        )
+
+    def test_no_report_file_when_nothing_was_kept(self, tmp_path, monkeypatch):
+        gr, _, _ = self._setup(tmp_path)
+        report = tmp_path / "kept.md"
+        monkeypatch.setenv("GEMINI_API_KEY", "k")
+        monkeypatch.setenv("KEPT_REPORT", str(report))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(
+            sys, "argv", ["translate.py", str(gr.relative_to(tmp_path))]
+        )
+        with patch.object(
+            translate_mod, "translate_payload", side_effect=_fake_translation
+        ):
+            translate_mod.main()
+        assert not report.exists()
+
+    def test_backfilled_hash_equals_what_the_bot_writes(self, tmp_path):
+        """Backfill hashes the file as it reads; the bot's hash is the same function."""
+        gr, nl, _ = self._setup(tmp_path)
+        self._translate_all(gr)
+        fm, body = parse_markdown(nl.read_text())
+        bot_hash = fm.pop("translation_hash")
+        assert compute_source_hash(fm, body) == bot_hash
+
+
+class TestNonGreekSource:
+    def _write(self, tmp_path, lang, extra=""):
+        p = tmp_path / "src" / "content" / "news" / lang / "post.md"
+        p.parent.mkdir(parents=True)
+        p.write_text(
+            f"---\ntitle: Hallo\nlang: {lang}\n{extra}---\nTekst", encoding="utf-8"
+        )
+        return p
+
+    @pytest.mark.parametrize("lang", ["nl", "en"])
+    def test_unlocked_non_greek_source_fails_with_clear_message(self, tmp_path, lang):
+        p = self._write(tmp_path, lang)
+        with patch.object(translate_mod, "translate_payload") as mock:
+            with pytest.raises(translate_mod.NonGreekSourceError) as exc:
+                translate_file("k", p, "")
+            mock.assert_not_called()
+        msg = str(exc.value)
+        assert str(p) in msg and "written in Greek" in msg
+        assert "translation_locked: true" in msg
+        assert not (tmp_path / "src" / "content" / "news" / "gr").exists()
+
+    def test_locked_non_greek_file_is_skipped(self, tmp_path):
+        p = self._write(tmp_path, "nl", "translation_locked: true\n")
+        with patch.object(translate_mod, "translate_payload") as mock:
+            assert translate_file("k", p, "") == []
+            mock.assert_not_called()
+        assert not (tmp_path / "src" / "content" / "news" / "gr").exists()
+
+    def test_non_greek_file_with_source_hash_is_still_just_skipped(self, tmp_path):
+        p = self._write(tmp_path, "en", "source_hash: abc\n")
+        assert translate_file("k", p, "") == []

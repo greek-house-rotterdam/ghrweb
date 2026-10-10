@@ -3,6 +3,7 @@ order: 1100
 title: The Association today
 lang: en
 source_hash: '44713dabcce5'
+translation_hash: '6b10425d6b74'
 ---
 
 Today, the Association’s mission continues through the cultural group *The Greek House in Rotterdam*. Founded in 2017, it organizes events, classes, and cultural activities for the Greek community in the Netherlands.

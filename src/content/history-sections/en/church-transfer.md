@@ -3,6 +3,7 @@ order: 1000
 title: 2010 — The transfer of the church
 lang: en
 source_hash: '61d0b6878317'
+translation_hash: '83e11c2c0b9c'
 ---
 
 ![The pillars of the canteen: Maria Kokkinou and Piet Haringsma](/images/eeo-canteen-founders.jpg)

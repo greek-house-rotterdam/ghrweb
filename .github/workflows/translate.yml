@@ -61,6 +61,8 @@ jobs:
       - name: Detect and translate changed content
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # translate.py lists translations it kept (corrected by hand) here
+          KEPT_REPORT: /tmp/kept.md
         run: |
           git fetch origin main
           git config core.quotePath false
@@ -86,6 +88,21 @@ jobs:
             xargs -d '\n' python .github/scripts/sync_deletions.py < /tmp/deleted.txt
           else
             echo "No content files deleted."
+          fi
+
+      # Information, not a failure: translations corrected by hand were kept
+      # when the Greek changed. Posted before the push, so a run cancelled
+      # mid-way still leaves it (the next run flags the file again, and the
+      # notice merges the lists). Later runs never clear it: they wouldn't flag
+      # the file again, because its source_hash is current by then.
+      - name: Tell the editor about kept translations
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s /tmp/kept.md ]; then
+            python3 .github/scripts/pr_notice.py set kept /tmp/kept.md
+          else
+            echo "No hand-corrected translations were kept."
           fi
 
       # Shrinks oversized images in place (same name and format). This runs

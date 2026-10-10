@@ -3,6 +3,7 @@ order: 400
 title: 1961 — De aankoop van het pand aan de Van Vollenhovenstraat
 lang: nl
 source_hash: 'ac5ae734be75'
+translation_hash: '2db83397f258'
 ---
 
 ![Het gebouw van de Vereniging sinds 1961, aan de Van Vollenhovenstraat 18](/images/eeo-building-1961.jpg)

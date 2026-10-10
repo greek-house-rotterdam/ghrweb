@@ -3,6 +3,7 @@ order: 1100
 title: De Vereniging vandaag
 lang: nl
 source_hash: '44713dabcce5'
+translation_hash: '87b50603aaaf'
 ---
 
 Vandaag de dag zetten we de missie van de Vereniging voort via de culturele groep *Het Griekse Huis in Rotterdam*. Sinds de oprichting in 2017 organiseren we evenementen, cursussen en culturele activiteiten voor de Griekse gemeenschap in Nederland.

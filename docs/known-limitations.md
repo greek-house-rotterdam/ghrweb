@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-09_
+_Last updated: 2026-10-10_
 
 ## Images
 
@@ -44,12 +44,19 @@ Images already on `main` are not checked again. To check all of them locally, ru
 
 Editors write every entry in Greek; `/admin` only offers new entries in the Greek collections. Dutch and English are generated from the Greek, and editors can still open them to fix a translation.
 
-### A fixed translation is replaced when the Greek changes
+### A kept translation may be out of date, and the flag only shows on GitHub
 
-When an editor changes the Greek text of an entry, its Dutch and English versions are translated again, and any fixes made to them by hand are lost. This also applies to the original hand-written Dutch and English of the older activities, FAQs, resources and news posts.
+When the bot writes a translation it also stores `translation_hash`, a fingerprint of the text it wrote. If an editor later corrects the Dutch or English by hand, the text no longer matches it. When the Greek then changes, that translation is **kept**, not re-translated: its text stays, its `source_hash` is brought up to date, and the PR gets a "Kept a corrected translation" notice listing the file (the job log has a `Kept a hand-corrected translation` warning). The notice mentions nobody and is not cleared by later runs; kept files from several runs are collected in the same comment. Shared fields (image, date, order, ...) are still synced.
 
-- **What to do:** to keep a hand-written translation for good, ask the admin to add `translation_locked: true` to the file's frontmatter (there is no checkbox for it in the CMS). A locked translation is no longer updated when the Greek changes.
-- **Possible fix:** detect hand edits and flag them instead of overwriting (A9 in the plan).
+- **Limitation:** a kept translation may no longer match the new Greek until someone updates it by hand in `/admin`. It stays "hand-edited", so the next Greek change keeps it again and flags it again. Nothing re-translates it unless the admin removes `translation_hash` from the file (or deletes the file), which hands it back to automatic translation.
+- **Limitation:** the flag shows only on the PR on GitHub, which editors may not read. The notice is Greek and English, but there is no sign in `/admin`.
+- **Files without `translation_hash`** (unknown history, or the field was removed) are re-translated when the Greek changes, so a fix to such a file is lost. The existing Dutch and English files were given a `translation_hash` from their content at the time A9 was added, so a fix made after that is detected.
+- **Locked files** (`translation_locked: true`, added by the admin; there is no checkbox in the CMS) are never re-translated, with or without a hash, and are not flagged.
+- **Edge case:** if a run is cancelled by a newer save after the bot pushed but before the notice was posted, the notice can be missing, because the next run sees the current `source_hash` and does not flag the file again. The notice is posted before the push to keep this window small.
+
+### The job fails on a Dutch or English source file
+
+Entries are written in Greek. If a PR changes a Dutch or English file that has no `source_hash`, it looks like a source, and the "translate" job fails with a message naming the file: create the entry in the Greek collection instead. A file like that with `translation_locked: true` is a hand-written translation and is skipped. The PR shows the generic "Translation failed" notice; the reason is in the job log.
 
 ### A hand-written Dutch or English file without `source_hash` stops the job
 
