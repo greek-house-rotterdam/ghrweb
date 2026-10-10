@@ -5,7 +5,8 @@ Authoritative shapes for each collection under `src/content/`. The Zod schema in
 All collections also accept (and the auto-translator may add) these meta fields. **Never set them yourself on a source file:**
 
 - `source_hash: string` — set by `translate.py` on translations only.
-- `translation_locked: boolean` — only set on a *translation* you want to protect from re-translation.
+- `translation_hash: string` — set by `translate.py` on translations only: a fingerprint of the text the bot wrote. If the file's text no longer matches it, the translation counts as corrected by hand and is kept (and flagged on the PR) when the Greek changes. Remove it to hand the file back to automatic translation.
+- `translation_locked: boolean` — only set on a *translation* you want to protect from re-translation. A locked file is never re-translated or flagged.
 
 ---
 

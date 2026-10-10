@@ -3,6 +3,7 @@ order: 1000
 title: 2010 — De overdracht van de kerk
 lang: nl
 source_hash: '61d0b6878317'
+translation_hash: '9d057ee7ac97'
 ---
 
 ![De drijvende krachten achter de kantine: Maria Kokkinou en Piet Haringsma](/images/eeo-canteen-founders.jpg)

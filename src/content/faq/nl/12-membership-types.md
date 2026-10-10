@@ -7,6 +7,7 @@ answer: 'Er zijn drie types: Vriend (filhellenen van niet-Griekse afkomst), Vast
 order: 12
 lang: nl
 source_hash: '1ad51f7a9d65'
+translation_hash: '7cfcf7ac4e64'
 ---
 
 

@@ -3,6 +3,7 @@ order: 200
 title: 1957 — The building of the Saint Nicholas Church
 lang: en
 source_hash: '1b0d8169066d'
+translation_hash: '89a9e306dbc2'
 ---
 
 Built in the Byzantine basilica style and dedicated to the patron saint of sailors, the church was inaugurated on **29 June 1957**.

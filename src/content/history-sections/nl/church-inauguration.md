@@ -3,6 +3,7 @@ order: 200
 title: 1957 — De bouw van de Heilige Nicolaaskerk
 lang: nl
 source_hash: '1b0d8169066d'
+translation_hash: 'c3f3e4aa8b92'
 ---
 
 De kerk, gebouwd in Byzantijnse basilicastijl en gewijd aan de beschermheilige van alle zeevarenden, werd ingewijd op **29 juni 1957**.

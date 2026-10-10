@@ -44,7 +44,7 @@ collections:
 
   - name: news-nl
     label: "Nieuws (Nederlands)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/news/nl
     create: false
     slug: "{{slug}}"
@@ -60,7 +60,7 @@ collections:
 
   - name: news-en
     label: "News (English)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/news/en
     create: false
     slug: "{{slug}}"
@@ -94,7 +94,7 @@ collections:
 
   - name: event-translations-nl
     label: "Evenementen (Nederlands)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/event-translations/nl
     create: false
     slug: "{{tt_event_id}}"
@@ -109,7 +109,7 @@ collections:
 
   - name: event-translations-en
     label: "Events (English)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/event-translations/en
     create: false
     slug: "{{tt_event_id}}"
@@ -144,7 +144,7 @@ collections:
 
   - name: activities-nl
     label: "Activiteiten (Nederlands)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/activities/nl
     create: false
     slug: "{{slug}}"
@@ -162,7 +162,7 @@ collections:
 
   - name: activities-en
     label: "Activities (English)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/activities/en
     create: false
     slug: "{{slug}}"
@@ -197,7 +197,7 @@ collections:
 
   - name: faq-nl
     label: "Veelgestelde vragen (Nederlands)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/faq/nl
     create: false
     slug: "{{slug}}"
@@ -212,7 +212,7 @@ collections:
 
   - name: faq-en
     label: "FAQ (English)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/faq/en
     create: false
     slug: "{{slug}}"
@@ -249,7 +249,7 @@ collections:
 
   - name: resources-nl
     label: "Nuttige informatie (Nederlands)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/resources/nl
     create: false
     slug: "{{slug}}"
@@ -269,7 +269,7 @@ collections:
 
   - name: resources-en
     label: "Useful Information (English)"
-    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η μετάφραση ξαναγίνεται και η διόρθωσή σου χάνεται. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, the translation is redone and your fix is lost."
+    description: "Αυτόματη μετάφραση από τα ελληνικά. Εδώ μόνο διορθώνεις τη μετάφραση· οι νέες καταχωρήσεις γράφονται στα ελληνικά. Αν αλλάξει αργότερα το ελληνικό κείμενο, η διόρθωσή σου διατηρείται και σημειώνεται στο PR για έλεγχο. / Translated automatically from the Greek. Use this only to fix a translation; new entries are written in Greek. If the Greek text changes later, your fix is kept and flagged on the PR for checking."
     folder: src/content/resources/en
     create: false
     slug: "{{slug}}"

@@ -7,6 +7,7 @@ answer: 'There are three types: Friend (Philhellenes of non-Greek descent), Full
 order: 12
 lang: en
 source_hash: '1ad51f7a9d65'
+translation_hash: 'c1fa0dbc35de'
 ---
 
 

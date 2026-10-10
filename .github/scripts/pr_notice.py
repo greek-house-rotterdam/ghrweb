@@ -8,6 +8,11 @@ Each notice carries a hidden `<!-- pr-notice:<topic> -->` marker, so re-runs
 update the same comment instead of adding new ones, and a later successful
 run calls `pr_notice.py clear <topic>` to remove it.
 
+The "kept" topic is information, not a failure: it lists translations that were
+corrected by hand and so were not re-translated. It mentions nobody, is never
+cleared by a later run (that run wouldn't flag the file again), and each `set`
+adds its files to the list already in the comment instead of replacing it.
+
 Mentions name users, not a team: a team @-mention posted with the workflow's
 GITHUB_TOKEN does not notify anyone.
 
@@ -52,6 +57,17 @@ NOTICES = {
         "The AI content review could not check this post. This does not "
         "block publishing. The site admin has been notified.",
     ),
+    "kept": (
+        "ℹ️ Κρατήθηκε διορθωμένη μετάφραση / Kept a corrected translation",
+        "Η ελληνική εκδοχή άλλαξε, αλλά η ολλανδική ή η αγγλική μετάφραση "
+        "είχε διορθωθεί με το χέρι, οπότε κρατήθηκε όπως ήταν και δεν "
+        "ξαναμεταφράστηκε. Μπορεί να μην ταιριάζει πια με το ελληνικό "
+        "κείμενο: έλεγξέ την στο /admin (δες τη λίστα παρακάτω).",
+        "The Greek changed, but the Dutch or English translation had been "
+        "corrected by hand, so it was kept as it was and not translated "
+        "again. It may no longer match the Greek: check it in /admin (see the "
+        "list below).",
+    ),
     "images": (
         "⚠️ Πρόβλημα με εικόνα / Image problem",
         "Κάποια εικόνα δεν μπορεί να χρησιμοποιηθεί (δες παρακάτω), οπότε η "
@@ -64,6 +80,13 @@ NOTICES = {
         "message doesn't go away.",
     ),
 }
+
+# Informational topics: nobody is @-mentioned.
+NO_MENTION_TOPICS = {"kept"}
+
+# Topics whose details accumulate: a new `set` merges its list into the one
+# already in the comment (keyed by the `path` in backticks) instead of replacing it.
+MERGE_TOPICS = {"kept"}
 
 USAGE = (
     "usage: pr_notice.py set <topic> [details-file] | clear <topic>"
@@ -92,7 +115,7 @@ def build_body(topic: str, mentions: str, run_url: str, details: str = "") -> st
         lines += ["", details.strip()]
 
     footer = []
-    if mentions.strip():
+    if mentions.strip() and topic not in NO_MENTION_TOPICS:
         footer.append(f"cc {mentions.strip()}")
     if run_url:
         footer.append(f"[workflow run]({run_url})")
@@ -102,21 +125,49 @@ def build_body(topic: str, mentions: str, run_url: str, details: str = "") -> st
     return "\n".join(lines)
 
 
-def find_notice_ids(repo: str, pr: str, topic: str, run: Runner = gh) -> list[int]:
-    """IDs of existing comments on the PR that carry this topic's marker."""
+def find_notices(
+    repo: str, pr: str, topic: str, run: Runner = gh
+) -> list[tuple[int, str]]:
+    """(id, body) of existing comments on the PR that carry this topic's marker."""
     out = run(
         "api", f"repos/{repo}/issues/{pr}/comments", "--paginate",
         "--jq", ".[] | {id, body}",
     )
     tag = marker(topic)
-    ids = []
+    found = []
     for line in out.splitlines():
         if not line.strip():
             continue
         comment = json.loads(line)
         if tag in (comment.get("body") or ""):
-            ids.append(comment["id"])
-    return ids
+            found.append((comment["id"], comment["body"]))
+    return found
+
+
+def find_notice_ids(repo: str, pr: str, topic: str, run: Runner = gh) -> list[int]:
+    """IDs of existing comments on the PR that carry this topic's marker."""
+    return [cid for cid, _ in find_notices(repo, pr, topic, run)]
+
+
+def _entry_key(line: str) -> str:
+    """The `path` in backticks that identifies a list entry (or the whole line)."""
+    start = line.find("`")
+    end = line.find("`", start + 1)
+    return line[start + 1 : end] if start != -1 and end != -1 else line
+
+
+def merge_details(old_bodies: list[str], new_details: str) -> str:
+    """Combine the list entries (lines starting "- ") of earlier notices with new ones.
+
+    Earlier entries keep their place, a new entry for the same path replaces the
+    old one, and other new entries are appended.
+    """
+    merged: dict[str, str] = {}
+    for text in [*old_bodies, new_details]:
+        for line in text.splitlines():
+            if line.startswith("- "):
+                merged[_entry_key(line)] = line
+    return "\n".join(merged.values()) + "\n" if merged else ""
 
 
 def delete_comment(repo: str, comment_id: int, run: Runner = gh) -> None:
@@ -172,6 +223,9 @@ def main(argv: list[str] | None = None, run: Runner = gh) -> int:
             if details_path and details_path.is_file()
             else ""
         )
+        if topic in MERGE_TOPICS:
+            old = [b for _, b in find_notices(repo, pr, topic, run)]
+            details = merge_details(old, details)
         body = build_body(
             topic,
             os.environ.get("ADMIN_MENTIONS", ""),

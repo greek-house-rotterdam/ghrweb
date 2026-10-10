@@ -3,6 +3,7 @@ order: 100
 title: The cultural team — The Greek House in Rotterdam
 lang: en
 source_hash: '1ea94f13f173'
+translation_hash: '61fabdb52bb7'
 ---
 
 The *Griekse Huis in Rotterdam* is the cultural team of the Association of Greeks in the Netherlands. It is well-known for a wide range of artistic activities and more.

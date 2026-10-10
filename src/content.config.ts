@@ -6,6 +6,7 @@ const langEnum = z.enum(["gr", "nl", "en"]);
 // Fields added by the auto-translation pipeline (translate.py)
 const translationMeta = {
   source_hash: z.string().optional(),
+  translation_hash: z.string().optional(),
   translation_locked: z.boolean().optional(),
 };
 

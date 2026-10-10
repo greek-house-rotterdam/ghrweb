@@ -38,7 +38,7 @@ You are only writing the **source** file (typically Greek, but Dutch or English 
 4. **Image path is `/images/<name>.<ext>`** in frontmatter. The file itself goes to `public/images/<name>.<ext>`. Keep filenames URL-safe (ASCII kebab-case is safest, though Greek/Cyrillic names do work).
 5. **Filename is the slug, and must be identical across the three language folders.** `verify_content.py` fails the build if `news/gr/foo.md` exists but `news/en/foo.md` doesn't. The translation workflow keeps these in sync by reusing the source filename, so name the file once correctly and don't rename later.
 6. **`event-translations` are keyed by `tt_event_id`.** The filename and the `tt_event_id` field must match a real published event in Ticket Tailor — otherwise the translation has nothing to attach to on the events page. Treat unknown IDs as a blocker, not a guess.
-7. **Don't include `translation_locked: true` unless the user explicitly asks** for a hand-crafted translation that should never be overwritten. The field defaults to absent; setting it makes the file immune to future re-translation.
+7. **Don't include `translation_locked: true` unless the user explicitly asks** for a hand-crafted translation that should never be re-translated or flagged. The field defaults to absent; setting it makes the file immune to future re-translation. (A translation that was only corrected by hand does not need it: the bot notices the edit through `translation_hash` and keeps the text when the Greek changes, flagging it on the PR.)
 
 ## Workflow
 
@@ -92,7 +92,7 @@ Read `references/collections.md` for the exact frontmatter shape and validation 
 
 - The source is the Greek file, `src/content/<collection>/gr/<slug>.md`. It's the one without `source_hash`.
 - Edit it in place. Do **not** touch the translated counterparts; the workflow will regenerate them when the text changes, and on every run it copies the non-text fields (image, date, order, …) from the Greek to them, locked or not.
-- Exception: if the user explicitly wants to *only* change the English (or Dutch) version without affecting the Greek source, edit that language's file and add `translation_locked: true` to its frontmatter so the next source change won't overwrite it. A Dutch or English file with neither `source_hash` nor `translation_locked: true` is treated as hand-written and makes the translate job fail, so never leave one like that.
+- Exception: if the user explicitly wants to *only* change the English (or Dutch) version without affecting the Greek source, edit that language's file (keep its `source_hash` and `translation_hash`). The bot sees the edit, keeps the text when the Greek next changes and flags it on the PR. Add `translation_locked: true` only if it must never be flagged or touched. A Dutch or English file with neither `source_hash` nor `translation_locked: true` is treated as hand-written and makes the translate job fail, so never leave one like that.
 
 ### 4. Review your own work
 
@@ -158,7 +158,7 @@ After opening, report the PR URL to the user and tell them what happens next:
 ## What you don't need to do
 
 - **Don't pre-translate.** The Gemini-backed workflow handles `nl` and `en` from the source. Pre-translating creates inconsistencies and gets overwritten.
-- **Don't write `source_hash` yourself.** Only `translate.py` writes that field.
+- **Don't write `source_hash` or `translation_hash` yourself.** Only `translate.py` writes those fields. To hand a hand-corrected translation back to automatic translation, remove its `translation_hash` (or delete the file).
 - **Don't optimize images.** The translate workflow does that on the PR.
 - **Don't write a stylistic review.** `content-review.yml` does that on the PR.
 

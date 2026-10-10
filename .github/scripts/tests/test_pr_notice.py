@@ -173,3 +173,49 @@ class TestMain:
 def test_every_topic_has_heading_greek_and_english():
     for topic, parts in pr_notice.NOTICES.items():
         assert len(parts) == 3 and all(parts), topic
+
+
+# ---------------------------------------------------------------------------
+# "kept": information about hand-corrected translations that were not redone
+# ---------------------------------------------------------------------------
+
+
+class TestKeptNotice:
+    @pytest.fixture(autouse=True)
+    def _env(self, monkeypatch):
+        monkeypatch.setenv("REPO", "o/r")
+        monkeypatch.setenv("PR_NUMBER", "7")
+        monkeypatch.setenv("ADMIN_MENTIONS", "@PanoEvJ")
+        monkeypatch.setenv("RUN_URL", "https://run/1")
+
+    def test_is_information_not_a_failure_and_mentions_nobody(self):
+        body = build_body("kept", "@PanoEvJ", "https://run/1", "- x (NL): `a.md`")
+        assert "cc" not in body
+        assert "@PanoEvJ" not in body
+        assert "Κρατήθηκε διορθωμένη μετάφραση" in body
+        assert "corrected by hand" in body and "/admin" in body
+        assert "- x (NL): `a.md`" in body
+
+    def test_merge_keeps_earlier_entries_and_adds_new_ones(self):
+        old = f"{marker('kept')}\n### h\n\ntext\n\n- «A» (NL): `src/a.md`\n\ncc"
+        merged = pr_notice.merge_details([old], "- «B» (EN): `src/b.md`\n")
+        assert merged == "- «A» (NL): `src/a.md`\n- «B» (EN): `src/b.md`\n"
+
+    def test_merge_does_not_duplicate_a_file_flagged_again(self):
+        old = "- «Old title» (NL): `src/a.md`"
+        merged = pr_notice.merge_details([old], "- «New title» (NL): `src/a.md`\n")
+        assert merged == "- «New title» (NL): `src/a.md`\n"
+
+    def test_second_run_updates_the_same_comment_with_both_lists(self, tmp_path):
+        first = pr_notice.merge_details([], "- «A» (NL): `src/a.md`\n")
+        existing = build_body("kept", "", "https://run/0", first)
+        details = tmp_path / "kept.md"
+        details.write_text("- «B» (EN): `src/b.md`\n", encoding="utf-8")
+        gh = FakeGh([{"id": 9, "body": existing}])
+        assert main(["set", "kept", str(details)], gh) == 0
+        (call,) = gh.writes()
+        assert call[:4] == ("api", "-X", "PATCH", "repos/o/r/issues/comments/9")
+        assert "`src/a.md`" in call[5] and "`src/b.md`" in call[5]
+
+    def test_only_the_kept_topic_accumulates(self):
+        assert pr_notice.MERGE_TOPICS == {"kept"}
