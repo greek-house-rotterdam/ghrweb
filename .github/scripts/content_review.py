@@ -3,7 +3,8 @@
 AI content review — checks content against the style guide using Gemini Flash.
 
 Reads changed .md files, sends frontmatter + body to Gemini, and outputs
-structured findings as JSON. The GitHub Action wrapper posts these as PR comments.
+structured findings as JSON. The workflow hands them to pr_status.py, which shows
+them in the PR's status comment.
 
 Requires: GEMINI_API_KEY environment variable.
 """
@@ -165,7 +166,7 @@ def review_content(file_path: str, content: str) -> tuple[list[dict], str | None
 
     On success, returns the list of findings (possibly empty) and None.
     On failure, returns an empty list and a truncated error message — the
-    workflow uses this to post a "review unavailable" PR comment so the
+    workflow uses this to show a "review unavailable" note in the PR status comment so the
     failure is visible to editors without blocking the merge.
 
     A missing API key is a failure too: in CI it means the secret is gone,
@@ -208,46 +209,6 @@ Body:
         return [], message
 
 
-def severity_emoji(severity: str) -> str:
-    return {"critical": "🔴", "major": "🟠", "minor": "🟡"}.get(severity, "⚪")
-
-
-def comment_marker(file_path: str) -> str:
-    """Hidden marker embedded in every comment for this file.
-
-    The workflow's posting step looks for this marker on existing PR
-    comments and deletes them before posting a new one, so re-running CI
-    on the same PR doesn't pile up duplicate review comments.
-    """
-    return f"<!-- content-review:{file_path} -->"
-
-
-def format_comment(file_path: str, findings: list[dict]) -> str:
-    """Format findings as a markdown PR comment."""
-    lines = [comment_marker(file_path), f"### Content Review: `{file_path}`\n"]
-
-    for f in sorted(findings, key=lambda x: ["critical", "major", "minor"].index(x.get("severity", "minor"))):
-        sev = f.get("severity", "minor")
-        field = f.get("field", "unknown")
-        msg = f.get("message", "")
-        lines.append(f"- {severity_emoji(sev)} **{sev.upper()}** ({field}): {msg}")
-
-    return "\n".join(lines)
-
-
-def format_unavailable_comment(file_path: str, error: str) -> str:
-    """Format a PR comment for files the AI reviewer could not process."""
-    return (
-        f"{comment_marker(file_path)}\n"
-        f"### Content Review: `{file_path}`\n"
-        f"\n"
-        f"⚠️ **Content review unavailable** — "
-        f"the AI reviewer could not process this file. Merge is not blocked.\n"
-        f"\n"
-        f"Error: `{error}`"
-    )
-
-
 def main():
     files = sys.argv[1:]
     if not files:
@@ -270,7 +231,6 @@ def main():
                     "file": file_path,
                     "findings": [],
                     "error": error,
-                    "comment": format_unavailable_comment(file_path, error),
                 }
             )
         elif findings:
@@ -279,7 +239,6 @@ def main():
                     "file": file_path,
                     "findings": findings,
                     "error": None,
-                    "comment": format_comment(file_path, findings),
                 }
             )
 
@@ -301,11 +260,11 @@ def main():
     )
 
     if critical > 0:
-        print("Critical findings detected — see PR comments.")
+        print("Critical findings detected — see the PR status comment.")
     if errored > 0:
         # Fail the check so a review that didn't run is never green. The
         # check is not required, so this flags the problem without blocking.
-        print("Some files could not be reviewed — see PR comments.")
+        print("Some files could not be reviewed — see the PR status comment.")
         sys.exit(1)
 
 

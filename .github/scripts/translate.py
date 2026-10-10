@@ -16,7 +16,7 @@ translation's own text, as the bot wrote it. If a target's current text no longe
 matches it, someone corrected it by hand. When the Greek then changes, that
 translation is kept (not re-translated), its `source_hash` is brought up to date
 so it is flagged once, and it is listed in the file named by $KEPT_REPORT for the
-PR notice. A target without `translation_hash` is re-translated as before; remove
+PR status comment. A target without `translation_hash` is re-translated as before; remove
 the field (or delete the file) to hand a translation back to the bot.
 
 On every run each existing target also gets the source's shared fields (image,
@@ -402,6 +402,21 @@ def write_kept_report(kept: list[tuple[Path, str]]) -> None:
         Path(report).write_text(kept_report_lines(kept), encoding="utf-8")
 
 
+def write_failure_report(kind: str, message: str) -> None:
+    """Write why the run failed to $TRANSLATE_REPORT (JSON), for the PR status comment.
+
+    Only the two known, editor-fixable errors are reported: their messages name
+    files and say what to do. Other exceptions may carry API details, so the
+    status comment just says it was a technical problem.
+    """
+    report = os.environ.get("TRANSLATE_REPORT")
+    if report:
+        Path(report).write_text(
+            json.dumps({"kind": kind, "message": message}, ensure_ascii=False),
+            encoding="utf-8",
+        )
+
+
 def main() -> None:
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
@@ -439,11 +454,13 @@ def main() -> None:
             kept += translate_file(api_key, filepath, guidelines)
         except NonGreekSourceError as e:
             print(f"::error title=Entry not in Greek::{e}")
+            write_failure_report("non-greek", str(e))
             print(f"Error translating {filepath}: {e}")
             sys.exit(1)
         except HandWrittenTargetError as e:
             # ::error:: shows up as an annotation on the workflow run
             print(f"::error title=Hand-written translation::{e}")
+            write_failure_report("hand-written", str(e))
             print(f"Error translating {filepath}: {e}")
             sys.exit(1)
         except Exception as e:

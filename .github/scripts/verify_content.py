@@ -5,6 +5,7 @@ Scans src/content/ and ensures that for every file in one language,
 a corresponding file exists in the other two with the same filename.
 """
 
+import os
 import sys
 from pathlib import Path
 
@@ -58,6 +59,13 @@ def main():
         print("\n❌ Content integrity check failed! The following files are missing:")
         for error in sorted(all_errors):
             print(f"  - {error}")
+        report = os.environ.get("VERIFY_REPORT")
+        if report:
+            # For the PR status comment: one bullet per missing file.
+            Path(report).write_text(
+                "".join(f"- `{e.removeprefix('Missing: ')}`\n" for e in sorted(all_errors)),
+                encoding="utf-8",
+            )
         print("\nThis usually means the translation workflow failed or hasn't run yet.")
         sys.exit(1)
     

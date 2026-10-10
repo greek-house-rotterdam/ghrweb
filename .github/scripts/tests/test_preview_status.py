@@ -81,6 +81,36 @@ def test_posts_status_on_head():
     ]
 
 
+def test_shows_the_link_in_the_status_comment():
+    seen = []
+    gh = FakeGh()
+    out = sync("o/r", "7", REAL_COMMENT, gh, lambda head, url: seen.append((head, url)) or "comment ok")
+    assert seen == [(HEAD, URL)] and out.endswith("; comment ok")
+
+
+def test_shows_the_link_even_when_the_status_already_exists():
+    seen = []
+    gh = FakeGh(statuses=[{"context": CONTEXT, "state": "success", "target_url": URL}])
+    sync("o/r", "7", REAL_COMMENT, gh, lambda head, url: seen.append(url) or "")
+    assert seen == [URL] and gh.posts == []
+
+
+def test_a_failing_comment_update_does_not_lose_the_status():
+    def broken(head, url):
+        raise RuntimeError("api down")
+
+    gh = FakeGh()
+    out = sync("o/r", "7", REAL_COMMENT, gh, broken)
+    assert out.startswith("posted") and "not updated" in out and len(gh.posts) == 1
+
+
+def test_no_link_for_a_stale_comment():
+    seen = []
+    gh = FakeGh(head="9" * 40)
+    sync("o/r", "7", REAL_COMMENT, gh, lambda *a: seen.append(a) or "")
+    assert seen == []
+
+
 def test_idempotent_when_status_already_set():
     gh = FakeGh(statuses=[{"context": CONTEXT, "state": "success", "target_url": URL}])
     assert sync("o/r", "7", REAL_COMMENT, gh).startswith("skip")
