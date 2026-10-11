@@ -172,6 +172,13 @@ def merge_states(states: list[State]) -> State:
     return merged
 
 
+def prune_review(state: State, pr_files: list[str]) -> None:
+    """Drop AI review notes for files that are no longer part of the PR."""
+    review = state.sections.get("review")
+    if review:
+        review["files"] = {p: e for p, e in review.get("files", {}).items() if p in pr_files}
+
+
 def apply_section(state: State, name: str, data: dict, pr_files: list[str] | None = None) -> None:
     """Replace this section's data. `kept` and `review` merge per entry instead."""
     if name == "kept":
@@ -185,9 +192,9 @@ def apply_section(state: State, name: str, data: dict, pr_files: list[str] | Non
                 files.pop(path, None)  # reviewed, nothing to say
             else:
                 files[path] = entry
-        if pr_files is not None:  # drop files that left the PR
-            files = {p: e for p, e in files.items() if p in pr_files}
         state.sections["review"] = {"files": files, "sha": data["sha"]}
+        if pr_files is not None:
+            prune_review(state, pr_files)
     else:
         state.sections[name] = data
 
@@ -529,8 +536,10 @@ def update(
             state.sections["kept"] = {"items": items}
         told = set(state.alerts)
 
-        files = api.files() if name == "review" else None
-        apply_section(state, name, data, files)
+        # Any update drops review notes for files that left the PR (the review
+        # workflow doesn't run when a push only deletes content).
+        apply_section(state, name, data)
+        prune_review(state, api.files())
         body = render(state, api.head_sha(), mentions, run_url)
         new_alerts = parse(body).alerts
 

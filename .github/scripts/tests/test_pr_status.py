@@ -351,6 +351,16 @@ class TestUpdate:
         gh.files = ["docs/x.md"]
         assert "updated" in upd(gh, "images", IMG_OK)
 
+    def test_any_update_drops_review_notes_for_files_that_left_the_pr(self):
+        gh = FakeGitHub(files=["src/content/news/gr/x.md", "src/content/news/gr/y.md"])
+        upd(gh, "review", {"files": {
+            "src/content/news/gr/x.md": {"error": None, "findings": [{"severity": "minor"}]},
+            "src/content/news/gr/y.md": {"error": None, "findings": [{"severity": "minor"}]},
+        }, "sha": HEAD})
+        gh.files = ["src/content/news/gr/y.md"]
+        upd(gh, "translation", TR_OK)
+        assert list(gh.state().sections["review"]["files"]) == ["src/content/news/gr/y.md"]
+
     def test_unchanged_body_is_not_written_again(self):
         gh = FakeGitHub()
         upd(gh, "translation", TR_OK)
