@@ -33,3 +33,5 @@ The site uses [Decap CMS](https://decapcms.org/) for content management, accessi
 **Local development:** Run `npm run dev:cms` and visit `http://localhost:4321/admin/`. This starts a local proxy server (`decap-server`) so you can create and edit content without GitHub authentication. Changes write directly to your local `src/content/` files.
 
 **Production:** The CMS authenticates via GitHub. The `local_backend` setting in `public/admin/config.yml` only activates on `localhost` — it is ignored on any other domain, so it is safe to leave on.
+
+<!-- fork build test, not to be merged -->
