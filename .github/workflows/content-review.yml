@@ -11,7 +11,8 @@ on:
       - "src/content/**/*.md"
 
 # One review per PR at a time: a newer save cancels the review still running
-# for the previous one, so two quick saves don't post duplicate comments.
+# for the previous one. (Updates to the status comment don't depend on this:
+# pr_status.py re-reads and retries.)
 concurrency:
   group: content-review-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -20,7 +21,8 @@ permissions:
   contents: read
   pull-requests: write
 
-# Used by pr_notice.py, which tells the editor and admins when this fails.
+# Used by pr_status.py, which puts the review into the PR's one status comment
+# and @-mentions the admins when the review couldn't run.
 env:
   REPO: ${{ github.repository }}
   PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -89,82 +91,14 @@ jobs:
           REVIEW_OUTPUT: /tmp/content-review.json
         run: xargs -d '\n' python .github/scripts/content_review.py < /tmp/changed_content.txt
 
-      # always(): the review step fails when a file couldn't be reviewed, and
-      # its "review unavailable" comments must still be posted.
-      - name: Post PR comments
-        if: always() && steps.changed.outputs.has_changes == 'true'
+      # !cancelled(): the review step fails when a file couldn't be reviewed,
+      # and that must still reach the status comment. A review cancelled by a
+      # newer save reports nothing; the next run covers its files.
+      - name: Update the status comment
+        if: ${{ !cancelled() && steps.changed.outputs.has_changes == 'true' }}
+        continue-on-error: true  # the comment is a courtesy, never a blocker
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
         run: |
-          REVIEW_FILE="/tmp/content-review.json"
-          if [ ! -f "$REVIEW_FILE" ] || [ "$(cat "$REVIEW_FILE")" = "[]" ]; then
-            echo "No comments to post."
-            exit 0
-          fi
-
-          # Post one comment per file. Comments embed a `<!-- content-review:<path> -->`
-          # marker so we can find and delete prior comments for the same file
-          # before posting a new one — keeps the PR clean across re-runs.
-          python3 <<'PYEOF'
-          import json, os, subprocess
-
-          with open('/tmp/content-review.json') as f:
-              results = json.load(f)
-
-          repo = os.environ['REPO']
-          pr = os.environ['PR_NUMBER']
-
-          findings_footer = '\n\n---\n*Automated review by Gemini Flash — advisory only, does not block merge.*'
-          error_footer = '\n\n---\n*Automated review by Gemini Flash — the site admin has been notified.*'
-
-          # Snapshot existing comments once so we don't re-fetch per file.
-          existing = json.loads(subprocess.run(
-              ['gh', 'api', f'repos/{repo}/issues/{pr}/comments', '--paginate'],
-              capture_output=True, text=True, check=True,
-          ).stdout)
-
-          def delete_prior(file_path: str) -> int:
-              marker = f'<!-- content-review:{file_path} -->'
-              ids = [c['id'] for c in existing if marker in (c.get('body') or '')]
-              for cid in ids:
-                  subprocess.run(['gh', 'api', '-X', 'DELETE',
-                                  f'repos/{repo}/issues/comments/{cid}', '--silent'],
-                                 check=False)
-              return len(ids)
-
-          for result in results:
-              if result.get('error'):
-                  comment = result['comment'] + error_footer
-                  label = 'unavailable'
-              elif result.get('findings'):
-                  comment = result['comment'] + findings_footer
-                  label = 'findings'
-              else:
-                  continue
-
-              file_path = result['file']
-              n_deleted = delete_prior(file_path)
-              if n_deleted:
-                  print(f'Replaced {n_deleted} prior comment(s) for {file_path}')
-
-              subprocess.run(
-                  ['gh', 'pr', 'comment', pr, '--body', comment],
-                  check=True,
-              )
-              print(f'Posted {label} comment for {file_path}')
-          PYEOF
-
-      - name: Tell the editor and admins
-        if: failure()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py set review
-
-      # A later run that succeeds removes the earlier failure notice.
-      - name: Clear failure notice
-        if: success()
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/pr_notice.py clear review
+          python3 .github/scripts/pr_status.py review --sha "$(git rev-parse HEAD)" \
+            --reviewed /tmp/changed_content.txt --results /tmp/content-review.json

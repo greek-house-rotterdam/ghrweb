@@ -23,7 +23,8 @@ PR opens on main, without the `decap-cms/draft` label
   - commits back to the PR branch
   - verify job: blocks images the site can't use (not JPEG/PNG/WebP, unreadable, >5 MB)
                           ↓
-.github/workflows/content-review.yml posts advisory comments
+.github/workflows/content-review.yml adds an advisory AI review to the PR's one
+status comment (translation, images, preview link, AI review, next step)
                           ↓
 required checks pass (no approval needed for content) → merge → Cloudflare deploys
 ```

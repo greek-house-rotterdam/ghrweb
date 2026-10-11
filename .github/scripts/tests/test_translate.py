@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 from unittest.mock import patch
@@ -515,6 +516,19 @@ class TestHandWrittenTarget:
         assert "translation_locked: true" in msg
         assert "source_hash" in msg and "delete" in msg
 
+    def test_main_reports_why_it_failed_for_the_pr_status(self, tmp_path, monkeypatch):
+        text = "---\ntitle: Handgeschreven\nlang: nl\n---\n\nMijn tekst\n"
+        gr, nl = self._setup(tmp_path, text)
+        report = tmp_path / "failure.json"
+        monkeypatch.setenv("GEMINI_API_KEY", "k")
+        monkeypatch.setenv("TRANSLATE_REPORT", str(report))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(sys, "argv", ["translate.py", str(gr.relative_to(tmp_path))])
+        with pytest.raises(SystemExit):
+            translate_mod.main()
+        data = json.loads(report.read_text(encoding="utf-8"))
+        assert data["kind"] == "hand-written" and "written by hand" in data["message"]
+
     def test_other_targets_are_not_written_first(self, tmp_path):
         """The check runs before any target is translated."""
         gr, nl = self._setup(
@@ -853,6 +867,19 @@ class TestNonGreekSource:
             assert translate_file("k", p, "") == []
             mock.assert_not_called()
         assert not (tmp_path / "src" / "content" / "news" / "gr").exists()
+
+    @pytest.mark.parametrize("lang,kind", [("nl", "non-greek")])
+    def test_main_reports_why_it_failed_for_the_pr_status(self, tmp_path, monkeypatch, lang, kind):
+        p = self._write(tmp_path, lang)
+        report = tmp_path / "failure.json"
+        monkeypatch.setenv("GEMINI_API_KEY", "k")
+        monkeypatch.setenv("TRANSLATE_REPORT", str(report))
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setattr(sys, "argv", ["translate.py", str(p.relative_to(tmp_path))])
+        with pytest.raises(SystemExit):
+            translate_mod.main()
+        data = json.loads(report.read_text(encoding="utf-8"))
+        assert data["kind"] == kind and "written in Greek" in data["message"]
 
     def test_non_greek_file_with_source_hash_is_still_just_skipped(self, tmp_path):
         p = self._write(tmp_path, "en", "source_hash: abc\n")

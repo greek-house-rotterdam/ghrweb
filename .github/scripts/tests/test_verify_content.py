@@ -1,6 +1,8 @@
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from verify_content import get_collections, verify_collection
 
 
@@ -90,6 +92,23 @@ class TestVerifyCollection:
         errors = verify_collection(col)
         assert len(errors) == 1
         assert "nl" in errors[0]
+
+    def test_main_writes_the_missing_files_for_the_pr_status(self, tmp_path, monkeypatch):
+        import verify_content
+
+        col = tmp_path / "src" / "content" / "news"
+        (col / "gr").mkdir(parents=True)
+        (col / "gr" / "post.md").touch()
+        report = tmp_path / "missing.md"
+        monkeypatch.chdir(tmp_path)
+        monkeypatch.setenv("VERIFY_REPORT", str(report))
+        with pytest.raises(SystemExit):
+            verify_content.main()
+        lines = report.read_text(encoding="utf-8").splitlines()
+        assert lines == [
+            "- `src/content/news/en/post.md`",
+            "- `src/content/news/nl/post.md`",
+        ]
 
     def test_no_errors_for_empty_collection(self, tmp_path):
         col = self._make_collection(tmp_path, "empty", {

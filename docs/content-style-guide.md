@@ -52,7 +52,7 @@ The automated review runs on every PR that changes content files (`src/content/*
 **What it does:**
 1. Reads changed/added `.md` files from the PR
 2. Sends frontmatter + body to Gemini Flash with the style guide as context
-3. Posts PR comments for each finding, tagged with severity level
+3. Lists the findings per file, tagged with severity level, in the AI review section of the PR's status comment (folded, one block per file)
 4. Does **not** block the PR — findings are advisory
 
 **What it does NOT do:**
