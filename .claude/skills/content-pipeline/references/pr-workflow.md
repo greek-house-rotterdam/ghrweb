@@ -75,7 +75,7 @@ gh pr create \
 
 ## Test plan
 - [ ] Translation workflow runs and pushes auto-translated `nl` and `en` files
-- [ ] AI content review posts no Critical or Major findings
+- [ ] The status comment's AI review section shows no Critical or Major findings
 - [ ] Cloudflare preview deploy renders all three languages
 - [ ] Required checks pass (translate, verify, Workers Builds)
 EOF
@@ -92,7 +92,7 @@ Print the PR URL to the user and tell them what will happen next:
 
 > Opened PR <URL>. Within a few minutes:
 > - The translation workflow will commit `nl` and `en` versions back to the branch, and shrink any oversized images.
-> - The content review workflow will post advisory comments.
+> - The PR gets one status comment (Greek with English) that the workflows keep up to date: translation, images, preview link, AI review notes and a "next step" line. The bot adds no other comments.
 > Once the required checks pass, merge and Cloudflare will deploy.
 
 Then **stop**. Don't merge the PR yourself. Don't try to manually run the translation script — the workflow does that. Don't push more commits unless the user asks.
@@ -116,6 +116,7 @@ A `synchronize` event will fire and the workflows re-run on the new files only.
 
 - **The translation bot will push to your branch.** If you have local commits the bot doesn't have, you'll need `git pull --rebase` before pushing again. This is normal.
 - **Content needs no approval; code does.** Changes under `src/content/` and `public/images/` merge once the required checks pass. Anything else needs `@PanoEvJ`'s review (CODEOWNERS). The skill produces content-only PRs, so no review is needed.
-- **An image in another format blocks publishing.** The `verify` job fails on images that aren't JPEG, PNG or WebP, can't be read, or are over 5 MB after the bot shrank them, and the PR gets an "Image problem" notice listing them.
-- **`verify_content.py` runs after translation.** If the bot fails to translate (e.g. Gemini outage), the PR will end up with the source file present but `nl`/`en` missing. The `verify` job fails the build until the translation completes. Re-running the workflow usually fixes transient failures.
+- **An image in another format blocks publishing.** The `verify` job fails on images that aren't JPEG, PNG or WebP, can't be read, or are over 5 MB after the bot shrank them, and the status comment's Images section lists them.
+- **`verify_content.py` runs after translation.** If the bot fails to translate (e.g. Gemini outage), the PR will end up with the source file present but `nl`/`en` missing. The `verify` job fails the build until the translation completes. Re-running the workflow usually fixes transient failures. The status comment's Translation section says why when it is a hand-written or non-Greek file; the failure re-creates the comment and mentions the admins.
+- **The status comment is the bot's only comment.** It is re-created (new comment, old one deleted) when a new failure appears so the admins are notified; otherwise it is edited in place. Old `pr-notice` and `content-review` comments on open PRs are deleted on its first update.
 - **Don't rename a file after it's been translated.** The `nl` and `en` filenames mirror the source; renaming the source orphans the translations. If you must rename, delete the old triple and recreate.

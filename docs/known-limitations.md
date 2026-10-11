@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-10_
+_Last updated: 2026-10-11_
 
 ## Images
 
@@ -107,5 +107,6 @@ All workflows run on pull requests only. Content pushed straight to `main` isn't
 
 ## Not yet verified in CI
 
-- **A real Gemini failure.** The failure notices were tested on PR #45, but never triggered by an actual API error.
+- **A real Gemini failure.** The failure path was tested on PR #67 with a non-Greek source file (the status comment was re-created with the admin mention, and GitHub's notifications API listed it with reason `mention`), but never with an actual API error.
+- **The Preview section from the workflow.** `preview-status.yml` runs from `main`, so on PR #67 the link was written by running `pr_status.py preview` by hand with the URL from Cloudflare's comment. Check the first content PR after merge.
 - **Cancelling a superseded run.** When an editor saves twice quickly, the older run should be cancelled. In the live test (PR #46) the bot finished before the second save, so this didn't happen.
