@@ -173,6 +173,8 @@ class TestRender:
         assert "<details><summary>💬 <code>src/content/news/gr/x.md</code> (2)" in body
         assert body.index("CRITICAL") < body.index("MINOR")
         assert "advice only" in body
+        # HTML inside <summary>: markdown backticks would show literally
+        assert "(2) · <code>aaaaaaa</code></summary>" in body
 
     def test_review_without_remarks(self):
         assert "No remarks" in render(State(), HEAD)

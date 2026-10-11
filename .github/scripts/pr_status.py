@@ -367,7 +367,7 @@ def render_review(data: dict | None, view: str) -> str:
                   "The AI review could not check some file. It doesn't block publishing; the site admin has been notified.")
     for path in sorted(files):
         entry = files[path]
-        sha = f" · `{short(entry.get('sha'))}`" if entry.get("sha") else ""
+        sha = f" · <code>{short(entry.get('sha'))}</code>" if entry.get("sha") else ""
         if entry.get("error"):
             text += (f"\n\n<details><summary>⚠️ <code>{clean(path, 200)}</code>{sha}</summary>\n\n"
                      f"Error: `{clean(entry['error'], 300)}`\n\n</details>")
