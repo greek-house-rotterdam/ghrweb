@@ -114,6 +114,10 @@ describe("Decap CMS config — global settings", () => {
     expect(config.backend.repo).toBe("greek-house-rotterdam/ghrweb");
   });
 
+  it("asks GitHub for a public-repo token only", () => {
+    expect(config.backend.auth_scope).toBe("public_repo");
+  });
+
   it("targets the main branch", () => {
     expect(config.backend.branch).toBe("main");
   });

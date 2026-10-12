@@ -10,6 +10,10 @@ backend:
   # Decap's Publish asks for a merge commit and GitHub rejects it for anyone
   # who can't bypass the ruleset, i.e. every editor.
   squash_merges: true
+  # The token an editor gets at login works on public repos only, not on their
+  # private ones. That's enough here because this repo is public. Who may edit
+  # is still decided by GitHub team permissions and the ruleset.
+  auth_scope: public_repo
 
 publish_mode: editorial_workflow
 

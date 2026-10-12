@@ -78,11 +78,11 @@ describe("OAuth handler — /auth", () => {
     );
   });
 
-  it("uses default scope repo,user", async () => {
+  it("uses default scope public_repo", async () => {
     const req = new Request("https://example.com/auth");
     const res = await handler.fetch(req, env);
     const html = await res.text();
-    expect(html).toContain("scope=repo%2Cuser");
+    expect(html).toContain("scope=public_repo");
   });
 
   it("respects custom scope parameter", async () => {

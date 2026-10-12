@@ -24,7 +24,9 @@ export default {
 };
 
 function handleAuth(url: URL, env: Env): Response {
-  const scope = url.searchParams.get("scope") || "repo,user";
+  // Decap sends the scope from config.yml (backend.auth_scope). The fallback
+  // matches it: public repos only, since this repo is public.
+  const scope = url.searchParams.get("scope") || "public_repo";
   const provider = url.searchParams.get("provider") || "github";
   const params = new URLSearchParams({
     client_id: env.GITHUB_CLIENT_ID,
