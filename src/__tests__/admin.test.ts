@@ -354,10 +354,24 @@ describe("Decap CMS admin page — pinned script", () => {
   });
 
   it("has an SRI hash and anonymous CORS on every external script", () => {
-    expect(tags.length).toBeGreaterThan(0);
-    for (const t of tags) {
+    const external = tags.filter((t) => /\bsrc="https?:/.test(t));
+    expect(external.length).toBeGreaterThan(0);
+    for (const t of external) {
       expect(t).toMatch(/integrity="sha384-[A-Za-z0-9+/]+=*"/);
       expect(t).toMatch(/crossorigin="anonymous"/);
     }
+  });
+
+  it("loads every other script from this site", () => {
+    const local = tags.filter((t) => !/\bsrc="https?:/.test(t));
+    for (const t of local) {
+      expect(t).toMatch(/\bsrc="\/admin\/[\w-]+\.js"/);
+    }
+  });
+
+  it("loads the Workflow board badges as a module", () => {
+    expect(tags).toContainEqual(
+      '<script type="module" src="/admin/workflow-badges.js">',
+    );
   });
 });
