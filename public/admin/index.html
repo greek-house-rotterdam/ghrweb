@@ -23,12 +23,16 @@
       version in the URL below, then recompute the hash:
         curl -sL https://unpkg.com/decap-cms@<version>/dist/decap-cms.js \
           | openssl dgst -sha384 -binary | openssl base64 -A
-      and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview.
+      and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview,
+      including the badges on the Workflow board cards (workflow-badges.js
+      depends on how Decap draws them).
     -->
     <script
       src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"
       integrity="sha384-A/Gdn928CNLufmnGWGs9RM4Q9o8bSNLeJERqBFrBjwzL7FRpoLT3MPF8Tl0+Wd2p"
       crossorigin="anonymous"
     ></script>
+    <!-- Preview link, translation and checks on each Workflow board card. -->
+    <script type="module" src="/admin/workflow-badges.js"></script>
   </body>
 </html>
