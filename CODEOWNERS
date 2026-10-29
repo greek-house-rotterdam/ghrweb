@@ -12,9 +12,13 @@
 
 # -----------------------------------------------------------------------------
 # CONTENT — no owner, so editors publish directly from the CMS.
-# These are the only paths Decap CMS writes to (collection folders and
-# media_folder in public/admin/config.yml); the translation and image bots
-# also write only here.
+# These are the only paths Decap CMS writes to (collection folders, the site
+# settings files and media_folder in public/admin/config.yml); the translation
+# and image bots write only to src/content/ and public/images/.
+# src/data/ holds only the YAML settings files. The build checks them
+# (src/lib/site-settings.ts), so a wrong value cannot go live. Keep code out of
+# src/data/: it would get no review.
 # -----------------------------------------------------------------------------
 /src/content/
+/src/data/
 /public/images/

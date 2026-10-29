@@ -1,0 +1,8 @@
+# Google Forms. Edited in /admin under "Ρυθμίσεις ιστότοπου".
+# An empty value hides the form or button. While contact_form_id is empty,
+# the contact page shows the email address instead of the form.
+# contact_form_id is still empty: the real form does not exist yet.
+contact_form_id: ""
+member_form_url: "https://docs.google.com/forms/d/1yyT6i75639RVY0ivdetlHuD1Uw5VnZ_JROEjgQpgcyo/viewform"
+candidate_form_url: "https://docs.google.com/forms/d/15AapoGdWrd1CBh3Osf8XMlFXo5EQtPJylJKIaXY4Z6c/viewform"
+friend_form_url: "https://docs.google.com/forms/d/1ahSDSU-j9pU8mO5SeOVzg3vAiZu563fqc3T2X918qqU/viewform"

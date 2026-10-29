@@ -340,6 +340,12 @@ class TestUpdate:
         assert upd(gh, "translation", TR_OK).startswith("skip")
         assert gh.comments == []
 
+    def test_settings_only_pr_gets_a_comment(self):
+        gh = FakeGitHub(files=["src/data/contact.yml"])
+        upd(gh, "translation", {**TR_OK, "files": [], "nothing": True})
+        assert len(gh.status_bodies()) == 1
+        assert "Nothing to translate" in gh.status_bodies()[0]
+
     def test_image_only_pr_gets_a_comment(self):
         gh = FakeGitHub(files=["public/images/a.jpg"])
         upd(gh, "images", IMG_OK)

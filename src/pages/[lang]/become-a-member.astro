@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
+import { getSiteSettings } from "../../lib/site-settings";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import BrutCard from "../../components/BrutCard.astro";
 import BrutButton from "../../components/BrutButton.astro";
@@ -9,29 +10,29 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const MEMBER_FORM = "https://docs.google.com/forms/d/1yyT6i75639RVY0ivdetlHuD1Uw5VnZ_JROEjgQpgcyo/viewform";
-const CANDIDATE_FORM = "https://docs.google.com/forms/d/15AapoGdWrd1CBh3Osf8XMlFXo5EQtPJylJKIaXY4Z6c/viewform";
-const FRIEND_FORM = "https://docs.google.com/forms/d/1ahSDSU-j9pU8mO5SeOVzg3vAiZu563fqc3T2X918qqU/viewform";
+// Form links come from src/data/forms.yml (edited in /admin). A tier whose
+// link is empty shows no button.
+const { forms } = getSiteSettings();
 
 const tiers = [
   {
     title: t(lang, "member.member.title"),
     desc: t(lang, "member.member.desc"),
-    href: MEMBER_FORM,
+    href: forms.member_form_url,
     color: "bg-primary-light",
     icon: "🏛️",
   },
   {
     title: t(lang, "member.candidate.title"),
     desc: t(lang, "member.candidate.desc"),
-    href: CANDIDATE_FORM,
+    href: forms.candidate_form_url,
     color: "bg-accent-gold-light",
     icon: "⭐",
   },
   {
     title: t(lang, "member.friend.title"),
     desc: t(lang, "member.friend.desc"),
-    href: FRIEND_FORM,
+    href: forms.friend_form_url,
     color: "bg-green-100",
     icon: "🤝",
   },
@@ -52,15 +53,17 @@ const tiers = [
             <span class="text-4xl">{tier.icon}</span>
             <h3 class="mt-4 text-xl font-extrabold">{tier.title}</h3>
             <p class="mt-2 flex-1 text-sm text-gray-700">{tier.desc}</p>
-            <BrutButton
-              href={tier.href}
-              size="sm"
-              class="mt-6 self-start bg-primary text-white"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t(lang, "member.cta")} →
-            </BrutButton>
+            {tier.href && (
+              <BrutButton
+                href={tier.href}
+                size="sm"
+                class="mt-6 self-start bg-primary text-white"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t(lang, "member.cta")} →
+              </BrutButton>
+            )}
           </BrutCard>
         ))}
       </div>

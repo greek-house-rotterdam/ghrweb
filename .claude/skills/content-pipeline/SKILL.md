@@ -31,6 +31,8 @@ required checks pass (no approval needed for content) → merge → Cloudflare d
 
 You are only writing the **source** file (typically Greek, but Dutch or English work too). Everything else happens automatically once the PR opens without the draft label.
 
+**Not part of this skill: site settings.** `src/data/*.yml` (`board.yml`, `contact.yml`, `forms.yml`) hold facts that are the same in every language: board members, address, emails, social links, form links. Editors change them in `/admin` under "Ρυθμίσεις ιστότοπου". Nothing translates them, so don't copy them into three languages and don't put them in `src/content/`. A PR that only changes `src/data/` has nothing to translate; the `translate` and `verify` checks still report. The build checks the files with the schemas in `src/lib/site-settings.ts`, and `src/data/` must hold only those YAML files (it has no code owner).
+
 ## Hard rules (these break things if you miss them)
 
 1. **No `decap-cms/draft` label on the PR.** The workflows no longer check labels (they run on every push), but with the label Decap lists the post as a Draft. Default `gh pr create` doesn't apply labels, so just don't pass `--label decap-cms/draft`.

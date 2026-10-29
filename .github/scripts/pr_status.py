@@ -65,7 +65,9 @@ ALERTS_RE = re.compile(r"<!-- pr-status:alerts ([a-z,]*) -->")
 URL_RE = re.compile(r"^https://[A-Za-z0-9.-]+/?$")
 
 SECTION_NAMES = ("translation", "kept", "images", "preview", "review")
-CONTENT_PREFIXES = ("src/content/", "public/images/")
+# src/data/ holds the site settings (board, contact, forms). A PR that only
+# changes those has nothing to translate but still gets the status comment.
+CONTENT_PREFIXES = ("src/content/", "src/data/", "public/images/")
 MAX_ITEMS = 20
 MAX_TEXT = 600
 

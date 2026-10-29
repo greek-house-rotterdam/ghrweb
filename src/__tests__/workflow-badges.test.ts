@@ -4,6 +4,7 @@ import { join } from "path";
 import { parse as parseYaml } from "yaml";
 import {
   REPO,
+  FILE_COLLECTIONS,
   PREVIEW_PATHS,
   parseCardLink,
   previewUrl,
@@ -106,7 +107,7 @@ describe("workflow badges — preview link", () => {
   });
 
   // The badge must open the same page as Decap's own View Preview button.
-  for (const collection of config.collections) {
+  for (const collection of config.collections.filter((c: { folder?: string }) => c.folder)) {
     it(`matches the preview_path of ${collection.name}`, () => {
       const dash = collection.name.lastIndexOf("-");
       const type = collection.name.slice(0, dash) as keyof typeof PREVIEW_PATHS;
@@ -117,6 +118,31 @@ describe("workflow badges — preview link", () => {
       );
     });
   }
+});
+
+// Decap 3.16.3 links a files-collection card like any other:
+// #/collections/<collection>/entries/<file name>?ref=workflow, on the branch
+// cms/<collection>/<file name>. Checked in decap-cms@3.16.3/dist/decap-cms.js.
+describe("workflow badges — site settings cards", () => {
+  it("matches a settings card to its branch", () => {
+    expect(parseCardLink("#/collections/settings/entries/board?ref=workflow")).toEqual({
+      collection: "settings",
+      slug: "board",
+      branch: "cms/settings/board",
+    });
+  });
+
+  it("opens the preview's home page, since a settings file has no page of its own", () => {
+    expect(previewUrl(PREVIEW, "settings", "contact")).toBe(PREVIEW);
+    expect(previewUrl(`${PREVIEW}/`, "settings", "forms")).toBe(PREVIEW);
+  });
+
+  it("knows every files collection in config.yml", () => {
+    const files = config.collections
+      .filter((c: { files?: unknown }) => c.files)
+      .map((c: { name: string }) => c.name);
+    expect(FILE_COLLECTIONS).toEqual(files);
+  });
 });
 
 describe("workflow badges — check states", () => {

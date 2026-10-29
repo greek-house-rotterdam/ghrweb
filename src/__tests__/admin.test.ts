@@ -27,7 +27,12 @@ interface CmsCollection {
   fields: CmsField[];
 }
 
-const collections: CmsCollection[] = config.collections;
+// Folder collections hold one file per entry (news, FAQ, ...). The site
+// settings collection is a files collection: it has no folder and no `create`.
+// It is checked in site-settings.test.ts.
+const collections: CmsCollection[] = config.collections.filter(
+  (c: { folder?: string }) => c.folder !== undefined,
+);
 
 const LANGUAGES = ["gr", "nl", "en"] as const;
 // history-milestones, history-sections, and about-sections are intentionally
@@ -143,8 +148,15 @@ describe("Decap CMS config — collection coverage", () => {
     }
   }
 
-  it("has exactly 15 collections (5 types x 3 languages, programmatic ones excluded)", () => {
+  it("has exactly 15 folder collections (5 types x 3 languages, programmatic ones excluded)", () => {
     expect(collections).toHaveLength(CONTENT_TYPES.length * LANGUAGES.length);
+  });
+
+  it("has only the site settings collection besides those", () => {
+    const others = config.collections
+      .filter((c: { folder?: string }) => c.folder === undefined)
+      .map((c: { name: string }) => c.name);
+    expect(others).toEqual(["settings"]);
   });
 });
 
@@ -345,6 +357,8 @@ describe("Decap CMS config — language defaults", () => {
 // Greek is the only source language: new entries are written in Greek and
 // NL/EN are generated from it. NL/EN entries can still be edited, to fix a
 // translation, but not created.
+// (Folder collections only: the settings collection has fixed files and no
+// `create`; see site-settings.test.ts.)
 describe("Decap CMS config — only Greek collections allow creation", () => {
   for (const col of collections) {
     const isGreek = col.name.endsWith("-gr");

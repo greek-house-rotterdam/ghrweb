@@ -23,6 +23,12 @@ export const PREVIEW_PATHS = {
   resources: "resources",
 };
 
+// Collections made of single files (config.yml `files:`). Decap links a card
+// the same way as for a folder collection, with the file's name in place of
+// the slug, so parseCardLink reads them too (branch: cms/settings/board). They
+// have no language and no preview_path: their preview is the site's home page.
+export const FILE_COLLECTIONS = ["settings"];
+
 // "#/collections/news-gr/entries/easter-2026?ref=workflow" →
 // { collection: "news-gr", slug: "easter-2026", branch: "cms/news-gr/easter-2026" }
 // Decap names the branch of each unpublished entry cms/<collection>/<slug>.
@@ -44,9 +50,10 @@ function decode(text) {
 
 // The entry's page on the preview site, like Decap's own "View Preview".
 export function previewUrl(base, collection, slug) {
+  const root = base.replace(/\/+$/, "");
+  if (FILE_COLLECTIONS.includes(collection)) return root;
   const dash = collection.lastIndexOf("-");
   const path = PREVIEW_PATHS[collection.slice(0, dash)];
-  const root = base.replace(/\/+$/, "");
   if (path === undefined) return root;
   const lang = collection.slice(dash + 1);
   return `${root}/${lang}/${path.replace("{slug}", encodeURIComponent(slug))}`;

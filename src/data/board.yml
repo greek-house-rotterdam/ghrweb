@@ -1,0 +1,14 @@
+# Board members. Edited in /admin under "Ρυθμίσεις ιστότοπου".
+# `role` is a fixed key; the page shows its name in Greek, Dutch or English.
+# An empty `name` shows the role as a placeholder.
+members:
+  - role: president
+    name: ""
+  - role: vice_president
+    name: ""
+  - role: secretary
+    name: ""
+  - role: treasurer
+    name: ""
+  - role: member
+    name: ""
