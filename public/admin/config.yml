@@ -40,7 +40,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -56,7 +56,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -72,7 +72,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
@@ -92,7 +92,7 @@ collections:
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
@@ -107,7 +107,7 @@ collections:
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
@@ -122,7 +122,7 @@ collections:
     fields:
       - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
 
@@ -138,7 +138,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
@@ -156,7 +156,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
@@ -174,7 +174,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
@@ -241,7 +241,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"
@@ -261,7 +261,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"
@@ -281,7 +281,7 @@ collections:
     editor: { preview: false }
     fields:
       - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - label: "Category"
         name: "category"
         widget: "select"

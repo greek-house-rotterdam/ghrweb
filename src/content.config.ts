@@ -14,7 +14,7 @@ const news = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
   schema: z.object({
     title: z.string().max(100),
-    description: z.string().max(200),
+    description: z.string().max(200).optional(),
     date: z.coerce.date(),
     image: z.string().optional(),
     lang: langEnum,
@@ -112,7 +112,7 @@ const eventTranslations = defineCollection({
   schema: z.object({
     tt_event_id: z.string(),
     title: z.string().max(100),
-    description: z.string().max(200),
+    description: z.string().max(200).optional(),
     lang: langEnum,
     ...translationMeta,
   }),
@@ -122,7 +122,7 @@ const activities = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/activities" }),
   schema: z.object({
     title: z.string().max(100),
-    description: z.string().max(200),
+    description: z.string().max(200).optional(),
     image: z.string().optional(),
     emoji: z.string().optional(),
     schedule: z.string().optional(),
@@ -147,7 +147,7 @@ const resources = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/resources" }),
   schema: z.object({
     title: z.string().max(100),
-    description: z.string().max(200),
+    description: z.string().max(200).optional(),
     category: z.string(),
     order: z.number().default(100),
     lang: langEnum,

@@ -190,7 +190,10 @@ def sync_shared_fields(source_fm: dict, target_fm: dict) -> dict:
 
     Shared fields are all source keys except TRANSLATION_OWN_FIELDS. Existing
     keys keep their position, new ones are appended, and shared keys the source
-    no longer has are removed. The translation's own fields are never touched.
+    no longer has are removed. The translation's own fields are never touched,
+    `description` included: it is a text, so a locked or hand-corrected one is
+    kept. (The bot drops a description whose Greek was removed when it keeps or
+    re-translates a file, see translate_file.)
     """
     shared = {k: v for k, v in source_fm.items() if k not in TRANSLATION_OWN_FIELDS}
     synced = {}
@@ -314,6 +317,10 @@ def translate_file(
             # text. source_hash moves to the current one so it is flagged once;
             # translation_hash stays, so the file still counts as hand-edited.
             synced_fm = sync_shared_fields(frontmatter, existing_fm)
+            if not frontmatter.get("description"):
+                # The Greek description was removed: remove it here too, so the
+                # page falls back to the start of the text like the Greek one.
+                synced_fm.pop("description", None)
             synced_fm["source_hash"] = current_hash
             target_path.write_text(
                 build_markdown(_quote_hashes(synced_fm), existing_body),
@@ -357,6 +364,10 @@ def translate_file(
         for field in TRANSLATABLE_FIELDS:
             if field in translated and field in translated_fm:
                 translated_fm[field] = translated[field]
+        # A Greek entry without a description (missing, empty or null) gives a
+        # translation without one. The bot never invents it.
+        if not frontmatter.get("description"):
+            translated_fm.pop("description", None)
 
         translated_fm["lang"] = target_lang
         translated_fm["source_hash"] = current_hash

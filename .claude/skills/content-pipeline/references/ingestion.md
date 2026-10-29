@@ -65,7 +65,7 @@ If there's no Greek, tell the user and offer to draft the Greek source from the 
 Title (≤100) and description (≤200) are *hard* limits. If the source material's headline is longer:
 
 - For `title`: trim to the essential noun phrase. Move detail into the body.
-- For `description`: write a fresh one-sentence summary. Don't truncate mid-word.
+- For `description`: write a fresh one-sentence summary. Don't truncate mid-word. The description is optional: if it would only repeat the title or the first sentence of the body, omit it.
 
 Don't translate-then-truncate — Gemini doesn't know about the limit and writing a 150-char Greek description that becomes a 220-char Dutch translation will fail validation downstream. Keep the source comfortably under the cap (say, 90/180) so translations have headroom.
 

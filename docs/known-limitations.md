@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-11_
+_Last updated: 2026-10-29_
 
 ## Images
 
@@ -53,6 +53,14 @@ When the bot writes a translation it also stores `translation_hash`, a fingerpri
 - **Files without `translation_hash`** (unknown history, or the field was removed) are re-translated when the Greek changes, so a fix to such a file is lost. The existing Dutch and English files were given a `translation_hash` from their content at the time A9 was added, so a fix made after that is detected.
 - **Locked files** (`translation_locked: true`, added by the admin; there is no checkbox in the CMS) are never re-translated, with or without a hash, and are not flagged.
 - **Edge case:** if a run is cancelled by a newer save after the bot pushed but before the list was recorded, it can be missing, because the next run sees the current `source_hash` and does not flag the file again. It is recorded before the push to keep this window small.
+
+### A description added later does not reach a kept or locked translation
+
+The description is optional. Without one, the site shows the first 200 characters or so of the text instead (cards, search results, link previews), and the bot adds no description to the Dutch and English files. If an editor adds a description to the Greek later, or removes it, the translations follow on the next run, except for the two cases below.
+
+- **Limitation:** a translation that is *kept* (corrected by hand) or *locked* keeps its own fields. If the Greek gets a description later, a kept or locked file does not get one, and the site shows the start of its text. The reverse works for a kept file: if the Greek description is removed, the description is removed from the kept file too. A locked file keeps its description.
+- **What to do:** add the description by hand in `/admin` to that Dutch or English entry, or remove `translation_hash` from the file so the bot translates it again.
+- **Status:** covered by tests, not seen in practice.
 
 ### The job fails on a Dutch or English source file
 

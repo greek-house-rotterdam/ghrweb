@@ -85,18 +85,18 @@ def parse_frontmatter(content: str) -> tuple[dict, str]:
 # Keys are the collection folder names under src/content/.
 COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
     "news": {
-        "required": ["title", "description", "date", "lang"],
-        "optional": ["image"],
+        "required": ["title", "date", "lang"],
+        "optional": ["description", "image"],
         "has_body": True,
     },
     "activities": {
-        "required": ["title", "description", "lang"],
-        "optional": ["image", "emoji", "schedule", "order"],
+        "required": ["title", "lang"],
+        "optional": ["description", "image", "emoji", "schedule", "order"],
         "has_body": True,
     },
     "resources": {
-        "required": ["title", "description", "category", "lang"],
-        "optional": ["order"],
+        "required": ["title", "category", "lang"],
+        "optional": ["description", "order"],
         "has_body": True,
     },
     "faq": {
@@ -105,8 +105,8 @@ COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
         "has_body": False,
     },
     "event-translations": {
-        "required": ["tt_event_id", "title", "description", "lang"],
-        "optional": [],
+        "required": ["tt_event_id", "title", "lang"],
+        "optional": ["description"],
         "has_body": True,
     },
     "history-sections": {
