@@ -5,6 +5,7 @@ import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../components/BrutCard.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
+import { entryPath } from "../../lib/entry-path";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -26,7 +27,7 @@ const activities = allActivities
 
       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity) => (
-          <BrutCard tag="a" href={`/${lang}/activities/${activity.id.split("/").pop()}`} interactive class="block p-6 bg-white">
+          <BrutCard tag="a" href={entryPath("activities", activity)} interactive class="block p-6 bg-white">
             {activity.data.emoji && (
               <span class="text-4xl">{activity.data.emoji}</span>
             )}

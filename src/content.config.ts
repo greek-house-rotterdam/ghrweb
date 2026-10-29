@@ -1,5 +1,6 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
+import { URL_SLUG_MAX_LENGTH, URL_SLUG_PATTERN } from "./lib/entry-path";
 
 const langEnum = z.enum(["gr", "nl", "en"]);
 
@@ -10,6 +11,19 @@ const translationMeta = {
   translation_locked: z.boolean().optional(),
 };
 
+// Optional short Latin address for an entry's page. Shared between languages
+// (the translation bot copies it from the Greek file). An empty value means
+// "not set". See src/lib/entry-path.ts.
+const urlSlug = z
+  .string()
+  .max(URL_SLUG_MAX_LENGTH)
+  .regex(
+    URL_SLUG_PATTERN,
+    "url_slug: use only lowercase Latin letters, numbers and single hyphens, e.g. pascha-2026",
+  )
+  .or(z.literal(""))
+  .optional();
+
 const news = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/news" }),
   schema: z.object({
@@ -17,6 +31,7 @@ const news = defineCollection({
     description: z.string().max(200).optional(),
     date: z.coerce.date(),
     image: z.string().optional(),
+    url_slug: urlSlug,
     lang: langEnum,
     ...translationMeta,
   }),
@@ -127,6 +142,7 @@ const activities = defineCollection({
     emoji: z.string().optional(),
     schedule: z.string().optional(),
     order: z.number().default(100),
+    url_slug: urlSlug,
     lang: langEnum,
     ...translationMeta,
   }),

@@ -23,6 +23,7 @@ stdout with file:line-style prefixes).
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -214,6 +215,24 @@ def validate_file(repo_root: Path, path: Path) -> list[str]:
         errs.append(
             f"{rel}: collection '{collection}' does not support an 'image' field"
         )
+
+    # url_slug (news, activities): optional short page address
+    if "url_slug" in fm and fm["url_slug"] not in (None, ""):
+        slug = fm["url_slug"]
+        if collection not in ("news", "activities"):
+            errs.append(
+                f"{rel}: collection '{collection}' has no pages of its own, "
+                f"so it does not support 'url_slug'"
+            )
+        elif (
+            not isinstance(slug, str)
+            or len(slug) > 60
+            or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", slug)
+        ):
+            errs.append(
+                f"{rel}: url_slug={slug!r} must be lowercase Latin letters, "
+                f"numbers and single hyphens, at most 60 characters (e.g. pascha-2026)"
+            )
 
     # FAQ body should be empty
     if collection == "faq" and body.strip():

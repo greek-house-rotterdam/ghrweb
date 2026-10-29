@@ -21,6 +21,19 @@ from translate import (
 # ---------------------------------------------------------------------------
 
 
+class TestUrlSlugIsShared:
+    """url_slug is one value for all languages, so it is not translated or hashed."""
+
+    def test_is_not_a_translated_or_translation_own_field(self):
+        assert "url_slug" not in translate_mod.TRANSLATABLE_FIELDS
+        assert "url_slug" not in translate_mod.TRANSLATION_OWN_FIELDS
+
+    def test_does_not_change_the_source_hash(self):
+        base = {"title": "Hello", "description": "World"}
+        with_slug = {**base, "url_slug": "pascha-2026"}
+        assert compute_source_hash(base, "body") == compute_source_hash(with_slug, "body")
+
+
 class TestComputeSourceHash:
     def test_deterministic(self):
         h1 = compute_source_hash({"title": "Hello", "description": "World"}, "body")
@@ -399,6 +412,34 @@ class TestSharedFieldSync:
         assert body == "Tekst"
         assert list(fm)[:3] == ["title", "image", "order"]  # key order kept
         assert "shared fields synced" in capsys.readouterr().out
+
+    def test_url_slug_is_copied_from_greek_without_api_call(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\nurl_slug: pascha-2026\nlang: gr\n",
+            "",
+        )
+        with patch.object(translate_mod, "translate_payload") as mock:
+            translate_file("fake-key", gr, "")
+            mock.assert_not_called()
+        fm, _ = parse_markdown(nl.read_text())
+        assert fm["url_slug"] == "pascha-2026"
+
+    def test_url_slug_change_and_removal_follow_greek(self, tmp_path):
+        gr, nl = self._setup(
+            tmp_path,
+            "title: Hello\nurl_slug: new-address\nlang: gr\n",
+            "url_slug: old-address\n",
+        )
+        with patch.object(translate_mod, "translate_payload"):
+            translate_file("fake-key", gr, "")
+        assert parse_markdown(nl.read_text())[0]["url_slug"] == "new-address"
+
+        # the editor clears the short address in the Greek file
+        gr.write_text("---\ntitle: Hello\nlang: gr\n---\nBody", encoding="utf-8")
+        with patch.object(translate_mod, "translate_payload"):
+            translate_file("fake-key", gr, "")
+        assert "url_slug" not in parse_markdown(nl.read_text())[0]
 
     def test_locked_target_is_synced_but_text_kept(self, tmp_path):
         gr, nl = self._setup(

@@ -1,0 +1,25 @@
+---
+// A page that only sends the visitor on to another address. Used for the
+// old file-name address of an entry that now has a short address.
+interface Props {
+  to: string;
+}
+
+const { to: rawTo } = Astro.props;
+// Greek file names must be percent-encoded inside a meta refresh.
+const to = encodeURI(rawTo);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Redirecting…</title>
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <link rel="canonical" href={to} />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <p><a href={to}>{to}</a></p>
+  </body>
+</html>

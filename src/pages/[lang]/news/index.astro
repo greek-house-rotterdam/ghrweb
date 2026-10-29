@@ -5,6 +5,7 @@ import { formatDate, getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../../components/BrutCard.astro";
 import { descriptionOrExcerpt } from "../../../lib/excerpt";
+import { entryPath } from "../../../lib/entry-path";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -23,7 +24,7 @@ const news = allNews
 
       <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {news.map((post) => (
-          <BrutCard tag="a" href={`/${lang}/news/${post.id.split("/").pop()}`} interactive class="block bg-white overflow-hidden">
+          <BrutCard tag="a" href={entryPath("news", post)} interactive class="block bg-white overflow-hidden">
             {post.data.image && (
               <img
                 src={post.data.image}

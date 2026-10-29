@@ -4,6 +4,7 @@ import { t } from "../../i18n/ui";
 import { formatDate, getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../components/BrutCard.astro";
+import { entryPath } from "../../lib/entry-path";
 import BrutButton from "../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
 
@@ -54,7 +55,7 @@ const events = allEvents
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.latest-news")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {news.map((post) => (
-          <BrutCard tag="a" href={`/${lang}/news/${post.id.split("/").pop()}`} interactive class="block bg-white p-6">
+          <BrutCard tag="a" href={entryPath("news", post)} interactive class="block bg-white p-6">
             <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
               {formatDate(post.data.date, lang)}
             </span>
