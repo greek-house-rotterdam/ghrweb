@@ -5,6 +5,7 @@ import { formatDate, getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../components/BrutCard.astro";
 import BrutButton from "../../components/BrutButton.astro";
+import { descriptionOrExcerpt } from "../../lib/excerpt";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -58,7 +59,7 @@ const events = allEvents
               {formatDate(post.data.date, lang)}
             </span>
             <h3 class="mt-3 text-lg font-extrabold leading-snug">{post.data.title}</h3>
-            <p class="mt-2 text-sm text-gray-600 line-clamp-2">{post.data.description}</p>
+            <p class="mt-2 text-sm text-gray-600 line-clamp-2">{descriptionOrExcerpt(post.data.description, post.body)}</p>
           </BrutCard>
         ))}
       </div>

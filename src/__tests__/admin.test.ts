@@ -13,6 +13,7 @@ interface CmsField {
   widget: string;
   required?: boolean;
   pattern?: [string, string];
+  hint?: string;
   options?: string[];
   default?: unknown;
 }
@@ -72,18 +73,18 @@ const EXPECTED_FIELDS: Record<
   }
 > = {
   news: {
-    required: ["title", "description", "date", "lang"],
-    optional: ["image"],
+    required: ["title", "date", "lang"],
+    optional: ["description", "image"],
     maxLengths: { title: 100, description: 200 },
   },
   "event-translations": {
-    required: ["tt_event_id", "title", "description", "lang"],
-    optional: [],
+    required: ["tt_event_id", "title", "lang"],
+    optional: ["description"],
     maxLengths: { title: 100, description: 200 },
   },
   activities: {
-    required: ["title", "description", "lang"],
-    optional: ["image", "emoji", "schedule", "order"],
+    required: ["title", "lang"],
+    optional: ["description", "image", "emoji", "schedule", "order"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },
@@ -94,8 +95,8 @@ const EXPECTED_FIELDS: Record<
     defaults: { order: 100 },
   },
   resources: {
-    required: ["title", "description", "category", "lang"],
-    optional: ["order"],
+    required: ["title", "category", "lang"],
+    optional: ["description", "order"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },
@@ -249,6 +250,26 @@ describe("Decap CMS config — field sync with content schemas", () => {
           expect(isOptional || hasDefault).toBe(true);
         });
       }
+    });
+  }
+});
+
+describe("Decap CMS config — optional description", () => {
+  for (const type of CONTENT_TYPES) {
+    if (!EXPECTED_FIELDS[type].optional.includes("description")) continue;
+    for (const lang of LANGUAGES) {
+      it(`${type}-${lang}: description is optional and has a Greek hint`, () => {
+        const f = getField(getCollection(type, lang), "description");
+        expect(f!.required).toBe(false);
+        expect(f!.hint).toMatch(/Προαιρετικό/);
+      });
+    }
+    it(`${type}: description hint is the same in all languages`, () => {
+      const hints = LANGUAGES.map(
+        (lang) => getField(getCollection(type, lang), "description")!.hint,
+      );
+      expect(hints[1]).toBe(hints[0]);
+      expect(hints[2]).toBe(hints[0]);
     });
   }
 });

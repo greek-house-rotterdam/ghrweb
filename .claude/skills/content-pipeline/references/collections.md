@@ -19,7 +19,7 @@ Dated announcements, recaps, blog-style posts.
 
 ```yaml
 title: string                    # required, ≤ 100 chars
-description: string              # required, ≤ 200 chars
+description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 date: date                       # required, ISO 8601 — "2026-02-09" or "2026-04-05T20:00:00.000+03:00"
 image: string                    # optional, e.g. "/images/welcome-event.jpg"
 lang: "gr" | "nl" | "en"         # required, must match the folder
@@ -38,7 +38,7 @@ Recurring/standing programs (language classes, dance group, cooking workshops). 
 
 ```yaml
 title: string                    # required, ≤ 100 chars
-description: string              # required, ≤ 200 chars
+description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 emoji: string                    # optional, e.g. "💃" "📚" "🎨" — shown in the listing
 schedule: string                 # optional, e.g. "Every Thursday 19:00"
 image: string                    # optional
@@ -60,7 +60,7 @@ A translation overlay for a **single Ticket Tailor event**. The event itself (da
 ```yaml
 tt_event_id: string              # required, e.g. "ev_8112397"
 title: string                    # required, ≤ 100 chars
-description: string              # required, ≤ 200 chars
+description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 lang: "gr" | "nl" | "en"         # required
 ```
 
@@ -154,7 +154,7 @@ Durable "useful information" pages (gemeente registration, healthcare, education
 
 ```yaml
 title: string                    # required, ≤ 100 chars
-description: string              # required, ≤ 200 chars
+description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 category: "legal" | "healthcare" | "education" | "housing" | "finance" | "culture" | "other"
 order: number                    # default 100
 lang: "gr" | "nl" | "en"         # required

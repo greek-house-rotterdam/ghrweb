@@ -36,6 +36,7 @@ You are only writing the **source** file (typically Greek, but Dutch or English 
 1. **No `decap-cms/draft` label on the PR.** The workflows no longer check labels (they run on every push), but with the label Decap lists the post as a Draft. Default `gh pr create` doesn't apply labels, so just don't pass `--label decap-cms/draft`.
 2. **Source files must not have `source_hash` in frontmatter.** Files with `source_hash` are treated as translations and skipped by `translate.py`. You're writing the source, so omit it.
 3. **Title ≤ 100, description ≤ 200, FAQ question ≤ 200 characters.** Enforced by Zod schema and Decap CMS validation pattern. Truncate or rewrite before saving, not after.
+   **The description is optional** (news, activities, resources, event-translations). Leave it out when it would only repeat the title or the first sentence of the body: the site then shows the first ~200 characters of the body instead, and the translation bot adds no description to the Dutch and English files. Don't write `description: ""`; just omit the line. If you add a description later, the translations get one on the next run; if you remove it, it is removed from them too.
 4. **Image path is `/images/<name>.<ext>`** in frontmatter. The file itself goes to `public/images/<name>.<ext>`. Keep filenames URL-safe (ASCII kebab-case is safest, though Greek/Cyrillic names do work).
 5. **Filename is the slug, and must be identical across the three language folders.** `verify_content.py` fails the build if `news/gr/foo.md` exists but `news/en/foo.md` doesn't. The translation workflow keeps these in sync by reusing the source filename, so name the file once correctly and don't rename later.
 6. **`event-translations` are keyed by `tt_event_id`.** The filename and the `tt_event_id` field must match a real published event in Ticket Tailor — otherwise the translation has nothing to attach to on the events page. Treat unknown IDs as a blocker, not a guess.
@@ -106,12 +107,12 @@ python3 .claude/skills/content-pipeline/scripts/validate_content.py <path-to-new
 python3 .claude/skills/content-pipeline/scripts/validate_content.py --strict src/content/news/gr/my-new-post.md
 ```
 
-It checks: frontmatter parses, required fields present, title/description lengths, `source_hash` is absent on source files, image referenced in frontmatter exists at `public/images/...`, `tt_event_id` filename match. Fix anything it flags.
+It checks: frontmatter parses, required fields present (the description is optional), title/description lengths, `source_hash` is absent on source files, image referenced in frontmatter exists at `public/images/...`, `tt_event_id` filename match. Fix anything it flags.
 
 Then do a quick read pass:
 
 - Does the title actually describe what's in the body?
-- Is the description a real one-sentence summary, not just the title repeated?
+- Is the description a real one-sentence summary, not just the title repeated? If it only repeats the title or the body's first sentence, leave it out.
 - Does the body match the [content style guide](../../docs/content-style-guide.md) (warm/welcoming, no political content, no commercial promotion, factual)?
 - For events: are date/time/location actually in the body, not buried at the end?
 - Are line breaks and lists rendering correctly (no stray `\n`, no Word smart quotes that look bad in monospace)?

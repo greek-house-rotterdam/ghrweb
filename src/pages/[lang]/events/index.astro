@@ -5,6 +5,7 @@ import { formatDate, getStaticLangPaths, type Lang } from "../../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutButton from "../../../components/BrutButton.astro";
 import BrutCard from "../../../components/BrutCard.astro";
+import { descriptionOrExcerpt } from "../../../lib/excerpt";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -28,7 +29,9 @@ const events = ttEvents
     return {
       id: e.id,
       title: overlay?.data.title ?? e.data.name,
-      description: overlay?.data.description ?? e.data.description_text,
+      description:
+        descriptionOrExcerpt(overlay?.data.description, overlay?.body) ||
+        e.data.description_text,
       start: new Date(e.data.start_iso),
       venue: e.data.venue,
       imageUrl: e.data.image_url,

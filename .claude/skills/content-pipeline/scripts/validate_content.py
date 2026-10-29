@@ -33,17 +33,17 @@ LANGS = {"gr", "nl", "en"}
 # Map collection name → (required-fields set, max-lengths dict, allows-image, allows-source-hash-on-self)
 COLLECTION_RULES: dict[str, dict] = {
     "news": {
-        "required": {"title", "description", "date", "lang"},
+        "required": {"title", "date", "lang"},
         "max_lengths": {"title": 100, "description": 200},
         "allows_image": True,
     },
     "activities": {
-        "required": {"title", "description", "lang"},
+        "required": {"title", "lang"},
         "max_lengths": {"title": 100, "description": 200},
         "allows_image": True,
     },
     "resources": {
-        "required": {"title", "description", "category", "lang"},
+        "required": {"title", "category", "lang"},
         "max_lengths": {"title": 100, "description": 200},
         "allows_image": False,
         "category_options": {
@@ -62,7 +62,7 @@ COLLECTION_RULES: dict[str, dict] = {
         "allows_image": False,
     },
     "event-translations": {
-        "required": {"tt_event_id", "title", "description", "lang"},
+        "required": {"tt_event_id", "title", "lang"},
         "max_lengths": {"title": 100, "description": 200},
         "allows_image": False,
     },
