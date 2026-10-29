@@ -74,7 +74,7 @@ const EXPECTED_FIELDS: Record<
 > = {
   news: {
     required: ["title", "date", "lang"],
-    optional: ["description", "image"],
+    optional: ["description", "image", "url_slug"],
     maxLengths: { title: 100, description: 200 },
   },
   "event-translations": {
@@ -84,7 +84,7 @@ const EXPECTED_FIELDS: Record<
   },
   activities: {
     required: ["title", "lang"],
-    optional: ["description", "image", "emoji", "schedule", "order"],
+    optional: ["description", "image", "emoji", "schedule", "order", "url_slug"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100 },
   },

@@ -118,3 +118,33 @@ class TestVerifyCollection:
         })
         errors = verify_collection(col)
         assert errors == []
+
+
+class TestCheckUrlSlugs:
+    def _write(self, tmp_path, lang, name, slug_line):
+        d = tmp_path / "news" / lang
+        d.mkdir(parents=True, exist_ok=True)
+        (d / name).write_text(f"---\ntitle: T\n{slug_line}lang: {lang}\n---\n\nBody\n", encoding="utf-8")
+
+    def test_accepts_valid_empty_and_missing(self, tmp_path):
+        from verify_content import check_url_slugs
+
+        self._write(tmp_path, "gr", "a.md", "url_slug: pascha-2026\n")
+        self._write(tmp_path, "gr", "b.md", "url_slug: ''\n")
+        self._write(tmp_path, "gr", "c.md", "")
+        assert check_url_slugs(tmp_path / "news") == []
+
+    @pytest.mark.parametrize(
+        "value", ["Pascha", "pascha_2026", "-x", "x-", "x--y", "πάσχα", "x y", "a" * 61, "12"]
+    )
+    def test_rejects_bad_values_and_names_the_file(self, tmp_path, value):
+        from verify_content import check_url_slugs
+
+        if value == "12":  # a bare number is read by YAML as an integer, not text
+            line = "url_slug: 12\n"
+        else:
+            line = f"url_slug: '{value}'\n"
+        self._write(tmp_path, "nl", "x.md", line)
+        errors = check_url_slugs(tmp_path / "news")
+        assert len(errors) == 1
+        assert "x.md" in errors[0] and "url_slug" in errors[0]

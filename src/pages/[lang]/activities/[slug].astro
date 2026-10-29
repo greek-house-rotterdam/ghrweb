@@ -5,25 +5,25 @@ import type { Lang } from "../../../i18n/utils";
 import { getCollection, render } from "astro:content";
 import BrutButton from "../../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../../lib/excerpt";
+import RedirectPage from "../../../components/RedirectPage.astro";
+import { buildEntryRoutes } from "../../../lib/entry-path";
 
 export async function getStaticPaths() {
-  const allActivities = await getCollection("activities");
-  return allActivities.map((activity) => {
-    const lang = activity.id.split("/")[0];
-    const slug = activity.id.split("/").slice(1).join("/");
-    return { params: { lang, slug }, props: { activity } };
-  });
+  return buildEntryRoutes("activities", await getCollection("activities"));
 }
 
-const { activity } = Astro.props;
+const { entry: activity, redirectTo } = Astro.props;
 const { lang } = Astro.params as { lang: Lang };
-const { Content } = await render(activity);
+const { Content } = redirectTo ? { Content: null } : await render(activity);
 // The lead paragraph shows only a description the editor wrote: the body is
 // right below it. The page description (search results, link previews) falls
 // back to the start of the body.
 const pageDescription = descriptionOrExcerpt(activity.data.description, activity.body);
 ---
 
+{redirectTo ? (
+  <RedirectPage to={redirectTo} />
+) : (
 <Layout title={activity.data.title} description={pageDescription} lang={lang}>
   <article class="py-16">
     <div class="mx-auto max-w-3xl px-4">
@@ -68,3 +68,4 @@ const pageDescription = descriptionOrExcerpt(activity.data.description, activity
     </div>
   </article>
 </Layout>
+)}

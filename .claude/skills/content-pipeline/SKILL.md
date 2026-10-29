@@ -42,6 +42,8 @@ You are only writing the **source** file (typically Greek, but Dutch or English 
 6. **`event-translations` are keyed by `tt_event_id`.** The filename and the `tt_event_id` field must match a real published event in Ticket Tailor — otherwise the translation has nothing to attach to on the events page. Treat unknown IDs as a blocker, not a guess.
 7. **Don't include `translation_locked: true` unless the user explicitly asks** for a hand-crafted translation that should never be re-translated or flagged. The field defaults to absent; setting it makes the file immune to future re-translation. (A translation that was only corrected by hand does not need it: the bot notices the edit through `translation_hash` and keeps the text when the Greek changes, flagging it on the PR.)
 
+8. **Short page address (`url_slug`) is optional, for `news` and `activities` only.** Greek file names make very long page addresses. If you set `url_slug: pascha-2026` on the Greek file, the page is served at `/<lang>/news/pascha-2026` in all three languages, and the old file-name address keeps working as a redirect. Rules: lowercase Latin letters, numbers and single hyphens, at most 60 characters. Leave it out when the file name is already short. Don't add it to files that already exist unless asked. Write it only in the Greek source; the translation workflow copies it to Dutch and English on every run, like `image` and `date`. Two entries in one language can't share an address (neither a `url_slug` nor a file name may clash with another entry's), and the build fails if they do. Events have no `url_slug`: their addresses come from the Ticket Tailor ID.
+
 ## Workflow
 
 ### 1. Ingest

@@ -22,6 +22,7 @@ title: string                    # required, ≤ 100 chars
 description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 date: date                       # required, ISO 8601 — "2026-02-09" or "2026-04-05T20:00:00.000+03:00"
 image: string                    # optional, e.g. "/images/welcome-event.jpg"
+url_slug: string                 # optional short page address, e.g. "pascha-2026" (see SKILL.md rule 8)
 lang: "gr" | "nl" | "en"         # required, must match the folder
 ```
 
@@ -42,6 +43,7 @@ description: string              # optional, ≤ 200 chars; if empty the site us
 emoji: string                    # optional, e.g. "💃" "📚" "🎨" — shown in the listing
 schedule: string                 # optional, e.g. "Every Thursday 19:00"
 image: string                    # optional
+url_slug: string                 # optional short page address (see SKILL.md rule 8)
 order: number                    # default 100 — lower numbers appear first
 lang: "gr" | "nl" | "en"         # required
 ```

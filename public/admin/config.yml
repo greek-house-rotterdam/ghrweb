@@ -43,6 +43,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -59,6 +60,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -75,6 +77,7 @@ collections:
       - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -142,6 +145,7 @@ collections:
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -160,6 +164,7 @@ collections:
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
@@ -178,6 +183,7 @@ collections:
       - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
       - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
