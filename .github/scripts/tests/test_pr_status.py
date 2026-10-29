@@ -211,6 +211,36 @@ class TestRender:
         assert len(render(st, HEAD)) < 65000
 
 
+class TestAutoPublish:
+    def test_no_section_until_the_workflow_ran(self):
+        assert "Δημοσίευση" not in render(State(), HEAD)
+
+    @pytest.mark.parametrize("state,greek,english", [
+        ("on", "μόνη της μόλις περάσουν", "goes live by itself once the checks pass"),
+        ("off", "ανενεργή", "Auto-publish is off"),
+        ("unavailable", "δεν είναι διαθέσιμη", "not available yet"),
+    ])
+    def test_section_in_greek_and_english(self, state, greek, english):
+        st = State()
+        apply_section(st, "autopublish", {"state": state, "run": 1})
+        body = render(st, HEAD)
+        assert "### 5. Δημοσίευση / Publishing" in body and greek in body and english in body
+        assert "### 6. Τι ακολουθεί / Next step" in body
+        assert parse(body).sections["autopublish"]["state"] == state  # survives the round trip
+
+    def test_view_state_ignores_unknown_values(self):
+        st = State()
+        apply_section(st, "autopublish", {"state": "weird", "run": 1})
+        assert view_states(st, HEAD)["autopublish"] == "unknown"
+
+    def test_update_writes_the_section_and_a_newer_run_wins(self):
+        gh = FakeGitHub()
+        update(Api("o/r", "7", gh), "autopublish", {"state": "on", "run": 5}, settle=0, sleep=lambda s: None)
+        update(Api("o/r", "7", gh), "autopublish", {"state": "off", "run": 6}, settle=0, sleep=lambda s: None)
+        assert "ανενεργή" in gh.comments[0]["body"]
+        assert len(gh.comments) == 1
+
+
 # ---------------------------------------------------------------------------
 # Next step
 # ---------------------------------------------------------------------------
@@ -223,10 +253,18 @@ def views(**over):
 
 
 class TestNextStep:
-    def test_all_good_says_publish(self):
+    def test_all_good_says_set_ready_and_it_goes_live_by_itself(self):
         gr, en = next_step(views())
-        assert gr == "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και πάτα Publish."
-        assert "Publish" in en
+        assert "βάλε την ανάρτηση στο Ready" in gr and "μόνη της" in gr
+        assert "Publish" not in gr and "by itself" in en
+
+    def test_auto_publish_on_says_no_need_to_press_publish(self):
+        gr, en = next_step(views(autopublish="on"))
+        assert "Δεν χρειάζεται να πατήσεις Publish" in gr and "don't need to press Publish" in en
+
+    def test_auto_publish_unavailable_still_says_press_publish(self):
+        gr, _ = next_step(views(autopublish="unavailable"))
+        assert gr.endswith("πάτα Publish.")
 
     def test_translation_failure_says_admin_was_told(self):
         gr, _ = next_step(views(translation="fail"))
@@ -599,6 +637,11 @@ class TestCli:
         gh = FakeGitHub(files=["a.md", "src/content/x.md"])
         pr_status.main(["review", "--sha", HEAD, "--reviewed", str(reviewed), "--results", str(tmp_path / "none")], gh)
         assert gh.state().alerts == {"review"}
+
+    def test_autopublish_state(self):
+        gh = FakeGitHub()
+        pr_status.main(["autopublish", "--state", "on"], gh)
+        assert gh.state().sections["autopublish"] == {"state": "on", "run": 42}
 
     def test_an_api_failure_warns_but_does_not_fail_the_job(self, capsys):
         def broken(*args):

@@ -119,6 +119,9 @@ export function summarize(pr, required) {
       : { state: "pending", url: null },
     translation: translate.length ? worst(translate.map(checkState)) : "pending",
     checks: state,
+    // Set when the editor moved the post to Ready: GitHub then publishes it
+    // by itself once the required checks pass (see auto-publish.yml).
+    autoMerge: Boolean(pr.autoMergeRequest),
   };
 }
 
@@ -129,6 +132,7 @@ const QUERY = `query ($owner: String!, $name: String!) {
         url
         headRefName
         mergeStateStatus
+        autoMergeRequest { enabledAt }
         commits(last: 1) { nodes { commit { statusCheckRollup { contexts(first: 50) { nodes {
           __typename
           ... on CheckRun { name status conclusion }
@@ -151,11 +155,12 @@ const TEXT = {
     fail: ["Translation ✗", "The translation step failed. Open Details."],
   },
   checks: {
-    ok: ["Checks ✓", "All checks passed. Publish will work."],
-    pending: ["Checks …", "Checks are still running. Wait before you publish."],
-    fail: ["Checks ✗", "A check failed, so Publish won't work. Open Details."],
+    ok: ["Checks ✓", "All checks passed. The post can go live."],
+    pending: ["Checks …", "Checks are still running. The post can go live only after they pass."],
+    fail: ["Checks ✗", "A check failed, so the post can't go live. Open Details."],
     conflict: ["Conflict ✗", "This edit conflicts with another change. Ask the web team."],
   },
+  auto: ["Goes live automatically", "This post is set to Ready. It goes live by itself as soon as all checks pass. You don't need to press Publish."],
   details: ["Details ↗", "Open the pull request on GitHub."],
 };
 
@@ -170,6 +175,7 @@ a.ghr-badge:hover { text-decoration: underline; }
 .ghr-ok { background: #e3f4e8; color: #1d6b35; }
 .ghr-pending { background: #eceef3; color: #555b69; }
 .ghr-fail, .ghr-conflict { background: #fdece8; color: #b42318; }
+.ghr-auto { background: #e6eefc; color: #1d4fbf; font-weight: 600; }
 .ghr-link { background: #e6eefc; color: #1d4fbf; }
 `;
 
@@ -202,6 +208,7 @@ function renderRow(summary, card) {
     badge(TEXT.preview[preview], preview, href),
     badge(TEXT.translation[summary.translation], summary.translation),
     badge(TEXT.checks[summary.checks], summary.checks),
+    ...(summary.autoMerge ? [badge(TEXT.auto, "auto")] : []),
     badge(TEXT.details, "link", summary.url),
   );
   return row;
