@@ -92,9 +92,19 @@ First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review run
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
 
+### Auto-publish: Decap still shows its own Publish button
+
+When an editor sets a post to Ready, the PR gets the label `decap-cms/pending_publish`. The `auto-publish.yml` workflow then turns on GitHub auto-merge (squash), and the post goes live by itself once `translate`, `verify` and `Workers Builds: ghrweb` pass. Moving the post out of Ready turns auto-merge off again.
+
+- **Decap's Publish button is still there.** Pressing it is harmless but not needed. Before the checks pass it shows an error, as it always did. After they pass it merges the PR a moment before auto-merge would.
+- **It needs two repository settings.** "Allow auto-merge" must be on. Until it is, the workflow prints a warning, ends green and the status comment says auto-publish is not available yet: editors press Publish as before. "Automatically delete head branches" is also needed, so Decap can edit the same entry again after the merge (it is already on).
+- **Only Decap's PRs.** The workflow only handles PRs from `cms/*` branches in this repository. A PR opened by the content-pipeline skill or by hand is merged by hand.
+- **A save after Ready keeps auto-publish on.** The new save runs the checks again, and the post goes live when they pass. To hold it back, move the post out of Ready.
+- **Merges made this way don't start GitHub workflows on `main`.** Cloudflare builds `main` through its own GitHub connection, so the deploy still runs.
+
 ### The PR status comment
 
-Each content PR has one status comment (`.github/scripts/pr_status.py`) with Translation, Images, Preview, AI review and a next step. PRs that change no content, no images and no site settings (`src/data/`) get none.
+Each content PR has one status comment (`.github/scripts/pr_status.py`) with Translation, Images, Preview, AI review, Publishing (whether auto-publish is on) and a next step. PRs that change no content, no images and no site settings (`src/data/`) get none.
 
 - **Edits don't notify.** GitHub's docs don't say whether an @mention added by editing a comment notifies, so the pipeline never relies on it. When a failure appears that the admins haven't been told about, the comment is re-created (new one first, then the old one deleted) with a `cc @admins` line: a new comment notifies the mentioned admins and emails the PR author. While the failure persists, later updates edit the comment in place and don't notify again. If the failure goes away and comes back, it notifies again. The comment's link changes when this happens.
 - **A rare lost update is possible.** Parallel jobs read the comment, change their own section, write it back, wait two seconds, re-read and retry (up to 5 times) if their section is gone. A writer whose read is older than that window can still overwrite another job's section without noticing. The affected section is rewritten by that job's next run; the Preview section is rewritten by the next Cloudflare comment edit.

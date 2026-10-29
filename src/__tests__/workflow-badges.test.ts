@@ -33,10 +33,11 @@ const status = (context: string, state = "SUCCESS", targetUrl: string | null = n
   state,
   targetUrl,
 });
-const pr = (checks: object[], mergeStateStatus = "CLEAN") => ({
+const pr = (checks: object[], mergeStateStatus = "CLEAN", autoMergeRequest: object | null = null) => ({
   url: "https://github.com/greek-house-rotterdam/ghrweb/pull/70",
   headRefName: "cms/news-en/easter-2026",
   mergeStateStatus,
+  autoMergeRequest,
   commits: { nodes: [{ commit: { statusCheckRollup: { contexts: { nodes: checks } } } }] },
 });
 
@@ -187,7 +188,20 @@ describe("workflow badges — what a card shows", () => {
       preview: { state: "ok", url: PREVIEW },
       translation: "ok",
       checks: "ok",
+      autoMerge: false,
     });
+  });
+
+  it("shows that the post goes live by itself when auto-merge is on", () => {
+    const on = pr(EDITOR_COMMIT, "BLOCKED", { enabledAt: "2026-10-29T10:00:00Z" });
+    expect(summarize(on, REQUIRED).autoMerge).toBe(true);
+    expect(summarize(pr(EDITOR_COMMIT), REQUIRED).autoMerge).toBe(false);
+  });
+
+  it("asks GitHub for the auto-merge request and shows a badge for it", () => {
+    const source = readFileSync(join(ROOT, "public/admin/workflow-badges.js"), "utf-8");
+    expect(source).toContain("autoMergeRequest { enabledAt }");
+    expect(source).toContain("Goes live automatically");
   });
 
   it("all green on the translation bot's commit", () => {

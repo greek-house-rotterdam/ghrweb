@@ -24,9 +24,11 @@ PR opens on main, without the `decap-cms/draft` label
   - verify job: blocks images the site can't use (not JPEG/PNG/WebP, unreadable, >5 MB)
                           ↓
 .github/workflows/content-review.yml adds an advisory AI review to the PR's one
-status comment (translation, images, preview link, AI review, next step)
+status comment (translation, images, preview link, AI review, publishing, next step)
                           ↓
 required checks pass (no approval needed for content) → merge → Cloudflare deploys
+  (CMS edits only: when the editor sets the post to Ready, auto-publish.yml turns on
+   auto-merge and the post merges by itself. A PR from this skill is merged by hand.)
 ```
 
 You are only writing the **source** file (typically Greek, but Dutch or English work too). Everything else happens automatically once the PR opens without the draft label.
@@ -159,7 +161,7 @@ Don't pass `--label decap-cms/draft` (it no longer blocks the workflows, but Dec
 
 After opening, report the PR URL to the user and tell them what happens next:
 
-> Opened PR #N. The translation workflow will push translated `nl` and `en` files within a few minutes. Once the required checks pass, merge → Cloudflare deploys.
+> Opened PR #N. The translation workflow will push translated `nl` and `en` files within a few minutes. Once the required checks pass, merge → Cloudflare deploys. (This PR is not from the CMS, so it does not merge by itself.)
 
 ## What you don't need to do
 

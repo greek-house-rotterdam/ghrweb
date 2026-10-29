@@ -1,0 +1,60 @@
+name: Auto-publish
+
+# When an editor sets a post to Ready, Decap puts the label
+# `decap-cms/pending_publish` on its pull request. This workflow then turns on
+# GitHub auto-merge, so the post goes live by itself as soon as the required
+# checks (translate, verify, Workers Builds: ghrweb) pass. Moving the post out
+# of Ready removes the label, and auto-merge is turned off again.
+#
+# Why this can't merge the editor's commit before the translation bot's commit:
+# the `translate` job pushes the bot's commit before it reports, and the required
+# checks are read on the pull request's newest commit, where `translate` and
+# `verify` only appear once the `verify` job has posted them. See the pull
+# request that added this file (C1) for the full argument.
+#
+# Decap changes labels with the editor's own token, so these events fire (a
+# label added with the workflow token would not start workflows).
+#
+# Until "Allow auto-merge" is switched on in the repository settings, this
+# prints a warning and ends green; editors then press Publish as before.
+on:
+  pull_request:
+    branches: [main]
+    types: [labeled, unlabeled]
+
+# No token rights by default: the job asks for what it needs.
+permissions: {}
+
+# One run at a time per pull request. A waiting run is replaced by a newer one,
+# which is fine: each run reads the current labels itself.
+concurrency:
+  group: auto-publish-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  auto-publish:
+    # Only the Ready label, only pull requests from this repository's own
+    # cms/* branches (the same guard as the other workflows: nothing runs for forks).
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'cms/') &&
+      github.event.label.name == 'decap-cms/pending_publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write       # merging into main
+      pull-requests: write  # auto-merge, and the status comment (pr_status.py)
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
+    steps:
+      # The scripts come from main, never from the pull request's branch.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          sparse-checkout: .github/scripts
+
+      - name: Turn auto-merge on or off
+        run: python3 .github/scripts/auto_publish.py

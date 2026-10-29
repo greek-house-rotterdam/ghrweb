@@ -9,6 +9,7 @@ Each workflow reports its own part and this script rewrites only that part:
     images       translate.yml (verify job)
     preview      preview-status.yml: the Cloudflare preview link
     review       content-review.yml: the AI review, notes per file
+    autopublish  auto-publish.yml: is the post set to go live by itself (C1)
 
 The comment carries the marker `<!-- pr-status -->`. Every section sits between
 `<!-- pr-status:begin <name> <data> -->` and `<!-- pr-status:end <name> -->`; the
@@ -64,7 +65,8 @@ BEGIN_RE = re.compile(r"<!-- pr-status:begin (\w+) ([A-Za-z0-9_=-]*) -->")
 ALERTS_RE = re.compile(r"<!-- pr-status:alerts ([a-z,]*) -->")
 URL_RE = re.compile(r"^https://[A-Za-z0-9.-]+/?$")
 
-SECTION_NAMES = ("translation", "kept", "images", "preview", "review")
+SECTION_NAMES = ("translation", "kept", "images", "preview", "review", "autopublish")
+AUTOPUBLISH_STATES = ("on", "off", "unavailable")
 # src/data/ holds the site settings (board, contact, forms). A PR that only
 # changes those has nothing to translate but still gets the status comment.
 CONTENT_PREFIXES = ("src/content/", "src/data/", "public/images/")
@@ -269,6 +271,8 @@ def view_states(state: State, head: str | None) -> dict[str, str]:
         out["review"] = "remarks"
     else:
         out["review"] = "ok"
+    auto = s.get("autopublish", {}).get("state")
+    out["autopublish"] = auto if auto in AUTOPUBLISH_STATES else "unknown"
     return out
 
 
@@ -395,6 +399,24 @@ def render_review(data: dict | None, view: str) -> str:
     return f"{title}\n\n{text}"
 
 
+def render_autopublish(data: dict | None) -> str:
+    """Empty until the auto-publish workflow has run for this PR."""
+    title = "### 5. Δημοσίευση / Publishing"
+    state = (data or {}).get("state")
+    if state == "on":
+        text = bi("✅ Η αυτόματη δημοσίευση είναι ενεργή: η ανάρτηση θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι.",
+                  "Auto-publish is on: the post goes live by itself once the checks pass.")
+    elif state == "off":
+        text = bi("Η αυτόματη δημοσίευση είναι ανενεργή. Βάλε την ανάρτηση στο Ready και θα δημοσιευτεί μόνη της.",
+                  "Auto-publish is off. Move the post to Ready and it goes live by itself.")
+    elif state == "unavailable":
+        text = bi("⚠️ Η αυτόματη δημοσίευση δεν είναι διαθέσιμη ακόμα. Όταν περάσουν οι έλεγχοι, πάτα Publish.",
+                  "Auto-publish is not available yet. Once the checks pass, press Publish.")
+    else:
+        return ""
+    return f"{title}\n\n{text}"
+
+
 def next_step(views: dict[str, str]) -> tuple[str, str]:
     """One line (Greek, English) from the sections' states."""
     problems_gr, problems_en = [], []
@@ -417,8 +439,16 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
             "Wait a moment, still running: " + ", ".join(e for _, e in waiting) + ". This comment updates by itself.",
         )
 
-    gr = "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και πάτα Publish."
-    en = "Ready: in /admin → Workflow, move the post to Ready and press Publish."
+    auto = views.get("autopublish", "unknown")
+    if auto == "on":
+        gr = "Έτοιμο: η ανάρτηση θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι. Δεν χρειάζεται να πατήσεις Publish."
+        en = "Ready: the post goes live by itself once the checks pass. You don't need to press Publish."
+    elif auto == "unavailable":
+        gr = "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και πάτα Publish."
+        en = "Ready: in /admin → Workflow, move the post to Ready and press Publish."
+    else:
+        gr = "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι."
+        en = "Ready: in /admin → Workflow, move the post to Ready and it goes live by itself once the checks pass."
     if views["review"] == "remarks":
         gr += " Δες πρώτα τις παρατηρήσεις του ελέγχου AI (προαιρετικό)."
         en += " Read the AI review remarks first (optional)."
@@ -441,6 +471,7 @@ def render(state: State, head: str | None, mentions: str = "", run_url: str = ""
 
     tr = render_translation(s.get("translation"))
     kept = render_kept(s.get("kept"))
+    publish = render_autopublish(s.get("autopublish"))
     parts = [
         MARK,
         f"<!-- pr-status:alerts {','.join(sorted(alerts))} -->",
@@ -450,9 +481,10 @@ def render(state: State, head: str | None, mentions: str = "", run_url: str = ""
         block("images", render_images(s.get("images"))),
         block("preview", render_preview(prev, views["preview"] == "ok")),
         block("review", render_review(s.get("review"), views["review"])),
+        block("autopublish", publish) if publish else "",
     ]
     gr, en = next_step(views)
-    parts.append(f"### 5. Τι ακολουθεί / Next step\n\n{gr}\n\n*{en}*")
+    parts.append(f"### 6. Τι ακολουθεί / Next step\n\n{gr}\n\n*{en}*")
     footer = []
     if alerts and mentions.strip():
         footer.append(f"cc {mentions.strip()}")
@@ -629,6 +661,8 @@ def build_data(args: argparse.Namespace) -> dict:
         else:
             data["problems"] = [l[2:] if l.startswith("- ") else l for l in read_lines(args.problems)]
         return data
+    if args.section == "autopublish":
+        return {"state": args.state, "run": run_stamp()}
     if args.section == "preview":
         return {"state": "ok", "sha": sha, "url": args.url, "run": run_stamp()}
     # review: results is the content_review.py JSON; reviewed is the file list
@@ -667,6 +701,9 @@ def parser() -> argparse.ArgumentParser:
     v = sub.add_parser("preview")
     v.add_argument("--sha", required=True)
     v.add_argument("--url", required=True)
+
+    a = sub.add_parser("autopublish")
+    a.add_argument("--state", choices=list(AUTOPUBLISH_STATES), required=True)
 
     r = sub.add_parser("review")
     r.add_argument("--sha")
