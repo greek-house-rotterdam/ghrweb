@@ -94,7 +94,7 @@ Content Review only reviews the files in the editor's own commits. The bot's com
 
 ### The PR status comment
 
-Each content PR has one status comment (`.github/scripts/pr_status.py`) with Translation, Images, Preview, AI review and a next step. PRs that change no content and no images get none.
+Each content PR has one status comment (`.github/scripts/pr_status.py`) with Translation, Images, Preview, AI review and a next step. PRs that change no content, no images and no site settings (`src/data/`) get none.
 
 - **Edits don't notify.** GitHub's docs don't say whether an @mention added by editing a comment notifies, so the pipeline never relies on it. When a failure appears that the admins haven't been told about, the comment is re-created (new one first, then the old one deleted) with a `cc @admins` line: a new comment notifies the mentioned admins and emails the PR author. While the failure persists, later updates edit the comment in place and don't notify again. If the failure goes away and comes back, it notifies again. The comment's link changes when this happens.
 - **A rare lost update is possible.** Parallel jobs read the comment, change their own section, write it back, wait two seconds, re-read and retry (up to 5 times) if their section is gone. A writer whose read is older than that window can still overwrite another job's section without noticing. The affected section is rewritten by that job's next run; the Preview section is rewritten by the next Cloudflare comment edit.
@@ -112,6 +112,34 @@ Each content PR has one status comment (`.github/scripts/pr_status.py`) with Tra
 ### Pushing straight to `main` skips every check
 
 All workflows run on pull requests only. Content pushed straight to `main` isn't translated and its translations go stale, with no alarm. To recover, open a small PR that saves the source file again.
+
+## Site settings
+
+Board members, contact details and form links are stored in `src/data/*.yml` and edited in `/admin` under "Ρυθμίσεις ιστότοπου". They are the same in every language, so nothing is translated. A PR that only changes them has nothing to translate: the `translate` and `verify` checks still report, and the status comment says "Nothing to translate". `src/data/` has no code owner, so editors publish settings without developer review.
+
+### A wrong value that is still valid goes live
+
+The build checks the format (an email looks like an email, a link starts with `https://`, a board role is one of the known roles). It cannot know that an address or a name is wrong. Nobody reviews settings before they are published.
+
+- **What to do:** editors check the preview before they publish. The preview of a settings entry is the site's home page, so open the page that shows the setting (About, Contact or Become a member).
+
+### A badly formed value blocks publishing, and only the build log says why
+
+A value that fails the check makes the Cloudflare build fail, so `Workers Builds: ghrweb` fails and Publish is blocked. The Workflow card shows "Checks ✗". The reason is in the build log: it names the file and the field.
+
+- **What to do:** the admin opens the build log from the PR and tells the editor what to fix. Decap's own checks (patterns on the fields) stop most mistakes before saving.
+
+### Comments in the YAML files are lost on the first CMS save
+
+Decap writes the whole file again when an editor saves. The explanatory comments at the top of `src/data/*.yml` disappear. The data is not affected.
+
+### Some fixed numbers and names still live in the code
+
+`about.board.intro` says the board has 5 members and `about.kvk` holds the KVK number, both in `src/i18n/ui.ts`. If the board grows or shrinks, that sentence has to be changed in code. The Ticket Tailor address in `src/pages/[lang]/events/calendar.astro` is also fixed.
+
+### Not yet tested in the live editor
+
+The settings collection was checked against the Decap 3.16.3 source and in tests, not yet by saving in `/admin`. On the first real edit, check that the PR branch is `cms/settings/<file>`, that its Workflow card shows the badges, and that the file keeps the same keys.
 
 ## Not yet verified in CI
 

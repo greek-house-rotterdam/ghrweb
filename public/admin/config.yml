@@ -303,3 +303,55 @@ collections:
   # ── docs). Editors manage the /history/<slug> detail pages, the         ──
   # ── /about/<slug> detail pages, and the timeline-milestone cards via    ──
   # ── PR, not via the admin UI. See src/content.config.ts for schemas.    ──
+
+  # ── Site settings ─────────────────────────────────────────────────
+  # One entry per file in src/data/. These are the same in every language, so
+  # nothing is translated. Each save opens a pull request on the branch
+  # cms/settings/<file name>. The checks are in src/lib/site-settings.ts; the
+  # fields below must match that file (a test compares them).
+
+  - name: settings
+    label: "Ρυθμίσεις ιστότοπου"
+    description: "Στοιχεία που είναι ίδια σε όλες τις γλώσσες: μέλη του Διοικητικού Συμβουλίου, στοιχεία επικοινωνίας και φόρμες. Δεν μεταφράζονται. Αν αφήσεις ένα πεδίο κενό, δεν εμφανίζεται στον ιστότοπο."
+    editor: { preview: false }
+    files:
+      - name: board
+        label: "Διοικητικό Συμβούλιο"
+        file: src/data/board.yml
+        fields:
+          - label: "Μέλη"
+            name: "members"
+            widget: "list"
+            summary: "{{fields.role}} · {{fields.name}}"
+            hint: "Η σειρά εδώ είναι η σειρά στη σελίδα «Σχετικά». Η ονομασία του ρόλου μεταφράζεται αυτόματα στα ολλανδικά και στα αγγλικά."
+            fields:
+              - label: "Ρόλος"
+                name: "role"
+                widget: "select"
+                options:
+                  - { label: "Πρόεδρος", value: "president" }
+                  - { label: "Αντιπρόεδρος", value: "vice_president" }
+                  - { label: "Γραμματέας", value: "secretary" }
+                  - { label: "Ταμίας", value: "treasurer" }
+                  - { label: "Μέλος Δ.Σ.", value: "member" }
+                default: "member"
+              - { label: "Ονοματεπώνυμο", name: "name", widget: "string", required: false, hint: "Αν μείνει κενό, η σελίδα δείχνει προσωρινά μόνο τον ρόλο." }
+
+      - name: contact
+        label: "Στοιχεία επικοινωνίας"
+        file: src/data/contact.yml
+        fields:
+          - { label: "Διεύθυνση", name: "address", widget: "string", required: false, hint: "Π.χ. Van Vollenhovenstraat 18, 3016 BH Rotterdam. Χρησιμοποιείται και για τον χάρτη. Αν μείνει κενό, κρύβονται η διεύθυνση και ο χάρτης." }
+          - { label: "Email Ένωσης", name: "union_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email"], hint: "Αν μείνει κενό, δεν εμφανίζεται στη σελίδα Επικοινωνία." }
+          - { label: "Email Ελληνικού Σπιτιού", name: "house_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email"], hint: "Εμφανίζεται και στη θέση της φόρμας όταν δεν υπάρχει φόρμα επικοινωνίας." }
+          - { label: "Instagram", name: "instagram_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.instagram.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο." }
+          - { label: "Facebook", name: "facebook_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.facebook.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο." }
+
+      - name: forms
+        label: "Φόρμες Google"
+        file: src/data/forms.yml
+        fields:
+          - { label: "Κωδικός φόρμας επικοινωνίας", name: "contact_form_id", widget: "string", required: false, pattern: ['^[A-Za-z0-9_-]*$', "Μόνο ο κωδικός της φόρμας, όχι ολόκληρος ο σύνδεσμος"], hint: "Ο κωδικός είναι το κομμάτι του συνδέσμου ανάμεσα στο /d/e/ και στο /viewform. Αν μείνει κενός, η σελίδα Επικοινωνία δείχνει το email αντί για φόρμα." }
+          - { label: "Φόρμα Τακτικού Μέλους", name: "member_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }
+          - { label: "Φόρμα Υποψήφιου Μέλους", name: "candidate_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }
+          - { label: "Φόρμα Φίλου", name: "friend_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }

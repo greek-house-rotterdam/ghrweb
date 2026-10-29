@@ -3,16 +3,20 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import BrutCard from "../../components/BrutCard.astro";
+import { contactFormUrl, getSiteSettings, mapUrls } from "../../lib/site-settings";
 
 export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const ADDRESS = "Van Vollenhovenstraat 18, 3016 BH Rotterdam";
-const MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(ADDRESS)}&output=embed`;
-const MAP_LINK = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`;
-const UNION_EMAIL = "enosi.ellinon.ollandias@gmail.com";
-const HOUSE_EMAIL = "het.griekse.huis@gmail.com";
+// Address, emails and the form come from src/data/*.yml (edited in /admin).
+// Anything left empty there is left out of the page.
+const { contact, forms } = getSiteSettings();
+const { address, union_email: unionEmail, house_email: houseEmail } = contact;
+const maps = address ? mapUrls(address) : null;
+const formUrl = contactFormUrl(forms);
+// Shown instead of the form while no form is set.
+const fallbackEmail = houseEmail ?? unionEmail;
 ---
 
 <Layout title={t(lang, "contact.title")} lang={lang}>
@@ -25,16 +29,29 @@ const HOUSE_EMAIL = "het.griekse.huis@gmail.com";
         <BrutCard class="bg-white p-6">
           <h2 class="text-xl font-extrabold">{t(lang, "contact.form.title")}</h2>
           <div class="mt-4">
-            {/* TODO: Replace with actual Google Form embed URL */}
-            <iframe
-              src="https://docs.google.com/forms/d/e/FORM_ID/viewform?embedded=true"
-              width="100%"
-              height="500"
-              class="border-2 border-black"
-              title="Contact Form"
-            >
-              Loading…
-            </iframe>
+            {formUrl ? (
+              <iframe
+                src={formUrl}
+                width="100%"
+                height="500"
+                class="border-2 border-black"
+                title="Contact Form"
+              >
+                Loading…
+              </iframe>
+            ) : (
+              <p class="text-gray-700">
+                {t(lang, "contact.form.fallback")}
+                {fallbackEmail && (
+                  <>
+                    {" "}
+                    <a href={`mailto:${fallbackEmail}`} class="font-bold text-black hover:underline">
+                      {fallbackEmail}
+                    </a>
+                  </>
+                )}
+              </p>
+            )}
           </div>
         </BrutCard>
 
@@ -43,50 +60,57 @@ const HOUSE_EMAIL = "het.griekse.huis@gmail.com";
           <BrutCard class="bg-accent-gold-lighter p-6">
             <h2 class="text-xl font-extrabold">{t(lang, "contact.info.title")}</h2>
             <div class="mt-4 space-y-3">
+              {address && (
               <div class="flex items-start gap-3">
                 <span class="text-lg">📍</span>
                 <div>
                   <p class="font-bold text-sm">{t(lang, "contact.address.label")}</p>
-                  <p class="text-sm text-gray-700">{ADDRESS}</p>
+                  <p class="text-sm text-gray-700">{address}</p>
                 </div>
               </div>
+              )}
+              {unionEmail && (
               <div class="flex items-start gap-3">
                 <span class="text-lg">✉️</span>
                 <div>
                   <p class="font-bold text-sm">{t(lang, "contact.email.union")}</p>
-                  <a href={`mailto:${UNION_EMAIL}`} class="text-sm text-gray-700 hover:text-black hover:underline">
-                    {UNION_EMAIL}
+                  <a href={`mailto:${unionEmail}`} class="text-sm text-gray-700 hover:text-black hover:underline">
+                    {unionEmail}
                   </a>
                 </div>
               </div>
+              )}
+              {houseEmail && (
               <div class="flex items-start gap-3">
                 <span class="text-lg">✉️</span>
                 <div>
                   <p class="font-bold text-sm">{t(lang, "contact.email.house")}</p>
-                  <a href={`mailto:${HOUSE_EMAIL}`} class="text-sm text-gray-700 hover:text-black hover:underline">
-                    {HOUSE_EMAIL}
+                  <a href={`mailto:${houseEmail}`} class="text-sm text-gray-700 hover:text-black hover:underline">
+                    {houseEmail}
                   </a>
                 </div>
               </div>
+              )}
             </div>
           </BrutCard>
 
+          {maps && (
           <BrutCard class="bg-white p-6">
             <h2 class="text-xl font-extrabold">{t(lang, "contact.map.title")}</h2>
             <div class="mt-4 aspect-video border-2 border-black overflow-hidden">
               <iframe
-                src={MAP_EMBED}
+                src={maps.embed}
                 width="100%"
                 height="100%"
                 style="border:0;"
                 allowfullscreen=""
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                title={`Google Maps - ${ADDRESS}`}
+                title={`Google Maps - ${address}`}
               ></iframe>
             </div>
             <a
-              href={MAP_LINK}
+              href={maps.link}
               target="_blank"
               rel="noopener noreferrer"
               class="mt-3 inline-block text-sm font-bold text-primary hover:underline"
@@ -94,6 +118,7 @@ const HOUSE_EMAIL = "het.griekse.huis@gmail.com";
               {t(lang, "contact.map.title")} →
             </a>
           </BrutCard>
+          )}
         </div>
       </div>
     </div>
