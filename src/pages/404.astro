@@ -1,0 +1,31 @@
+---
+// Served by Cloudflare for any address that doesn't exist (wrangler.json:
+// assets.not_found_handling = "404-page"). There's no language in the address,
+// so the page speaks all three and links to each home page.
+import Layout from "../layouts/Layout.astro";
+import BrutButton from "../components/BrutButton.astro";
+
+const messages = [
+  { lang: "gr", text: "Η σελίδα δεν βρέθηκε.", home: "Αρχική" },
+  { lang: "nl", text: "Deze pagina bestaat niet.", home: "Home" },
+  { lang: "en", text: "This page doesn't exist.", home: "Home" },
+] as const;
+---
+
+<Layout title="404" lang="gr">
+  <section class="py-24">
+    <div class="mx-auto max-w-3xl px-4 text-center">
+      <h1 class="text-5xl font-extrabold text-black">404</h1>
+      <ul class="mt-8 space-y-6">
+        {messages.map((m) => (
+          <li lang={m.lang}>
+            <p class="text-lg text-gray-700">{m.text}</p>
+            <BrutButton href={`/${m.lang}/`} size="sm" class="mt-2 bg-white text-black hover:bg-accent-gold">
+              {m.home} ({m.lang.toUpperCase()})
+            </BrutButton>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</Layout>
