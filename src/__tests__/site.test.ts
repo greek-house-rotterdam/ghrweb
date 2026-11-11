@@ -70,6 +70,13 @@ describe("build smoke test", () => {
     });
     expect(result).toContain("[build] Complete!");
   });
+
+  // The nightly rebuild reads /build.json to check the live site updated.
+  it("writes /build.json with the build time", () => {
+    const info = JSON.parse(readFileSync(join(ROOT, "dist/build.json"), "utf-8"));
+    expect(Number.isNaN(Date.parse(info.built_at))).toBe(false);
+    expect(typeof info.events).toBe("number");
+  });
 }, 90_000);
 
 // The build does NOT catch a file whose lang field doesn't match its directory.
