@@ -1,0 +1,119 @@
+name: Nightly rebuild
+
+# Rebuilds the live site once a day, so changes in Ticket Tailor (new, sold-out
+# or cancelled events) reach the site within a day without anyone merging.
+# It calls a Cloudflare deploy hook, which builds and deploys `main`.
+#
+# Then it checks that the live site really updated, by reading /build.json
+# (src/pages/build.json.ts). If it didn't, for example because the Ticket
+# Tailor key is broken and every production build stops, it opens an issue
+# that mentions the admins (or comments on the open one), and the run fails.
+# Without this, merged posts would look published while the site stays old.
+# When a later run sees the site update, it closes that issue.
+#
+# Setup: Cloudflare → ghrweb → Settings → Builds → Deploy Hooks → create one
+# for `main`, then save its URL as the repository secret CF_DEPLOY_HOOK_URL.
+# Anyone with that URL can start a build, so it lives only in the secret.
+#
+# GitHub pauses scheduled workflows after 60 days without activity in the
+# repository; "Run workflow" on this workflow's page starts it again.
+on:
+  schedule:
+    # 03:17 UTC daily. Not on the hour: GitHub delays runs scheduled at :00.
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: nightly-rebuild
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    # Never in forks.
+    if: github.repository == 'greek-house-rotterdam/ghrweb'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      issues: write # the "live site is not updating" issue
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      SITE: https://ghrweb.enosi-ellinon-ollandias.workers.dev
+      ISSUE_TITLE: The live site is not updating
+      ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Start a production build in Cloudflare
+        id: start
+        env:
+          HOOK: ${{ secrets.CF_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error title=Nightly rebuild::The secret CF_DEPLOY_HOOK_URL is not set. See the comment at the top of .github/workflows/nightly-rebuild.yml."
+            exit 1
+          fi
+          # A minute of slack for clock differences between GitHub and Cloudflare.
+          echo "since=$(( $(date -u +%s) - 60 ))" >> "$GITHUB_OUTPUT"
+          curl --fail-with-body --silent --show-error --max-time 30 \
+            --retry 3 --retry-all-errors -X POST "$HOOK"
+          echo
+          echo "Cloudflare accepted the build request."
+
+      - name: Wait for the live site to update
+        id: check
+        env:
+          SINCE: ${{ steps.start.outputs.since }}
+        run: |
+          deadline=$(( $(date -u +%s) + 20 * 60 ))
+          while :; do
+            info=$(curl --silent --max-time 20 "$SITE/build.json?t=$(date +%s)" || true)
+            built=$(echo "$info" | jq -r '.built_at // empty' 2>/dev/null || true)
+            if [ -n "$built" ] && [ "$(date -u -d "$built" +%s)" -ge "$SINCE" ]; then
+              echo "The live site updated: $info"
+              echo "fresh=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [ "$(date -u +%s)" -ge "$deadline" ]; then
+              echo "::error title=Live site not updated::No new build went live within 20 minutes. Last seen: ${info:-nothing}"
+              echo "fresh=false" >> "$GITHUB_OUTPUT"
+              echo "last=${built:-unknown}" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 60
+          done
+
+      - name: Close the alert issue
+        if: steps.check.outputs.fresh == 'true'
+        run: |
+          num=$(gh issue list -R "$REPO" --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == \"$ISSUE_TITLE\")) | .[0].number // empty")
+          if [ -n "$num" ]; then
+            gh issue close "$num" -R "$REPO" --comment "Fixed: the nightly rebuild went live again ($RUN_URL)."
+          fi
+
+      - name: Open or update the alert issue
+        if: steps.check.outputs.fresh == 'false'
+        env:
+          LAST: ${{ steps.check.outputs.last }}
+        run: |
+          body=$(cat <<EOF
+          $ADMIN_MENTIONS The nightly rebuild started a build of \`main\`, but the live site did not update within 20 minutes. Until this is fixed, merged posts look published but don't appear on the site.
+
+          - Last live build: $LAST
+          - This run: $RUN_URL
+
+          **What to check:** Cloudflare → ghrweb → Deployments → the latest build's log. A common cause is the Ticket Tailor key (\`TT_API_KEY\` under Settings → Build → Variables and secrets) being missing, wrong or revoked.
+
+          This issue closes itself when a later nightly rebuild goes live.
+          EOF
+          )
+          num=$(gh issue list -R "$REPO" --state open --search "in:title \"$ISSUE_TITLE\"" \
+            --json number,title --jq "map(select(.title == \"$ISSUE_TITLE\")) | .[0].number // empty")
+          if [ -n "$num" ]; then
+            gh issue comment "$num" -R "$REPO" --body "$body"
+          else
+            gh issue create -R "$REPO" --title "$ISSUE_TITLE" --body "$body"
+          fi
+          exit 1

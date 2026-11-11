@@ -1,6 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 import { URL_SLUG_MAX_LENGTH, URL_SLUG_PATTERN } from "./lib/entry-path";
+import { loadEvents } from "./lib/ticket-tailor";
 
 const langEnum = z.enum(["gr", "nl", "en"]);
 
@@ -37,73 +38,10 @@ const news = defineCollection({
   }),
 });
 
-async function fetchTicketTailorEvents() {
-  const key = process.env.TT_API_KEY;
-  if (!key) {
-    // CI builds (test smoke + Cloudflare preview) don't have the secret, and
-    // shouldn't fail on its absence. Local dev sees the warning and remembers
-    // to set it before they need real event data.
-    console.warn(
-      "[content.config] TT_API_KEY not set — returning an empty events list. " +
-        "Set TT_API_KEY in .env to fetch from Ticket Tailor (see docs/events-ticket-tailor.md).",
-    );
-    return [];
-  }
-  const auth = "Basic " + Buffer.from(key).toString("base64");
-  const url =
-    "https://api.tickettailor.com/v1/events?status=published&limit=100";
-  const res = await fetch(url, {
-    headers: { Authorization: auth, Accept: "application/json" },
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(
-      `Ticket Tailor API ${res.status}: ${body.slice(0, 300)}`,
-    );
-  }
-  const json = (await res.json()) as { data?: TTEvent[] };
-  const items = Array.isArray(json.data) ? json.data : [];
-  return items.map((e) => {
-    const html = e.description ?? "";
-    const plain = html
-      .replace(/<[^>]+>/g, " ")
-      .replace(/&nbsp;/g, " ")
-      .replace(/\s+/g, " ")
-      .trim();
-    return {
-      id: e.id,
-      name: e.name ?? "",
-      description_html: html,
-      description_text: plain.length > 200 ? plain.slice(0, 197) + "…" : plain,
-      start_iso: e.start?.iso ?? "",
-      end_iso: e.end?.iso ?? undefined,
-      url: e.url ?? "",
-      checkout_url: e.checkout_url ?? e.url ?? "",
-      image_url: e.images?.header ?? e.images?.thumbnail ?? undefined,
-      status: e.status ?? "published",
-      venue: e.venue?.name ?? undefined,
-      sold_out: e.tickets_available === "false" || e.unavailable === "true",
-    };
-  });
-}
-
-interface TTEvent {
-  id: string;
-  name?: string;
-  description?: string;
-  start?: { iso?: string };
-  end?: { iso?: string };
-  url?: string;
-  checkout_url?: string;
-  images?: { header?: string; thumbnail?: string };
-  status?: string;
-  venue?: { name?: string };
-  tickets_available?: string;
-  unavailable?: string;
-}
-
 const events = defineCollection({
-  loader: fetchTicketTailorEvents,
+  // Ticket Tailor, at build time. See src/lib/ticket-tailor.ts for what
+  // happens when it can't be reached.
+  loader: () => loadEvents({ env: process.env }),
   schema: z.object({
     name: z.string(),
     description_html: z.string(),

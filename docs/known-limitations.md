@@ -151,6 +151,30 @@ Decap writes the whole file again when an editor saves. The explanatory comments
 
 The settings collection was checked against the Decap 3.16.3 source and in tests, not yet by saving in `/admin`. On the first real edit, check that the PR branch is `cms/settings/<file>`, that its Workflow card shows the badges, and that the file keeps the same keys.
 
+## Events (Ticket Tailor)
+
+The site fetches events from Ticket Tailor while Cloudflare builds it (`src/lib/ticket-tailor.ts`), with up to three tries.
+
+### A broken Ticket Tailor key stops live-site updates
+
+When Ticket Tailor can't be reached during a **production** build (an outage, or a missing, wrong or revoked `TT_API_KEY`), the build stops on purpose. Cloudflare keeps the current live site, events included, rather than publishing an empty events page.
+
+- **While it lasts, merged posts don't appear on the site,** although their PRs show as merged and their cards leave the Workflow board.
+- **A short outage fixes itself** with the next build: the nightly rebuild or the next merge.
+- **A broken key doesn't.** The nightly rebuild checks `/build.json` on the live site. If no new build went live within 20 minutes, it opens the issue "The live site is not updating", which mentions the admins, and fails. It closes the issue once a later run goes live. So a frozen site is noticed within a day.
+
+### PR previews may show no events
+
+Preview builds don't stop when Ticket Tailor can't be reached: they warn in the build log and build without events, so editors can keep working. An empty events page on a preview is therefore not a sign of a problem with the post.
+
+### Changes in Ticket Tailor reach the site within a day
+
+New, sold-out or cancelled events show up with the next build: the nightly rebuild (03:17 UTC) or any merge. GitHub pauses scheduled workflows after 60 days without repository activity; "Run workflow" on the Nightly rebuild page restarts it.
+
+### Only the first 100 published events are read
+
+The loader reads one page of up to 100 published events (Ticket Tailor's maximum per page) and doesn't follow further pages.
+
 ## Not yet verified in CI
 
 - **A real Gemini failure.** The failure path was tested on PR #67 with a non-Greek source file (the status comment was re-created with the admin mention, and GitHub's notifications API listed it with reason `mention`), but never with an actual API error.
