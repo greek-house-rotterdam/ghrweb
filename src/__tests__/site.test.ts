@@ -77,7 +77,28 @@ describe("build smoke test", () => {
     expect(Number.isNaN(Date.parse(info.built_at))).toBe(false);
     expect(typeof info.events).toBe("number");
   });
+
+  // Cloudflare serves dist/404.html for unknown addresses (not_found_handling).
+  it("writes a 404 page", () => {
+    expect(readFileSync(join(ROOT, "dist/404.html"), "utf-8")).toContain("404");
+  });
 }, 90_000);
+
+// src/oauth.ts hands every request it doesn't handle to env.ASSETS. Without the
+// binding, env.ASSETS is undefined and every unknown address crashes the Worker
+// (Cloudflare error 1101) instead of showing the 404 page.
+describe("Worker config", () => {
+  const config = JSON.parse(readFileSync(join(ROOT, "wrangler.json"), "utf-8"));
+
+  it("binds the static files as ASSETS for the Worker", () => {
+    expect(config.assets.binding).toBe("ASSETS");
+    expect(readFileSync(join(ROOT, "src/oauth.ts"), "utf-8")).toContain("env.ASSETS.fetch(request)");
+  });
+
+  it("serves the 404 page for unknown addresses", () => {
+    expect(config.assets.not_found_handling).toBe("404-page");
+  });
+});
 
 // The build does NOT catch a file whose lang field doesn't match its directory.
 // A file at news/gr/post.md with lang: nl would build fine but display Greek
