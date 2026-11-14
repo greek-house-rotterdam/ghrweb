@@ -57,5 +57,8 @@ def test_the_check_compares_something():
     """Guard against a test that passes because it compared nothing."""
     with_source = [p for p in _translations() if "source_hash" in _read(p)[0]]
     assert len(with_source) > 0
-    # Descriptions must be part of what is being protected.
-    assert any(_read(p)[0].get("description") for p in with_source)
+    # Descriptions must be part of what is being protected. Checked on the hash
+    # itself, not on the real files: no entry has to have a description.
+    title_only = compute_source_hash({"title": "Τίτλος"}, "Κείμενο")
+    with_description = compute_source_hash({"title": "Τίτλος", "description": "Περιγραφή"}, "Κείμενο")
+    assert title_only != with_description
