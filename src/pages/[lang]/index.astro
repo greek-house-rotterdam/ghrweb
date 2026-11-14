@@ -35,7 +35,10 @@ const events = allEvents
       <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
         {t(lang, "home.hero.title")}
       </h1>
-      <p class="mt-6 text-lg text-primary-content sm:text-xl max-w-2xl mx-auto">
+      <p class="mt-6 text-lg font-bold text-white sm:text-xl max-w-2xl mx-auto">
+        {t(lang, "home.hero.welcome")}
+      </p>
+      <p class="mt-4 text-lg text-primary-content sm:text-xl max-w-2xl mx-auto">
         {t(lang, "home.hero.subtitle")}
       </p>
       <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
@@ -49,7 +52,8 @@ const events = allEvents
     </div>
   </section>
 
-  {/* Latest News */}
+  {/* Latest News (hidden while there are no posts) */}
+  {news.length > 0 && (
   <section class="py-16">
     <div class="mx-auto max-w-7xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.latest-news")}</h2>
@@ -64,15 +68,14 @@ const events = allEvents
           </BrutCard>
         ))}
       </div>
-      {news.length > 0 && (
-        <div class="mt-8">
-          <BrutButton href={`/${lang}/news`} size="sm" class="bg-white text-black hover:bg-accent-gold">
-            {t(lang, "common.read-more")} →
-          </BrutButton>
-        </div>
-      )}
+      <div class="mt-8">
+        <BrutButton href={`/${lang}/news`} size="sm" class="bg-white text-black hover:bg-accent-gold">
+          {t(lang, "common.read-more")} →
+        </BrutButton>
+      </div>
     </div>
   </section>
+  )}
 
   {/* Upcoming Events */}
   <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
