@@ -86,7 +86,9 @@ The status comment has no separate message for a crash in "Optimize changed imag
 
 ### The bot's commits create runs that wait for approval
 
-First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review runs for the bot's own pushes and holds them as "action_required" (awaiting approval). They aren't needed and don't block publishing. Don't approve them: they would only check the bot's commit again, which has no new content.
+First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review runs for the bot's own pushes and holds them as "action_required" (awaiting approval). This happens because the repository requires approval for every outside contributor's runs, and the bot isn't a collaborator. They aren't needed and don't block publishing. Don't approve them: they would only check the bot's commit again, which has no new content.
+
+Since 2026-11-15 the `tidy` job in `translate.yml` deletes these held runs on the bot's commit, so the "workflows awaiting approval" box goes away within about two minutes. If one still shows, it appeared after the job stopped looking; ignore it or delete it in the Actions tab.
 
 ### Translations aren't reviewed separately
 
