@@ -15,6 +15,11 @@ name: Nightly rebuild
 # for `main`, then save its URL as the repository secret CF_DEPLOY_HOOK_URL.
 # Anyone with that URL can start a build, so it lives only in the secret.
 #
+# A second job deletes leftover `cms/...` branches of posts that are already
+# published (or closed). Auto-publish normally deletes them right after the
+# merge (GitHub doesn't, for merges made with the workflow token), and Decap
+# can't save the same post again while its old branch is still there.
+#
 # GitHub pauses scheduled workflows after 60 days without activity in the
 # repository; "Run workflow" on this workflow's page starts it again.
 on:
@@ -30,6 +35,25 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  cleanup:
+    # Never in forks.
+    if: github.repository == 'greek-house-rotterdam/ghrweb'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write      # deleting branches
+      pull-requests: read  # which branches belong to merged or closed PRs
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/scripts
+
+      - name: Delete branches of published posts
+        run: python3 .github/scripts/auto_publish.py sweep
+
   rebuild:
     # Never in forks.
     if: github.repository == 'greek-house-rotterdam/ghrweb'
