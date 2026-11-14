@@ -56,11 +56,15 @@ describe("src/data", () => {
     expect(() => getSiteSettings()).not.toThrow();
   });
 
-  it("keeps the placeholders as placeholders", () => {
+  // Editors fill in names and the contact form in /admin, so this checks the
+  // shape of the real data, not today's values.
+  it("has only known board roles and a valid contact form link or none", () => {
     const { board, forms } = getSiteSettings();
-    expect(board.members.map((m) => m.role)).toEqual([...BOARD_ROLES]);
-    expect(board.members.every((m) => m.name === undefined)).toBe(true);
-    expect(contactFormUrl(forms)).toBeNull();
+    for (const m of board.members) expect(BOARD_ROLES).toContain(m.role);
+    const url = contactFormUrl(forms);
+    if (url !== null) {
+      expect(url).toMatch(/^https:\/\/docs\.google\.com\/forms\/d\/e\/[A-Za-z0-9_-]+\/viewform\?embedded=true$/);
+    }
   });
 });
 
