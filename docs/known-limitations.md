@@ -90,6 +90,10 @@ First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review run
 
 Since 2026-11-15 the `tidy` job in `translate.yml` deletes these held runs on the bot's commit, so the "workflows awaiting approval" box goes away within about two minutes. If one still shows, it appeared after the job stopped looking; ignore it or delete it in the Actions tab.
 
+### Content tests report, they don't block
+
+Since 2026-11-15 the tests that read the real content (`src/__tests__/site-settings.test.ts`, `.github/scripts/tests/test_content_hashes.py`) also run on every pull request, after the bot's commit (the `content-tests` job in `translate.yml`). If one fails, the pull request can still be published, and an issue "The content tests failed" mentions the admins. It doesn't block, because a broken test is the developer's problem, not the editor's. New tests that read the content must check its shape, never its current values.
+
 ### Translations aren't reviewed separately
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
