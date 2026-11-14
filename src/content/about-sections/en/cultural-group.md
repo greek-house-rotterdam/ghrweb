@@ -1,12 +1,12 @@
 ---
 order: 100
-title: The Cultural Team — The Greek House in Rotterdam
+title: The cultural group — The Greek House in Rotterdam
 lang: en
 source_hash: 'b977dd1dd9e8'
-translation_hash: '5fea4eb0306b'
+translation_hash: '5b8fe49e27f0'
 ---
 
-*The Greek House in Rotterdam* is the cultural team of the Association of Greeks in the Netherlands, known for a wide range of artistic activities and beyond.
+*The Greek House in Rotterdam* is the cultural group of the Association of Greeks in the Netherlands, known for a wide range of artistic activities and beyond.
 
 It began its journey in the autumn of 2017. Some of its founding members include Thodoris A. Klouvas, Fani Traikou, Michalis Kemanetzis, Thodoris Karypidis, Dafni Berikaki, and others.
 

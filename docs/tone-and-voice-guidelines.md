@@ -16,7 +16,7 @@ We communicate with warmth and personality, while remaining clear, trustworthy, 
 
 # The difference between voice and tone
 
-Our voice is who we are, our identity and position as an organisation, the Greek Association in the Netherlands and, through it, the Greek House in Rotterdam, the cultural entity of it; our tone is how we sound and communicate our values, activities, and community.
+Our voice is who we are, our identity and position as an organisation, the Association of Greeks in the Netherlands and, through it, the Greek House in Rotterdam, the cultural entity of it; our tone is how we sound and communicate our values, activities, and community.
 The voice of The Greek House and the Association of Greeks in the Netherlands reflects:
 - a cultural institution
 - a community space
@@ -119,12 +119,15 @@ Use these names exactly as written, in every language.
 |---|---|---|---|
 | The house | Το Ελληνικό Σπίτι (στο Ρότερνταμ) | Het Griekse Huis (in Rotterdam) | The Greek House (in Rotterdam) |
 | The association | Ένωση Ελλήνων Ολλανδίας | Vereniging van Grieken in Nederland | Association of Greeks in the Netherlands |
+| The association, abbreviated | ΕΕΟ (Ε.Ε.Ο.) | VvGiN | No abbreviation: write the full name |
+| The cultural group (Το Ελληνικό Σπίτι) | πολιτιστική ομάδα | culturele groep | cultural group |
 | Membership type: friend | Φίλος | Vriend | Friend |
 | Membership type: full | Τακτικό Μέλος | Vast Lid | Full Member |
 | Membership type: candidate | Υποψήφιο Μέλος | Kandidaat-lid | Candidate Member |
 | Membership page | Γίνε Μέλος | Word Lid | Become a Member |
 
 In Dutch, always address the reader with the informal "je/jij/jouw", never "u/uw". Never use "Grieks Huis" or "Hellenic House".
+In English, never call the association "Greek Union", "Greek Association" or "Hellenic Association", and never call the cultural group a "team".
 
 # Do’s and Don’ts through examples
 
