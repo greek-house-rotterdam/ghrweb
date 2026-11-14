@@ -45,3 +45,4 @@ data/scrapes/vvgn/records/**/*.json
 !/docs/content-style-guide.md
 !/docs/tone-and-voice-guidelines.md
 !/docs/known-limitations.md
+!/docs/content-reset.md

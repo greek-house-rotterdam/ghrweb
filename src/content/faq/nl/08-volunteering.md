@@ -1,9 +1,0 @@
----
-question: "Hoe kan ik vrijwilliger worden?"
-answer: "We verwelkomen vrijwilligers bij al onze activiteiten! Neem contact met ons op via de Contactpagina of kom naar een van onze gemeenschapsbijeenkomsten om te ontdekken hoe je kunt helpen."
-order: 8
-lang: nl
-source_hash: 'a19b0b064313'
-translation_hash: '8e97032d9d9a'
----
-
