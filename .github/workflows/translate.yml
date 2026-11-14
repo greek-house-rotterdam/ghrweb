@@ -285,3 +285,49 @@ jobs:
             if [ -f /tmp/changed_images.txt ]; then COUNT=$(grep -c . /tmp/changed_images.txt || true); fi
             python3 .github/scripts/pr_status.py images --state ok --sha "$SHA" --count "$COUNT"
           fi
+
+  # The bot's commit should not start these workflows again: the verify job
+  # already reports translate, verify and review on it. GitHub does create
+  # runs for it, then holds them for approval, because this repository requires
+  # approval for every outside contributor and the bot isn't a collaborator.
+  # Approving them would only repeat the work, so delete them and the "workflows
+  # awaiting approval" box goes away. Only the bot's own held runs on its own
+  # commit are touched. Never a blocker: the pull request is green without it.
+  tidy:
+    needs: translate
+    if: ${{ needs.translate.outputs.new_sha != '' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      actions: write  # delete the held runs
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      NEW_SHA: ${{ needs.translate.outputs.new_sha }}
+    steps:
+      - name: Delete the held runs on the bot's commit
+        run: |
+          # GitHub creates the runs a few seconds after the push, not all at once.
+          deleted=0
+          for attempt in 1 2 3 4 5 6 7 8; do
+            sleep 15
+            ids=$(gh api "repos/$REPO/actions/runs?head_sha=$NEW_SHA&per_page=50" --jq '
+              .workflow_runs[]
+              | select(.conclusion == "action_required")
+              | select(.triggering_actor.login == "github-actions[bot]")
+              | .id')
+            if [ -z "$ids" ]; then
+              # Stop once a round finds nothing after something was deleted.
+              [ "$deleted" -gt 0 ] && break
+              continue
+            fi
+            for id in $ids; do
+              if gh api -X DELETE "repos/$REPO/actions/runs/$id"; then
+                deleted=$((deleted + 1))
+                echo "Deleted held run $id"
+              else
+                echo "::warning title=Held run::Could not delete run $id"
+              fi
+            done
+          done
+          echo "Deleted $deleted held run(s) on $NEW_SHA."
