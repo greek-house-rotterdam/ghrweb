@@ -4,6 +4,7 @@ import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
 import BrutCard from "../../components/BrutCard.astro";
+import BrutButton from "../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
 import { entryPath } from "../../lib/entry-path";
 
@@ -23,6 +24,9 @@ const activities = allActivities
       <h1 class="text-4xl font-extrabold text-black">{t(lang, "activities.title")}</h1>
       <p class="mt-4 text-lg text-gray-600 max-w-2xl">
         {t(lang, "activities.intro")}
+      </p>
+      <p class="mt-4 text-gray-600 max-w-2xl">
+        {t(lang, "activities.note")}
       </p>
 
       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -47,6 +51,14 @@ const activities = allActivities
           <p class="text-gray-500 font-bold">{t(lang, "activities.none")}</p>
         </div>
       )}
+
+      <BrutCard class="mt-12 bg-accent-gold-lighter p-6 max-w-3xl">
+        <h2 class="text-xl font-extrabold">{t(lang, "activities.join.title")}</h2>
+        <p class="mt-2 text-gray-700">{t(lang, "activities.join.text")}</p>
+        <BrutButton href={`/${lang}/contact`} size="sm" class="mt-4 bg-white text-black hover:bg-accent-gold">
+          {t(lang, "nav.contact")}
+        </BrutButton>
+      </BrutCard>
     </div>
   </section>
 </Layout>
