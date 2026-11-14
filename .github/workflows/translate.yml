@@ -293,9 +293,12 @@ jobs:
   # Approving them would only repeat the work, so delete them and the "workflows
   # awaiting approval" box goes away. Only the bot's own held runs on its own
   # commit are touched. Never a blocker: the pull request is green without it.
+  # The job checks out no code and runs no third-party actions: its token,
+  # with `actions: write`, is only used by the `gh api` calls below.
   tidy:
     needs: translate
-    if: ${{ needs.translate.outputs.new_sha != '' }}
+    # Never for forks (translate already refuses them; this repeats it here).
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.translate.outputs.new_sha != '' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
