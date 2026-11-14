@@ -34,7 +34,7 @@ Each entry was removed in Greek, Dutch and English.
 
 ## What was added or changed
 
-- **Activities:** the 11 activities from the Drive's overview, word for word, with 6 photos from its folder. Kept file names: `cooking`, `art-workshop`, `dutch-classes`. Left out: «gyrokinisis (?)» and the «Open House» paragraph, which are marked unfinished in the Drive.
+- **Activities:** the 11 activities from the Drive's overview (its wording, with small spelling and punctuation fixes), with 6 photos from its folder. Kept file names: `cooking`, `art-workshop`, `dutch-classes`. Left out: «gyrokinisis (?)» and the «Open House» paragraph, which are marked unfinished in the Drive.
 - **Useful information:** `resources/greek-consulate`, from «Πότε, πώς και γιατί απευθυνόμαστε στο Ελληνικό Προξενείο».
-- **FAQ:** 7 of the Drive's 11 questions, answered only with facts from the Drive (membership PDF, activities overview, cultural group text) or about this website. The other 4 wait for the managers.
+- **FAQ:** 7 of the Drive's 11 questions. 4 are answered with facts from the Drive (membership PDF, activities overview, cultural group text); 3 describe how this website works (where to find events and updates). The other 4 wait for the managers.
 - **History and About:** already based on the same Drive texts. Removed sentences the Drive doesn't have, restored the Drive's wording in a few places, and added the 1780 view of Amsterdam embedded in the Drive's history document.
