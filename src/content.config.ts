@@ -143,6 +143,8 @@ const historyMilestones = defineCollection({
     year: z.string(),
     title: z.string().max(140),
     linkedSection: z.string().optional(),
+    // Optional photo shown on the timeline card, e.g. "/images/timeline-1957.jpg".
+    image: z.string().optional(),
     lang: langEnum,
     ...translationMeta,
   }),
