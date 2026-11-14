@@ -1,11 +1,11 @@
 ---
-title: Dutch Language Classes
-description: Free Dutch language classes for members of the Greek community.
-emoji: "📚"
-order: 2
+title: Dutch Lessons
+emoji: 🇳🇱
+image: /images/activity-dutch-classes.jpg
+order: 40
 lang: en
-source_hash: '701136cfc8f0'
-translation_hash: '47c8923aa628'
+source_hash: '5531bdd87be0'
+translation_hash: '54ea811bb7e5'
 ---
 
-Free Dutch language classes for members of the Greek community.
+Our online Dutch lessons are designed to support newcomers—and anyone interested—in learning the language. Through mutual support and group study, we help each other settle into daily life in the friendliest and most encouraging way.

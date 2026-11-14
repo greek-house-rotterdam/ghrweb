@@ -1,11 +1,11 @@
 ---
-title: Cooking
-description: Traditional Greek cooking classes and communal meals.
-emoji: "🍳"
-order: 6
+title: Cooking Workshops
+emoji: 🍲
+image: /images/activity-cooking.jpg
+order: 70
 lang: en
-source_hash: 'af2af4957449'
-translation_hash: '64902948e5d3'
+source_hash: 'e158c2bf763b'
+translation_hash: 'fe88bc60ed64'
 ---
 
-Traditional Greek cooking classes and communal meals.
+A creative, hands-on workshop that brings the rich flavours and aromas of Greek culinary tradition to the table. Participants dive into the techniques behind authentic recipes—from traditional handmade pies to slow-cooked classics—celebrating the richness and warmth of our home cuisine.

@@ -1,11 +1,10 @@
 ---
-title: Art Workshop
-description: Creative workshops in painting, ceramics, and crafts.
-emoji: "🎨"
-order: 3
+title: Visual Arts Workshop
+emoji: 🎨
+order: 80
 lang: en
-source_hash: '96fb267aabd0'
-translation_hash: '45640c5dfe7c'
+source_hash: 'f70c12f2eaf1'
+translation_hash: '7344e679d0e4'
 ---
 
-Creative workshops in painting, ceramics, and crafts.
+An initiative dedicated to artistic expression. Through the creative process, our members have the opportunity to transform memories and emotions into art, while fostering connection and meaningful sharing within the group. A journey of inner exploration and creativity, open to everyone who wants to discover the power of the visual arts.

@@ -1,11 +1,11 @@
 ---
-title: Koken
-description: Lessen in traditionele Griekse keuken en gezamenlijke maaltijden.
-emoji: "🍳"
-order: 6
+title: Kookworkshops
+emoji: 🍲
+image: /images/activity-cooking.jpg
+order: 70
 lang: nl
-source_hash: 'af2af4957449'
-translation_hash: '5b711d24e8d7'
+source_hash: 'e158c2bf763b'
+translation_hash: 'f32c63314a0f'
 ---
 
-Lessen in traditionele Griekse keuken en gezamenlijke maaltijden.
+Een creatieve en leerzame workshop waarin de geuren en smaken van de Griekse culinaire traditie centraal staan. Je leert de technieken achter authentieke gerechten — van traditionele pites tot smaakvolle stoofgerechten — en ontdekt zo de rijkdom van onze Griekse keuken.

@@ -1,13 +1,13 @@
 ---
 order: 200
-title: 1957 — The building of the Saint Nicholas Church
+title: 1957 — The Construction of Saint Nicholas Church
 lang: en
-source_hash: '1b0d8169066d'
-translation_hash: '89a9e306dbc2'
+source_hash: '3d6b0a2af50e'
+translation_hash: '5aab524883e9'
 ---
 
-Built in the Byzantine basilica style and dedicated to the patron saint of sailors, the church was inaugurated on **29 June 1957**.
+Built in a Byzantine basilica style and dedicated to the patron saint of seafarers, the church was inaugurated on **29 June 1957**.
 
-At that time, only 41 Greeks were registered in the Consulate's archives — a small community that saw the church not just as a place of worship, but as a vital meeting point and a symbol of their identity.
+That year, 41 Greeks were registered in the Consulate's records.
 
 The church remained the only Greek Orthodox church in the Netherlands until 1987.
