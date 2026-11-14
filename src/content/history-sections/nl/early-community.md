@@ -1,51 +1,55 @@
 ---
 order: 50
-title: De Griekse gemeenschap in Nederland vóór de E.E.O.
+title: De Griekse gemeenschap in Nederland vóór de VGN
 lang: nl
-source_hash: '4be80dcfaec5'
-translation_hash: 'a6eb07ba6e9a'
+source_hash: '9995719665ec'
+translation_hash: 'ee732577a216'
 ---
 
-## Ioannis Prigos en “het grootste handelscentrum ter wereld”
+## Ioannis Prigkos en ‘het grootste handelscentrum ter wereld’
 
-De gedocumenteerde geschiedenis van de Griekse gemeenschap in Nederland gaat terug tot ongeveer 1760.
+De geschreven geschiedenis van de Griekse gemeenschap in Nederland gaat terug tot rond 1760.
 
-De gebeurtenissen uit die tijd staan beschreven in de beroemde *“Kronieken van Amsterdam”*, geschreven door Johannes Brink. Brink werd geboren als Ioannis Prigos in het kleine bergdorpje Zagora op de Pilion en vestigde zich later in Amsterdam — een stad die hij in zijn kroniek omschreef als “het grootste handelscentrum ter wereld”.
+De gebeurtenissen uit die tijd staan opgetekend in de beroemde *‘Kroniek van Amsterdam’*, geschreven door Johannes Brink. Brink werd geboren als Ioannis Prigkos in het bergdorp Zagora in Pilion en vestigde zich later in Amsterdam — de stad die hij in zijn kroniek omschreef als ‘het grootste handelscentrum ter wereld’.
 
-## “Maar wie zijn jullie eigenlijk?”
+![Gezicht op Amsterdam rond 1780 (Daniel Pomarède, Stadsarchief Amsterdam)](/images/amsterdam-1780.jpg)
 
-Uit de beschrijvingen in zijn dagboek leren we veel details over de Grieken die in de 18e eeuw in Nederland woonden.
+*Gezicht op Amsterdam rond 1780. Daniel Pomarède, collectie [Amsterdam City Archives](http://archief.amsterdam/archief/10097/010097012073).*
 
-De gezamenlijke droom van een kleine groep kooplieden in Amsterdam — het welvarende hart van Nederland — was om een gebedshuis op te richten. Dit moest niet alleen voorzien in hun religieuze behoeften, maar ook dienen als een centrum om onderling contact te bevorderen en de Griekse identiteit, cultuur en tradities te behouden. Bovenal wilden ze hun geloof beschermen in het verre lutherse land waar ze zich hadden gevestigd.
+## ‘Maar wie zijn jullie dan?’
 
-Rond 1763 stapten ze naar de gemeenteraad met het verzoek om de orthodoxe Heilige Liturgie te mogen vieren. “Maar wie zijn jullie eigenlijk?” was de logische vervolgvraag. “Grieken en christenen,” luidde het antwoord. De toestemming werd verleend en volgens de Kronieken stelden twee Griekse ondernemers — Pigazis en Avgerinos — de zolder van hun handelspanden beschikbaar als gebedsruimte.
+Uit de aantekeningen in zijn dagboek leren we veel over de Grieken die in de 18e eeuw in Nederland woonden.
 
-## 22 juli 1764: De eerste Heilige Liturgie
+Een kleine groep kooplieden in Amsterdam — het welvarende hart van Nederland — koesterde een gezamenlijke droom: het stichten van een gebedsruimte. Een plek voor hun religieuze behoeften, maar ook een ontmoetingsplek om onderling contact te onderhouden en de Griekse identiteit, cultuur en tradities levend te houden. Bovenal wilden ze trouw blijven aan hun geloof in het verre lutherse land waar ze waren neergestreken.
 
-De eerste Heilige Liturgie vond plaats op 22 juli 1764, geleid door de eerwaarde Anthimos uit Zagora. Al snel zat de kleine zolder vol — vooral met Griekse en Russische orthodoxe zeelieden die op doorreis waren.
+Rond 1763 stapten ze naar het stadsbestuur met het verzoek om de orthodoxe Goddelijke Liturgie te mogen vieren. ‘Maar wie zijn jullie dan?’, luidde de logische vraag. ‘Grieken en christenen’, antwoordden ze. De toestemming kwam er en volgens de kroniek stelden twee Griekse zakenlieden — Pigazis en Avgerinos — de zolder van hun handelshuizen beschikbaar als gebedsruimte.
 
-Onder de aanwezigen bevonden zich vaak intellectuelen, Nederlandse hellenisten en geestelijken. Zij werden aangetrokken door de ingetogen sfeer van de dienst en de kans om de Heilige Liturgie in de oorspronkelijke Griekse taal bij te wonen — en niet in het “Erasmiaans Grieks” dat ze op de grote Nederlandse universiteiten hadden geleerd.
+## 22 juli 1764: De eerste Goddelijke Liturgie
 
-## De aankoop van de Griekse kerk
+De allereerste Goddelijke Liturgie vond plaats op 22 juli 1764, onder leiding van de eerwaarde pater Anthimos uit Zagora. Al snel zat het kleine zolderkerkje vol — vooral met passerende Griekse en Russische orthodoxe zeelieden.
 
-De behoefte aan een eigen Griekse kerk kon niet langer worden uitgesteld — en die wens ging in vervulling door een reeks toevalligheden die wel een thriller lijken.
+Tussen de kerkgangers zag je ook regelmatig intellectuelen, Nederlandse hellenisten en predikanten. Ze kwamen af op de ingetogen sfeer van de dienst en de unieke kans om de liturgie in de oorspronkelijke Griekse taal mee te maken — en niet in het ‘Erasmiaans Grieks’ dat hun aan de Nederlandse universiteiten werd onderwezen.
 
-In 1748 stierf in Batavia (de verre Nederlandse kolonie in Indië) een zeer rijke Griekse koopman, Dimitris Papathanasis. Voor zijn overlijden vertrouwde hij de Nederlandse gouverneur het lot toe van de 15.417 gouden munten die hij samen met zijn overleden partner Konstantina Mavroudoglou had verzameld. Het fortuin moest naar hun erfgenamen, die destijds in Philippopolis (het huidige Plovdiv in Bulgarije) woonden.
+## Een eigen Griekse kerk
 
-De plichtsgetrouwe gouverneur voerde de wens uit en het geld werd naar Nederland gestuurd en ondergebracht bij de *“Weeskamer”*, een instantie die erfenissen voor weduwen en wezen beheerde. Zo kwamen op een dag in 1762 twee erfgenamen in Amsterdam aan om hun fortuin op te eisen.
+De wens voor een echte Griekse kerk kon niet langer wachten — en ging uiteindelijk in vervulling door een samenloop van omstandigheden die zo uit een spannend boek lijkt te komen.
 
-Uit dankbaarheid voor de hulp van de lokale Griekse gemeenschap — en in het bijzonder van priester Nektarios — bij het verkrijgen van de nodige identiteitsbewijzen, schonken de erfgenamen het voor die tijd aanzienlijke bedrag van 5.000 munten voor de aankoop van een pand van drie verdiepingen aan de Oudezijds Voorburgwal nr. 91. Dit gebouw werd omgevormd tot kerk.
+In 1748 overleed in Batavia (de verre Nederlandse kolonie in Oost-Indië) een zeer welvarende Griekse handelaar, Dimitris Papathanasis. Vóór zijn overlijden vertrouwde hij de Nederlandse gouverneur het beheer toe over 15.417 gouden florijnen, een fortuin dat hij samen met zijn overleden partner Konstantina Mavroudoglou had opgebouwd. De erfenis moest toekomen aan hun nabestaanden, die destijds in Filippopolis (het huidige Plovdiv) in Bulgarije woonden.
 
-Zo vond op een zondagochtend in mei 1764 de eerste dienst plaats in de nieuwe Grieks-Russisch-orthodoxe kerk van de Heilige Catharina — vernoemd naar de beschermvrouwe van de kerk, Catharina de Grote, keizerin van Rusland. Het gebouw staat er vandaag de dag nog steeds. In diezelfde straat woonde tussen 1772 en 1778 een andere Griekse koopman, [Adamantios Korais](https://en.wikipedia.org/wiki/Adamantios_Korais) — die later een van de grootste visionairs zou worden in de strijd voor de bevrijding van Griekenland van het Ottomaanse Rijk.
+De plichtsgetrouwe gouverneur zorgde dat de wens werd uitgevoerd: het geld werd naar Nederland overgebracht en toevertrouwd aan de *Weeskamer*, de instantie die nalatenschappen voor weduwen en wezen beheerde. Zo arriveerden op een dag in 1762 twee erfgenamen in Amsterdam om de erfenis op te eisen.
 
-Ondanks een voortdurend gebrek aan middelen vonden de diensten min of meer regelmatig plaats, afhankelijk van de beschikbaarheid van een priester.
+Als dank voor de hulp van de lokale Griekse gemeenschap — en in het bijzonder van pater Nektarios — bij het aantonen van hun identiteit, schonken de erfgenamen het destijds aanzienlijke bedrag van 5.000 florijnen. Hiermee werd een pand van drie verdiepingen gekocht aan de Oudezijds Voorburgwal nr. 91, dat werd ingericht als volwaardige kerk.
+
+Zo vond op een zondagochtend in mei 1764 de eerste dienst plaats in de nieuwe Grieks-Russisch-orthodoxe Sint-Catharinakerk — vernoemd naar Catharina de Grote, keizerin van Rusland en beschermvrouwe van de kerk. Het pand staat er nog altijd. In diezelfde straat woonde tussen 1772 en 1778 nog een Griekse handelaar: [Adamantios Korais](https://en.wikipedia.org/wiki/Adamantios_Korais), die later zou uitgroeien tot een van de belangrijkste wegbereiders voor de Griekse onafhankelijkheid van het Ottomaanse Rijk.
+
+Ondanks een voortdurend tekort aan financiële middelen vonden de diensten min of meer regelmatig plaats — afhankelijk van de beschikbaarheid van een priester.
 
 ## De Russische connectie en de sluiting in 1867
 
-In de jaren 1830 kreeg de orthodoxe gemeenschap nieuw leven ingeblazen toen de Russische prinses Anna Paulowna naar Nederland kwam om te trouwen met prins Willem van Oranje. Zij schonk diverse voorwerpen aan de orthodoxe kerken in de koninklijke paleizen en bad regelmatig in de Sint-Catharinakerk, waarvoor zij een belangrijke weldoener werd. Ook de broer van tsaar Nicolaas I schonk kostbare geschenken aan de kerk.
+In de jaren 1830 leefde de orthodoxe gemeenschap weer helemaal op. De Russische grootvorstin Anna Paulowna kwam naar Nederland om te trouwen met prins Willem van Oranje. Ze schonk waardevolle stukken aan de orthodoxe kapellen in de paleizen en kwam bidden in de Sint-Catharinakerk, waar ze een belangrijke weldoenster van werd. Ook de broer van tsaar Nicolaas I overlaadde de kerk met rijke geschenken.
 
-Helaas moest de kerk in 1867, na het overlijden van Anna Paulowna, de deuren sluiten wegens geldgebrek en werd het gebouw bij opbod verkocht. De geschenken van de tsaar werden overgebracht naar het Russische consulaat.
+Toch viel het doek in 1867: na het overlijden van Anna Paulowna moest de kerk bij gebrek aan middelen noodgedwongen sluiten. Het pand werd geveild en de tsaristische geschenken werden overgebracht naar het Russische consulaat.
 
 ---
 
-*Bron: V. Skouvaras, “Ioannis Prigos (1725–1789). De Griekse gemeenschap in Amsterdam, de school en de bibliotheek van Zagora”, in Thessalika Chronika, Athene 1964.*
+*Bron: V. Skouvaras, ‘Ioannis Prigkos (1725–1789). De Griekse gemeenschap van Amsterdam, de school en de bibliotheek van Zagora’, in Thessalika Chronika, Athene 1964.*

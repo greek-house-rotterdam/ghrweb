@@ -1,23 +1,21 @@
 ---
 order: 100
-title: The cultural team — The Greek House in Rotterdam
+title: The Cultural Team — The Greek House in Rotterdam
 lang: en
-source_hash: '1ea94f13f173'
-translation_hash: '61fabdb52bb7'
+source_hash: 'b977dd1dd9e8'
+translation_hash: '5fea4eb0306b'
 ---
 
-The *Griekse Huis in Rotterdam* is the cultural team of the Association of Greeks in the Netherlands. It is well-known for a wide range of artistic activities and more.
+*The Greek House in Rotterdam* is the cultural team of the Association of Greeks in the Netherlands, known for a wide range of artistic activities and beyond.
 
-Our journey began in the autumn of 2017. Some of the founding members include Thodoris A. Klouvas, Fani Traikou, Michalis Kemanetzis, Thodoris Karypidis, Dafni Berikaki, and others.
+It began its journey in the autumn of 2017. Some of its founding members include Thodoris A. Klouvas, Fani Traikou, Michalis Kemanetzis, Thodoris Karypidis, Dafni Berikaki, and others.
 
-![The hall and the coffee house of the Greek House](/images/eeo-koffiehuis.jpg)
+![The hall and café of The Greek House](/images/eeo-koffiehuis.jpg)
 
-## Our goals and vision
+## Goals and Vision
 
-Our main goal at the Greek House is to continuously launch new activities and support projects by creative Greek artists and professionals. We aim to establish the *Greek House in Rotterdam* as a hub for arts, culture, dialogue, and entertainment.
+The primary goal of The Greek House is to continuously organise new activities and support projects by creative Greek artists and professionals. We aim to establish *The Greek House in Rotterdam* as a home for culture, the arts, dialogue, and entertainment.
 
-Our long-term vision is to keep the Association of Greeks in the Netherlands vibrant, engaging, and welcoming for everyone who visits us — whether it's to join an activity or just to enjoy a coffee with fellow Greeks on a Sunday morning or a Friday afternoon.
+Our long-term vision is to keep the Association of Greeks in the Netherlands vibrant, engaging, and welcoming—for everyone who visits us, whether to participate in our activities or simply to enjoy a coffee with fellow Greeks on a Sunday morning or a Friday evening.
 
-## Want to get involved?
-
-Are you looking for a creative outlet? Would you like to volunteer for our activities? [Get in touch with us](/gr/contact) or drop by the Greek House during our opening hours so we can meet you!
+Do you have a creative passion and/or would you like to volunteer for the activities of The Greek House? [Get in touch with us](/gr/contact) or drop by The Greek House during opening hours so we can get to know each other!
