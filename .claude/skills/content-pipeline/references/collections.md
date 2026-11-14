@@ -140,10 +140,11 @@ Year/title pairs rendered as the timeline on `/history`. Each entry is one timel
 year: string          # required, e.g. "1946" (string, not number — supports ranges like "1965-1971")
 title: string         # required, ≤ 140 chars
 linkedSection: string # optional — slug of a history-sections entry. When set, the card becomes a link to /<lang>/history/<slug>.
+image: string         # optional — photo on the timeline card, e.g. "/images/timeline-1957.jpg" (copied to the translations)
 lang: "gr" | "nl" | "en"
 ```
 
-Body: leave empty — the timeline card only renders year + title (and an optional "read more →" affordance when `linkedSection` is set).
+Body: leave empty — the timeline card only renders the optional photo, year + title (and an optional "read more →" affordance when `linkedSection` is set).
 
 ---
 
