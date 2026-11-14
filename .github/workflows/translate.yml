@@ -164,6 +164,90 @@ jobs:
               --report /tmp/translate_failure.json
           fi
 
+  # The automatic tests that read the real content (src/content, src/data) run
+  # here too, after the bot's commit, so a content edit that breaks one shows
+  # up on the pull request that caused it (it happened with #88 and #90). They
+  # can't run in the Tests workflow on content pull requests: there they would
+  # check the editor's commit, before the translations exist.
+  #
+  # Not a required check: a broken test is the developer's problem, never the
+  # editor's, so it doesn't block publishing. `report-content-tests` tells the
+  # admins instead. Read-only token: this job installs packages and runs code.
+  content-tests:
+    needs: [translate, verify]
+    # Never for forks (translate already refuses them; this repeats it here).
+    if: ${{ !cancelled() && github.event.pull_request.head.repo.full_name == github.repository && needs.translate.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}  # includes the bot's commit, if any
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      # Keep this list to the tests that read real content. Each one checks the
+      # shape of the content, never today's values (see the tests' comments).
+      - name: Content tests (Node)
+        run: npx vitest run src/__tests__/site-settings.test.ts
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Python dependencies
+        run: uv export --no-hashes --extra test | uv pip install --system -r -
+
+      - name: Content tests (Python)
+        run: pytest -v .github/scripts/tests/test_content_hashes.py
+
+  # Opens (or adds to) one issue for the admins when the content tests fail.
+  # Separate job with no code checkout: only the `gh` calls below use its
+  # `issues: write` token.
+  report-content-tests:
+    needs: content-tests
+    if: ${{ failure() && needs.content-tests.result == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      TITLE: The content tests failed
+      ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Open or update the issue
+        run: |
+          body=$(cat <<EOF
+          $ADMIN_MENTIONS The tests that read the site's content failed on $PR_URL.
+
+          If that pull request only changes content (for example a save in /admin), the text is probably fine: usually a test expects something about the content that is no longer true. Fix the test (check the content's shape, not its current values), or the content if it really is wrong. If it changes code, the code may have broken the test.
+
+          - Run: $RUN_URL
+
+          This doesn't block publishing. Close this issue when it's fixed.
+          EOF
+          )
+          num=$(gh issue list -R "$REPO" --state open --search "in:title \"$TITLE\"" \
+            --json number,title --jq "map(select(.title == \"$TITLE\")) | .[0].number // empty")
+          if [ -n "$num" ]; then
+            gh issue comment "$num" -R "$REPO" --body "$body"
+          else
+            gh issue create -R "$REPO" --title "$TITLE" --body "$body"
+          fi
+
   verify:
     needs: translate
     runs-on: ubuntu-latest

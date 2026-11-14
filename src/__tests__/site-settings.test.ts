@@ -44,6 +44,11 @@ function failure(files: Record<string, string>): string {
 
 // ---------------------------------------------------------------------------
 // The files in src/data
+//
+// These read the real settings, which editors change in /admin. They also run
+// on content pull requests (the content-tests job in translate.yml). Check the
+// shape of the data, never its current values: a test that expects, say, an
+// empty contact form breaks on the first legitimate edit (it happened in #88).
 // ---------------------------------------------------------------------------
 
 describe("src/data", () => {

@@ -88,6 +88,10 @@ The status comment has no separate message for a crash in "Optimize changed imag
 
 First seen on 2026-10-07: GitHub creates Content Pipeline and Content Review runs for the bot's own pushes and holds them as "action_required" (awaiting approval). They aren't needed and don't block publishing. Don't approve them: they would only check the bot's commit again, which has no new content.
 
+### Content tests report, they don't block
+
+Since 2026-11-15 the tests that read the real content (`src/__tests__/site-settings.test.ts`, `.github/scripts/tests/test_content_hashes.py`) also run on every pull request, after the bot's commit (the `content-tests` job in `translate.yml`). If one fails, the pull request can still be published, and an issue "The content tests failed" mentions the admins. It doesn't block, because a broken test is the developer's problem, not the editor's. New tests that read the content must check its shape, never its current values.
+
 ### Translations aren't reviewed separately
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.

@@ -10,6 +10,11 @@ a Dutch or English file whose text differs from it is a hand fix, which the
 bot keeps (feature A9), and editors make those through the CMS. The hash
 format itself is pinned in test_optional_description.py
 (test_hash_with_a_description_is_unchanged).
+
+These tests also run on content pull requests, after the bot's commit (the
+content-tests job in translate.yml). Check how the content fits together,
+never what it currently says: no entry has to exist, have a description, etc.
+(a test that required a description broke when #90 removed the last one).
 """
 
 from pathlib import Path
