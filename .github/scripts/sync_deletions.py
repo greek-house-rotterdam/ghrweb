@@ -1,15 +1,32 @@
 #!/usr/bin/env python3
 """
-Sync deletions across languages.
-Reads a list of deleted files (passed as arguments) and removes their counterparts
-in other languages.
+Handle content files deleted in a pull request (plan item 0.4).
+
+- **A Greek file deleted:** the post is gone, so its Dutch and English
+  translations are deleted too.
+- **A Dutch or English file deleted, its Greek file still there:** nothing else
+  is deleted. The Greek file is listed for translate.py, which writes the
+  missing translation again. Deleting a translation is a way to have the bot
+  redo it; it never removes the post.
+
+Before this, deleting any language deleted all three, Greek included.
+
+Usage:
+    sync_deletions.py [--retranslate-to FILE] DELETED_FILE...
+
+The Greek files to translate again are written to FILE, one per line.
 """
 
-import sys
+import argparse
 import os
+import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from _common import LANGUAGES
+
+SOURCE_LANG = "gr"
+
 
 def get_counterparts(filepath: Path) -> list[Path]:
     """
@@ -17,61 +34,67 @@ def get_counterparts(filepath: Path) -> list[Path]:
     return paths for 'src/content/news/nl/post.md' and 'src/content/news/en/post.md'.
     """
     parts = list(filepath.parts)
-    
-    # Find which part is the language code
-    try:
-        lang_index = -1
-        for i, part in enumerate(parts):
-            if part in LANGUAGES:
-                lang_index = i
-                break
-        
-        if lang_index == -1:
-            return []
+    for i, part in enumerate(parts):
+        if part in LANGUAGES:
+            counterparts = []
+            for lang in LANGUAGES:
+                if lang != part:
+                    new_parts = parts.copy()
+                    new_parts[i] = lang
+                    counterparts.append(Path(*new_parts))
+            return counterparts
+    return []
 
-        current_lang = parts[lang_index]
-        counterparts = []
-        
-        for lang in LANGUAGES:
-            if lang == current_lang:
-                continue
-                
-            new_parts = parts.copy()
-            new_parts[lang_index] = lang
-            counterparts.append(Path(*new_parts))
-            
-        return counterparts
-        
-    except Exception:
-        return []
 
-def main():
-    # Skip the first argument (script name)
-    deleted_files = sys.argv[1:]
-    
-    if not deleted_files:
-        print("No files provided to sync.")
-        return
+def language_of(filepath: Path) -> str | None:
+    return next((part for part in filepath.parts if part in LANGUAGES), None)
 
-    print(f"Processing {len(deleted_files)} deleted file(s)...")
-    
-    for file_path_str in deleted_files:
-        # Remove quotes if present (though shell should handle this)
-        file_path_str = file_path_str.strip('"').strip("'")
-        file_path = Path(file_path_str)
-        
-        print(f"Source deleted: {file_path}")
-        
-        counterparts = get_counterparts(file_path)
-        for target in counterparts:
-            if target.exists():
-                print(f"  Removing counterpart: {target}")
-                try:
-                    os.remove(target)
-                except OSError as e:
-                    print(f"  Error removing {target}: {e}")
-            else:
-                print(f"  Counterpart not found (already deleted?): {target}")
+
+def plan(deleted: list[Path], exists: Callable[[Path], bool] = Path.exists) -> tuple[list[Path], list[Path]]:
+    """Returns (files to delete, Greek files to translate again)."""
+    to_delete: list[Path] = []
+    to_translate: list[Path] = []
+    for path in deleted:
+        lang = language_of(path)
+        if lang is None:
+            continue
+        if lang == SOURCE_LANG:
+            to_delete += [p for p in get_counterparts(path) if exists(p) and p not in to_delete]
+        else:
+            greek = next(p for p in get_counterparts(path) if language_of(p) == SOURCE_LANG)
+            # If the Greek was deleted in the same pull request, the post is
+            # gone: the Greek deletion removes the rest.
+            if exists(greek) and greek not in to_translate:
+                to_translate.append(greek)
+    return to_delete, to_translate
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser.add_argument("--retranslate-to", type=Path, help="write the Greek files to translate again here")
+    parser.add_argument("deleted", nargs="*", type=Path)
+    args = parser.parse_args(argv)
+
+    deleted = [Path(str(p).strip("\"'")) for p in args.deleted]
+    if not deleted:
+        print("No deleted files.")
+    to_delete, to_translate = plan(deleted)
+
+    for path in deleted:
+        print(f"Deleted in this pull request: {path}")
+    for target in to_delete:
+        print(f"  Removing the translation of a deleted Greek post: {target}")
+        try:
+            os.remove(target)
+        except OSError as e:
+            print(f"  Could not remove {target}: {e}")
+    for greek in to_translate:
+        print(f"  A translation was deleted; translating {greek} again")
+
+    if args.retranslate_to:
+        args.retranslate_to.write_text("".join(f"{p}\n" for p in to_translate), encoding="utf-8")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

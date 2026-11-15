@@ -23,6 +23,7 @@ interface CmsCollection {
   label: string;
   folder: string;
   create: boolean;
+  delete?: boolean;
   slug: string;
   fields: CmsField[];
 }
@@ -364,6 +365,19 @@ describe("Decap CMS config — only Greek collections allow creation", () => {
     const isGreek = col.name.endsWith("-gr");
     it(`${col.name} has create: ${isGreek}`, () => {
       expect(col.create).toBe(isGreek);
+    });
+  }
+});
+
+// A post is deleted from its Greek entry: the workflow then removes its
+// translations. Deleting only a translation would just make the bot write it
+// again (sync_deletions.py), so NL/EN entries offer no Delete button.
+// Decap's default is `delete: true`, so the Greek collections leave it out.
+describe("Decap CMS config — only Greek collections allow deleting", () => {
+  for (const col of collections) {
+    const isGreek = col.name.endsWith("-gr");
+    it(`${col.name} ${isGreek ? "allows" : "doesn't allow"} deleting`, () => {
+      expect(col.delete ?? true).toBe(isGreek);
     });
   }
 });

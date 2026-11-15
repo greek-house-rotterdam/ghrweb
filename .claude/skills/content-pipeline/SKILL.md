@@ -166,7 +166,7 @@ After opening, report the PR URL to the user and tell them what happens next:
 ## What you don't need to do
 
 - **Don't pre-translate.** The Gemini-backed workflow handles `nl` and `en` from the source. Pre-translating creates inconsistencies and gets overwritten.
-- **Don't write `source_hash` or `translation_hash` yourself.** Only `translate.py` writes those fields. To hand a hand-corrected translation back to automatic translation, remove its `translation_hash` (or delete the file).
+- **Don't write `source_hash` or `translation_hash` yourself.** Only `translate.py` writes those fields. To hand a hand-corrected translation back to automatic translation, remove its `translation_hash` (the bot re-translates it at the next Greek change), or delete the file in a pull request to have it written again right away. Deleting a translation never removes the post: only deleting the Greek file removes all three languages.
 - **Don't optimize images.** The translate workflow does that on the PR.
 - **Don't write a stylistic review.** `content-review.yml` does that on the PR.
 
