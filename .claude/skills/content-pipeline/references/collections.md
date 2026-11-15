@@ -8,6 +8,8 @@ All collections also accept (and the auto-translator may add) these meta fields.
 - `translation_hash: string` — set by `translate.py` on translations only: a fingerprint of the text the bot wrote. If the file's text no longer matches it, the translation counts as corrected by hand and is kept (and flagged on the PR) when the Greek changes. Remove it to hand the file back to automatic translation.
 - `translation_locked: boolean` — only set on a *translation* you want to protect from re-translation. A locked file is never re-translated or flagged.
 
+`news`, `activities`, `resources` and `faq` also accept `hidden: boolean` ("Απόκρυψη από τον ιστότοπο" / Hide from site in /admin). Set it on the Greek file; the bot copies it to Dutch and English. A hidden entry gets no page and no place in any list, in any language. This is how a post is taken down: /admin has no Delete button, because deleting a published entry there commits straight to `main` and removes only the Greek file. The text stays readable in the public repository and its history; only a history rewrite by the developer removes it for good.
+
 ---
 
 ## `news`

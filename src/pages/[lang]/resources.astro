@@ -2,7 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
-import { getCollection } from "astro:content";
+import { getVisible } from "../../lib/visible";
 import BrutCard from "../../components/BrutCard.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
 
@@ -10,7 +10,7 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const allResources = await getCollection("resources");
+const allResources = await getVisible("resources");
 const resources = allResources
   .filter((r) => r.data.lang === lang)
   .sort((a, b) => a.data.order - b.data.order);

@@ -86,22 +86,22 @@ def parse_frontmatter(content: str) -> tuple[dict, str]:
 COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
     "news": {
         "required": ["title", "date", "lang"],
-        "optional": ["description", "image"],
+        "optional": ["description", "image", "url_slug", "hidden"],
         "has_body": True,
     },
     "activities": {
         "required": ["title", "lang"],
-        "optional": ["description", "image", "emoji", "schedule", "order"],
+        "optional": ["description", "image", "emoji", "schedule", "order", "url_slug", "hidden"],
         "has_body": True,
     },
     "resources": {
         "required": ["title", "category", "lang"],
-        "optional": ["description", "order"],
+        "optional": ["description", "order", "hidden"],
         "has_body": True,
     },
     "faq": {
         "required": ["question", "answer", "lang"],
-        "optional": ["order"],
+        "optional": ["order", "hidden"],
         "has_body": False,
     },
     "event-translations": {

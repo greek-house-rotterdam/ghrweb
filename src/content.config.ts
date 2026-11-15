@@ -12,6 +12,13 @@ const translationMeta = {
   translation_locked: z.boolean().optional(),
 };
 
+// "Hide from site" (Απόκρυψη από τον ιστότοπο): how editors take a post down.
+// Set on the Greek entry in /admin; the translation bot copies it to Dutch and
+// English. Pages read these collections through src/lib/visible.ts, which
+// leaves hidden entries out of every list and page. (Deleting a published
+// entry in /admin would commit straight to main and remove only the Greek.)
+const hidden = z.boolean().optional();
+
 // Optional short Latin address for an entry's page. Shared between languages
 // (the translation bot copies it from the Greek file). An empty value means
 // "not set". See src/lib/entry-path.ts.
@@ -33,6 +40,7 @@ const news = defineCollection({
     date: z.coerce.date(),
     image: z.string().optional(),
     url_slug: urlSlug,
+    hidden,
     lang: langEnum,
     ...translationMeta,
   }),
@@ -81,6 +89,7 @@ const activities = defineCollection({
     schedule: z.string().optional(),
     order: z.number().default(100),
     url_slug: urlSlug,
+    hidden,
     lang: langEnum,
     ...translationMeta,
   }),
@@ -92,6 +101,7 @@ const faq = defineCollection({
     question: z.string().max(200),
     answer: z.string(),
     order: z.number().default(100),
+    hidden,
     lang: langEnum,
     ...translationMeta,
   }),
@@ -104,6 +114,7 @@ const resources = defineCollection({
     description: z.string().max(200).optional(),
     category: z.string(),
     order: z.number().default(100),
+    hidden,
     lang: langEnum,
     ...translationMeta,
   }),

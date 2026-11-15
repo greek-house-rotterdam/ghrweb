@@ -34,6 +34,9 @@ collections:
     label: "Νέα (Ελληνικά)"
     description: "Γράψε στα ελληνικά. Τα ολλανδικά και τα αγγλικά μεταφράζονται αυτόματα όταν αποθηκεύσεις. / Write in Greek. Dutch and English are translated automatically when you save."
     folder: src/content/news/gr
+    # Deleting a published entry commits straight to main and removes only
+    # the Greek file (tested on #99). Editors use "Hide from site" instead.
+    delete: false
     create: true
     slug: "{{slug}}"
     preview_path: "gr/news/{{slug}}"
@@ -44,6 +47,7 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -64,6 +68,7 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -84,6 +89,7 @@ collections:
       - { label: "Date", name: "date", widget: "datetime" }
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -94,6 +100,9 @@ collections:
     label: "Εκδηλώσεις (Ελληνικά)"
     description: "Γράψε στα ελληνικά. Τα ολλανδικά και τα αγγλικά μεταφράζονται αυτόματα όταν αποθηκεύσεις. / Write in Greek. Dutch and English are translated automatically when you save."
     folder: src/content/event-translations/gr
+    # Deleting a published entry commits straight to main and removes only
+    # the Greek file, leaving its translations without a source (#99).
+    delete: false
     create: true
     slug: "{{tt_event_id}}"
     preview_path: "gr/events/{{slug}}"
@@ -147,6 +156,9 @@ collections:
     label: "Δραστηριότητες (Ελληνικά)"
     description: "Γράψε στα ελληνικά. Τα ολλανδικά και τα αγγλικά μεταφράζονται αυτόματα όταν αποθηκεύσεις. / Write in Greek. Dutch and English are translated automatically when you save."
     folder: src/content/activities/gr
+    # Deleting a published entry commits straight to main and removes only
+    # the Greek file (tested on #99). Editors use "Hide from site" instead.
+    delete: false
     create: true
     slug: "{{slug}}"
     preview_path: "gr/activities/{{slug}}"
@@ -159,6 +171,7 @@ collections:
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -181,6 +194,7 @@ collections:
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -203,6 +217,7 @@ collections:
       - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
       - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -212,6 +227,9 @@ collections:
     label: "Συχνές Ερωτήσεις (Ελληνικά)"
     description: "Γράψε στα ελληνικά. Τα ολλανδικά και τα αγγλικά μεταφράζονται αυτόματα όταν αποθηκεύσεις. / Write in Greek. Dutch and English are translated automatically when you save."
     folder: src/content/faq/gr
+    # Deleting a published entry commits straight to main and removes only
+    # the Greek file (tested on #99). Editors use "Hide from site" instead.
+    delete: false
     create: true
     slug: "{{slug}}"
     preview_path: "gr/faq"
@@ -220,6 +238,7 @@ collections:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
 
@@ -238,6 +257,7 @@ collections:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
 
@@ -256,6 +276,7 @@ collections:
       - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
       - { label: "Answer", name: "answer", widget: "text" }
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
 
@@ -265,6 +286,9 @@ collections:
     label: "Χρήσιμες Πληροφορίες (Ελληνικά)"
     description: "Γράψε στα ελληνικά. Τα ολλανδικά και τα αγγλικά μεταφράζονται αυτόματα όταν αποθηκεύσεις. / Write in Greek. Dutch and English are translated automatically when you save."
     folder: src/content/resources/gr
+    # Deleting a published entry commits straight to main and removes only
+    # the Greek file (tested on #99). Editors use "Hide from site" instead.
+    delete: false
     create: true
     slug: "{{slug}}"
     preview_path: "gr/resources"
@@ -278,6 +302,7 @@ collections:
         options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
         default: "other"
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -301,6 +326,7 @@ collections:
         options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
         default: "other"
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "markdown" }
 
@@ -324,6 +350,7 @@ collections:
         options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
         default: "other"
       - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "markdown" }
 

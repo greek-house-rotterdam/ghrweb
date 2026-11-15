@@ -3,6 +3,7 @@ import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
 import { formatDate, getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getCollection } from "astro:content";
+import { getVisible } from "../../lib/visible";
 import BrutCard from "../../components/BrutCard.astro";
 import { entryPath } from "../../lib/entry-path";
 import BrutButton from "../../components/BrutButton.astro";
@@ -14,7 +15,7 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-const allNews = await getCollection("news");
+const allNews = await getVisible("news");
 const news = allNews
   .filter((post) => post.data.lang === lang)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
