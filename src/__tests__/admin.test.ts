@@ -80,8 +80,9 @@ const EXPECTED_FIELDS: Record<
 > = {
   news: {
     required: ["title", "date", "lang"],
-    optional: ["description", "image", "url_slug"],
+    optional: ["description", "image", "url_slug", "hidden"],
     maxLengths: { title: 100, description: 200 },
+    defaults: { hidden: false },
   },
   "event-translations": {
     required: ["tt_event_id", "title", "lang"],
@@ -90,21 +91,21 @@ const EXPECTED_FIELDS: Record<
   },
   activities: {
     required: ["title", "lang"],
-    optional: ["description", "image", "emoji", "schedule", "order", "url_slug"],
+    optional: ["description", "image", "emoji", "schedule", "order", "url_slug", "hidden"],
     maxLengths: { title: 100, description: 200 },
-    defaults: { order: 100 },
+    defaults: { order: 100, hidden: false },
   },
   faq: {
     required: ["question", "answer", "lang"],
-    optional: ["order"],
+    optional: ["order", "hidden"],
     maxLengths: { question: 200 },
-    defaults: { order: 100 },
+    defaults: { order: 100, hidden: false },
   },
   resources: {
     required: ["title", "category", "lang"],
-    optional: ["description", "order"],
+    optional: ["description", "order", "hidden"],
     maxLengths: { title: 100, description: 200 },
-    defaults: { order: 100 },
+    defaults: { order: 100, hidden: false },
   },
 };
 
@@ -369,22 +370,19 @@ describe("Decap CMS config — only Greek collections allow creation", () => {
   }
 });
 
-// A post is deleted from its Greek entry: the workflow then removes its
-// translations. Deleting only a translation would just make the bot write it
-// again (sync_deletions.py), so NL/EN entries offer no Delete button.
-// Decap's default is `delete: true`, so the Greek collections leave it out.
-describe("Decap CMS config — only Greek collections allow deleting", () => {
+// No entry can be deleted in /admin. Deleting a published entry commits
+// straight to main and removes only that file (tested on #99), so its
+// translations would stay live without a Greek source. Editors take an entry
+// off the site with "Hide from site" (the `hidden` field) instead, which goes
+// through a pull request like any save. Decap's default is `delete: true`.
+describe("Decap CMS config — no collection allows deleting", () => {
   for (const col of collections) {
-    const isGreek = col.name.endsWith("-gr");
-    it(`${col.name} ${isGreek ? "allows" : "doesn't allow"} deleting`, () => {
-      expect(col.delete ?? true).toBe(isGreek);
+    it(`${col.name} has delete: false`, () => {
+      expect(col.delete).toBe(false);
     });
   }
 });
 
-// The editor is loaded from a CDN, so it must be pinned to an exact version
-// and integrity-checked; otherwise it changes unreviewed on every upstream
-// release.
 describe("Decap CMS admin page — pinned script", () => {
   const html = readFileSync(join(ROOT, "public/admin/index.html"), "utf-8");
   const tags = [...html.matchAll(/<script\b[^>]*\bsrc="[^"]*"[^>]*>/g)].map(

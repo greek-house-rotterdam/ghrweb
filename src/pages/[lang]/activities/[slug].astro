@@ -2,14 +2,15 @@
 import Layout from "../../../layouts/Layout.astro";
 import { t } from "../../../i18n/ui";
 import type { Lang } from "../../../i18n/utils";
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
+import { getVisible } from "../../../lib/visible";
 import BrutButton from "../../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../../lib/excerpt";
 import RedirectPage from "../../../components/RedirectPage.astro";
 import { buildEntryRoutes } from "../../../lib/entry-path";
 
 export async function getStaticPaths() {
-  return buildEntryRoutes("activities", await getCollection("activities"));
+  return buildEntryRoutes("activities", await getVisible("activities"));
 }
 
 const { entry: activity, redirectTo } = Astro.props;

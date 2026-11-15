@@ -98,6 +98,14 @@ Since 2026-11-15 the tests that read the real content (`src/__tests__/site-setti
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
 
+### Taking a post down: hide it, don't delete it
+
+Tested on 2026-11-15 (#99): deleting a published entry in /admin commits straight to `main`, without a pull request, and removes only the Greek file. Its Dutch and English pages stay live, and every later content pull request fails `verify`. Editors without permission to skip the "pull requests only" rule are most likely refused instead.
+
+So /admin has no Delete button. Editors switch on «Απόκρυψη από τον ιστότοπο» (Hide from site) on the Greek entry and publish as usual; the post disappears in all three languages and can be brought back by switching it off. Actually deleting files is left to the developer, through a pull request (deleting the Greek file removes the translations, #98).
+
+**Hidden is not erased.** The repository is public: a hidden (or deleted) post stays readable on GitHub, in the file or in the history. For something that must really go, such as personal details posted by mistake, the developer rewrites the git history.
+
 ### Auto-publish: Decap still shows its own Publish button
 
 When an editor sets a post to Ready, the PR gets the label `decap-cms/pending_publish`. The `auto-publish.yml` workflow then turns on GitHub auto-merge (squash), and the post goes live by itself once `translate`, `verify` and `Workers Builds: ghrweb` pass. Moving the post out of Ready turns auto-merge off again.
