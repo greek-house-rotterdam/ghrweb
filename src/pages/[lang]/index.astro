@@ -20,7 +20,7 @@ const news = allNews
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-// The 3 soonest upcoming events, newest first like the events page.
+// The 3 soonest upcoming events, soonest first like the events page.
 const [ttEvents, overlays] = await Promise.all([
   getCollection("events"),
   getCollection("eventTranslations"),

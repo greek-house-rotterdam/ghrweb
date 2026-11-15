@@ -42,8 +42,8 @@ describe("splitEvents", () => {
     "gr",
   );
 
-  it("puts events that haven't ended in upcoming, newest first", () => {
-    expect(ids(splitEvents(events, NOW).upcoming)).toEqual(["future-far", "future-near", "running"]);
+  it("puts events that haven't ended in upcoming, soonest first", () => {
+    expect(ids(splitEvents(events, NOW).upcoming)).toEqual(["running", "future-near", "future-far"]);
   });
 
   it("puts ended events in past, newest first", () => {
@@ -57,12 +57,12 @@ describe("splitEvents", () => {
 });
 
 describe("nextEvents", () => {
-  it("takes the soonest upcoming events and shows them newest first", () => {
+  it("takes the soonest upcoming events, soonest first", () => {
     const upcoming = toListEvents(
       ["2027-03-01", "2026-12-11", "2026-11-21", "2027-01-10"].map((d, i) => entry(`e${i}`, `${d}T19:00:00Z`)),
       [],
       "gr",
     );
-    expect(ids(nextEvents(upcoming, 3))).toEqual(["e3", "e1", "e2"]);
+    expect(ids(nextEvents(upcoming, 3))).toEqual(["e2", "e1", "e3"]);
   });
 });

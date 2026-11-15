@@ -63,10 +63,12 @@ export function toListEvents(events: EventEntry[], overlays: EventOverlay[], lan
   });
 }
 
+const soonestFirst = (a: ListEvent, b: ListEvent) => a.start.getTime() - b.start.getTime();
 const newestFirst = (a: ListEvent, b: ListEvent) => b.start.getTime() - a.start.getTime();
 
 /**
- * Upcoming events (not yet ended at `now`) and past events, both newest first.
+ * Upcoming events (not yet ended at `now`), soonest first, so the next event
+ * is at the top; and past events, the most recent first.
  * An event without an end time counts as ended when it starts.
  */
 export function splitEvents(events: ListEvent[], now: Date): { upcoming: ListEvent[]; past: ListEvent[] } {
@@ -75,13 +77,10 @@ export function splitEvents(events: ListEvent[], now: Date): { upcoming: ListEve
   for (const e of events) {
     ((e.end ?? e.start).getTime() >= now.getTime() ? upcoming : past).push(e);
   }
-  return { upcoming: upcoming.sort(newestFirst), past: past.sort(newestFirst) };
+  return { upcoming: upcoming.sort(soonestFirst), past: past.sort(newestFirst) };
 }
 
-/** The `count` soonest upcoming events, newest first like the events page. */
+/** The `count` soonest upcoming events, soonest first. */
 export function nextEvents(upcoming: ListEvent[], count: number): ListEvent[] {
-  return [...upcoming]
-    .sort((a, b) => a.start.getTime() - b.start.getTime())
-    .slice(0, count)
-    .sort(newestFirst);
+  return [...upcoming].sort(soonestFirst).slice(0, count);
 }

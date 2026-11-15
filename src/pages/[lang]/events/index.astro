@@ -16,7 +16,7 @@ const [ttEvents, overlays] = await Promise.all([
   getCollection("eventTranslations"),
 ]);
 
-// Upcoming first, then past; both newest first. "Now" is the build time.
+// Upcoming (soonest first), then past (most recent first). "Now" is the build time.
 const { upcoming, past } = splitEvents(toListEvents(ttEvents, overlays, lang), new Date());
 ---
 
