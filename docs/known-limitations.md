@@ -106,12 +106,12 @@ So /admin has no Delete button. Editors switch on «Απόκρυψη από το
 
 **Hidden is not erased.** The repository is public: a hidden (or deleted) post stays readable on GitHub, in the file or in the history. For something that must really go, such as personal details posted by mistake, the developer rewrites the git history.
 
-### Auto-publish: Decap still shows its own Publish button
+### Auto-publish: Ready is the only way to publish
 
 When an editor sets a post to Ready, the PR gets the label `decap-cms/pending_publish`. The `auto-publish.yml` workflow then turns on GitHub auto-merge (squash), and the post goes live by itself once `translate`, `verify` and `Workers Builds: ghrweb` pass. Moving the post out of Ready turns auto-merge off again.
 
-- **Decap's Publish button is still there.** Pressing it is harmless but not needed. Before the checks pass it shows an error, as it always did. After they pass it merges the PR a moment before auto-merge would.
-- **It needs two repository settings.** "Allow auto-merge" must be on. Until it is, the workflow prints a warning, ends green and the status comment says auto-publish is not available yet: editors press Publish as before. "Automatically delete head branches" is also needed, so Decap can edit the same entry again after a merge made by a person, such as Decap's Publish (it is already on).
+- **No Publish button (since 2026-11-15).** Every collection has `publish: false`. Decap's Publish button was harmless for editors, but the admin account may skip the ruleset, so its Publish could merge a post before the bot had written the translations (the same gap the delete test showed on #99).
+- **It needs two repository settings.** "Allow auto-merge" must be on. Until it is, the workflow prints a warning, ends green and the status comment says auto-publish is not available yet and mentions the admins, who merge the pull request on GitHub. "Automatically delete head branches" is also needed, so Decap can edit the same entry again after a merge made by a person, such as Decap's Publish (it is already on).
 - **The workflow deletes the post's branch itself.** GitHub's "Automatically delete head branches" skips merges made with the workflow token (seen on #83), and Decap can't save the same post again while its old branch is still there. So after turning auto-merge on, the job waits up to 30 minutes for the merge and then deletes the `cms/...` branch. If the checks take longer, the branch stays until the nightly cleanup, and saving that same post again fails until then.
 - **Only Decap's PRs.** The workflow only handles PRs from `cms/*` branches in this repository. A PR opened by the content-pipeline skill or by hand is merged by hand.
 - **A save after Ready keeps auto-publish on.** The new save runs the checks again, and the post goes live when they pass. To hold it back, move the post out of Ready.

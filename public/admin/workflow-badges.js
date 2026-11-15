@@ -105,7 +105,7 @@ export function summarize(pr, required) {
       (required === null || required.includes(checkName(c))),
   );
 
-  // The Checks badge answers one question: will Publish work? A required
+  // The Checks badge answers one question: can the post go live? A required
   // check may not have started yet, so we can't see it; GitHub's own merge
   // state can, and a blocked pull request is never shown as ready.
   let state = worst(others.map(checkState));
@@ -160,7 +160,7 @@ const TEXT = {
     fail: ["Checks ✗", "A check failed, so the post can't go live. Open Details."],
     conflict: ["Conflict ✗", "This edit conflicts with another change. Ask the web team."],
   },
-  auto: ["Goes live automatically", "This post is set to Ready. It goes live by itself as soon as all checks pass. You don't need to press Publish."],
+  auto: ["Goes live automatically", "This post is set to Ready. It goes live by itself as soon as all checks pass."],
   details: ["Details ↗", "Open the pull request on GitHub."],
 };
 

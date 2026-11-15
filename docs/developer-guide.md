@@ -104,7 +104,7 @@ A Dutch or English file exists without its Greek file, usually after something w
 - Pages read `news`, `activities`, `resources` and `faq` through `getVisible()`, never `getCollection()` (a test enforces it).
 - Tests that read real content check its shape, never its current values (#88, #90 broke such tests).
 - `ui.ts` changes need all three languages.
-- Keep `/admin` without Delete buttons (`delete: false`, a test enforces it).
+- Keep `/admin` without Delete and Publish buttons (`delete: false`, `publish: false`; tests enforce both). Your account may skip the ruleset, so either button would bypass the translations and checks. Publish with Ready, like editors; in an emergency, merge on GitHub.
 
 ## Secrets and settings
 

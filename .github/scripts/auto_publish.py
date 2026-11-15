@@ -23,7 +23,8 @@ are all merged or closed, for the cases this job missed (a timeout, a run that
 never started).
 
 Fails soft: when the repository does not allow auto-merge yet, this prints a
-warning and ends green. The status comment then tells the editor to press Publish.
+warning and ends green. The status comment then tells the editor that the admin
+will publish the post, and mentions the admins: /admin has no Publish button.
 
 Environment:
     GH_TOKEN, REPO, PR_NUMBER, RUN_URL, GITHUB_RUN_ID, ADMIN_MENTIONS
@@ -206,7 +207,8 @@ def main(
         print(
             "::warning title=Auto-publish is not available::Auto-merge is not allowed in this "
             'repository. Turn on "Allow auto-merge" in Settings > General > Pull Requests. '
-            "Until then, editors must press Publish themselves."
+            "Until then, the admin merges content pull requests on GitHub: /admin has no "
+            "Publish button (publish: false)."
         )
     try:
         print(pr_status.update(

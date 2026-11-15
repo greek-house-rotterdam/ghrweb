@@ -281,6 +281,9 @@ def compute_alerts(views: dict[str, str]) -> set[str]:
     alerts = {n for n in ("translation", "images") if views[n] == "fail"}
     if views["review"] == "warn":
         alerts.add("review")
+    # Editors have no Publish button, so without auto-publish only the admin can.
+    if views.get("autopublish") == "unavailable":
+        alerts.add("autopublish")
     return alerts
 
 
@@ -410,8 +413,8 @@ def render_autopublish(data: dict | None) -> str:
         text = bi("Η αυτόματη δημοσίευση είναι ανενεργή. Βάλε την ανάρτηση στο Ready και θα δημοσιευτεί μόνη της.",
                   "Auto-publish is off. Move the post to Ready and it goes live by itself.")
     elif state == "unavailable":
-        text = bi("⚠️ Η αυτόματη δημοσίευση δεν είναι διαθέσιμη ακόμα. Όταν περάσουν οι έλεγχοι, πάτα Publish.",
-                  "Auto-publish is not available yet. Once the checks pass, press Publish.")
+        text = bi("⚠️ Η αυτόματη δημοσίευση δεν είναι διαθέσιμη ακόμα. Ο διαχειριστής ενημερώθηκε και θα δημοσιεύσει την ανάρτηση.",
+                  "Auto-publish is not available yet. The site admin has been told and will publish the post.")
     else:
         return ""
     return f"{title}\n\n{text}"
@@ -441,11 +444,12 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
 
     auto = views.get("autopublish", "unknown")
     if auto == "on":
-        gr = "Έτοιμο: η ανάρτηση θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι. Δεν χρειάζεται να πατήσεις Publish."
-        en = "Ready: the post goes live by itself once the checks pass. You don't need to press Publish."
+        gr = "Έτοιμο: η ανάρτηση θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι."
+        en = "Ready: the post goes live by itself once the checks pass."
     elif auto == "unavailable":
-        gr = "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και πάτα Publish."
-        en = "Ready: in /admin → Workflow, move the post to Ready and press Publish."
+        # /admin has no Publish button (publish: false), so the admin merges it.
+        gr = "Έτοιμο: ο διαχειριστής θα δημοσιεύσει την ανάρτηση, γιατί η αυτόματη δημοσίευση δεν είναι διαθέσιμη."
+        en = "Ready: the site admin will publish the post, because auto-publish isn't available."
     else:
         gr = "Έτοιμο: στο /admin → Workflow, βάλε την ανάρτηση στο Ready και θα δημοσιευτεί μόνη της μόλις περάσουν οι έλεγχοι."
         en = "Ready: in /admin → Workflow, move the post to Ready and it goes live by itself once the checks pass."

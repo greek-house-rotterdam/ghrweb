@@ -383,6 +383,18 @@ describe("Decap CMS config — no collection allows deleting", () => {
   }
 });
 
+// No Publish button anywhere, settings included: setting a post to Ready is
+// the only way to publish, and auto-publish then waits for the translations
+// and the checks. The admin account may skip the ruleset, so its Publish could
+// merge a post before its translations exist.
+describe("Decap CMS config — no collection shows Publish", () => {
+  for (const col of config.collections as { name: string; publish?: boolean }[]) {
+    it(`${col.name} has publish: false`, () => {
+      expect(col.publish).toBe(false);
+    });
+  }
+});
+
 describe("Decap CMS admin page — pinned script", () => {
   const html = readFileSync(join(ROOT, "public/admin/index.html"), "utf-8");
   const tags = [...html.matchAll(/<script\b[^>]*\bsrc="[^"]*"[^>]*>/g)].map(
