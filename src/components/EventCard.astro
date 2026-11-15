@@ -1,0 +1,44 @@
+---
+// One event in a list: the events page and the home page.
+import BrutCard from "./BrutCard.astro";
+import { t } from "../i18n/ui";
+import { formatDate, type Lang } from "../i18n/utils";
+import type { ListEvent } from "../lib/event-list";
+
+interface Props {
+  event: ListEvent;
+  lang: Lang;
+}
+
+const { event, lang } = Astro.props;
+---
+
+<BrutCard tag="a" href={`/${lang}/events/${event.id}`} interactive class="block bg-white overflow-hidden">
+  {event.imageUrl && (
+    <img
+      src={event.imageUrl}
+      alt={event.title}
+      loading="lazy"
+      class="w-full h-40 object-cover border-b-2 border-black"
+    />
+  )}
+  <div class="p-6">
+    <div class="flex flex-wrap gap-2">
+      <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
+        {formatDate(event.start, lang)}
+      </span>
+      {event.venue && (
+        <span class="inline-block border border-black bg-green-100 px-2 py-0.5 text-xs font-bold">
+          📍 {event.venue}
+        </span>
+      )}
+      {event.soldOut && (
+        <span class="inline-block border border-black bg-red-100 px-2 py-0.5 text-xs font-bold uppercase">
+          {t(lang, "events.sold-out")}
+        </span>
+      )}
+    </div>
+    <h3 class="mt-3 text-lg font-extrabold leading-snug">{event.title}</h3>
+    <p class="mt-2 text-sm text-gray-600 line-clamp-2">{event.description}</p>
+  </div>
+</BrutCard>
