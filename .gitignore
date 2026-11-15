@@ -46,3 +46,5 @@ data/scrapes/vvgn/records/**/*.json
 !/docs/tone-and-voice-guidelines.md
 !/docs/known-limitations.md
 !/docs/content-reset.md
+!/docs/editor-guide.md
+!/docs/developer-guide.md

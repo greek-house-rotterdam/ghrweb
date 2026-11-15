@@ -4,13 +4,18 @@ The website for the Greek House in Rotterdam (GHR): a sustainable, trilingual hu
 
 ## Documentation
 
-Project documentation is kept out of version control for now. The exceptions are the two guideline files that the translation and content-review workflows read, and the list of known limitations:
+Most project documentation is kept out of version control for now. These files are in it:
 
 | Document | Description |
 | :--- | :--- |
 | [Content Style Guide](docs/content-style-guide.md) | Rules the AI content review checks posts against |
 | [Tone & Voice Guidelines](docs/tone-and-voice-guidelines.md) | Tone and voice used by the translation and review prompts |
+| [Editor Guide](docs/editor-guide.md) | For website editors (in Greek): writing, publishing, fixing translations, hiding posts, settings, events |
+| [Developer Guide](docs/developer-guide.md) | For the developer: how changes reach the site, removing content, alerts, events, secrets |
 | [Known Limitations](docs/known-limitations.md) | Gaps in the publishing pipeline we accept for now, with workarounds |
+| [Content Reset](docs/content-reset.md) | The November 2026 reset to the managers' approved content, and how to restore removed entries |
+
+When a change alters how editors or the developer work, update the two guides in the same pull request.
 
 ## Commands
 
