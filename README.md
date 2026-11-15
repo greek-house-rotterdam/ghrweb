@@ -17,6 +17,8 @@ Most project documentation is kept out of version control for now. These files a
 
 When a change alters how editors or the developer work, update the two guides in the same pull request.
 
+Planned features are [GitHub issues](https://github.com/greek-house-rotterdam/ghrweb/issues) labelled `enhancement`. A pull request that finishes one says `Closes #N` in its body. [CLAUDE.md](CLAUDE.md) has the full rules.
+
 ## Commands
 
 All commands are run from the root of the project:
