@@ -106,6 +106,17 @@ A Dutch or English file exists without its Greek file, usually after something w
 - `ui.ts` changes need all three languages.
 - Keep `/admin` without Delete and Publish buttons (`delete: false`, `publish: false`; tests enforce both). Your account may skip the ruleset, so either button would bypass the translations and checks. Publish with Ready, like editors; in an emergency, merge on GitHub.
 
+## Planned work: GitHub issues
+
+The backlog is the open [GitHub issues](https://github.com/greek-house-rotterdam/ghrweb/issues) labelled `enhancement`.
+
+- Open an issue for each agreed feature or follow-up: what, why, and "done when".
+- A pull request that finishes an issue says `Closes #N` in its body, so merging it closes the issue. One that does part of the work says `Part of #N`.
+- Close an issue you decide not to do, or a settled decision, with a comment giving the reason. Don't delete issues.
+- The repository is public: no secrets, account details or personal data in issues.
+
+The alert issues opened by workflows ("The live site is not updating", "The content tests failed") are not backlog; see [When an alert arrives](#when-an-alert-arrives).
+
 ## Secrets and settings
 
 | Where | Name | What |
