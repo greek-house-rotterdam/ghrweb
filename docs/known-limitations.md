@@ -72,7 +72,7 @@ On every run the Greek entry's image, date, order and other non-text fields are 
 
 A Dutch or English file that has no `source_hash` and no `translation_locked: true` counts as hand-written. Instead of overwriting it, the "translate" job fails with a message naming the file. The status comment shows "Translation did not finish" with the reason.
 
-- **What to do:** the admin reads the message in the status comment, then either adds `translation_locked: true` to the file to keep it as it is, or deletes the file (or adds the `source_hash` from the message) to have it generated again from the Greek.
+- **What to do:** the admin reads the message in the status comment, then either adds `translation_locked: true` to the file to keep it as it is, or deletes that one file in the pull request (or adds the `source_hash` from the message) to have it generated again from the Greek. Deleting a Dutch or English file only makes the bot write it again; the Greek post stays.
 
 ## Checks and notices
 

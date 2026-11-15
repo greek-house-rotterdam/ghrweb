@@ -72,8 +72,24 @@ jobs:
           git fetch origin main
           git config core.quotePath false
 
+          # Deletions first: a deleted Greek file removes its translations; a
+          # deleted translation (Greek still there) is written again below.
+          echo "=== Deleted files ==="
+          git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/deleted.txt || true
+          cat /tmp/deleted.txt
+          : > /tmp/retranslate.txt
+          if [ -s /tmp/deleted.txt ]; then
+            xargs -d '\n' python .github/scripts/sync_deletions.py --retranslate-to /tmp/retranslate.txt < /tmp/deleted.txt
+          else
+            echo "No content files deleted."
+          fi
+
+          echo ""
           echo "=== Added/Changed files ==="
           git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/changed.txt || true
+          # Plus the Greek files whose translation was deleted.
+          cat /tmp/retranslate.txt >> /tmp/changed.txt
+          sort -u -o /tmp/changed.txt /tmp/changed.txt
           cat /tmp/changed.txt
 
           if [ -s /tmp/changed.txt ]; then
@@ -81,18 +97,6 @@ jobs:
             xargs -d '\n' python .github/scripts/translate.py < /tmp/changed.txt
           else
             echo "No content files to translate."
-          fi
-
-          echo ""
-          echo "=== Deleted files ==="
-          git diff --name-only --diff-filter=D origin/main...HEAD -- 'src/content/' | grep '\.md$' > /tmp/deleted.txt || true
-          cat /tmp/deleted.txt
-
-          if [ -s /tmp/deleted.txt ]; then
-            echo "Syncing deletions..."
-            xargs -d '\n' python .github/scripts/sync_deletions.py < /tmp/deleted.txt
-          else
-            echo "No content files deleted."
           fi
 
       # Information, not a failure: translations corrected by hand were kept

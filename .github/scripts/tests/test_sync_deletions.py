@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sync_deletions import get_counterparts
+from sync_deletions import get_counterparts, main, plan
 
 
 class TestGetCounterparts:
@@ -50,3 +50,57 @@ class TestGetCounterparts:
         assert len(result) == 2
         langs = {p.parts[-2] for p in result}
         assert langs == {"gr", "nl"}
+
+
+GR = Path("src/content/news/gr/post.md")
+NL = Path("src/content/news/nl/post.md")
+EN = Path("src/content/news/en/post.md")
+
+
+def on_disk(*paths: Path):
+    """An `exists` stand-in: these files are still in the checkout."""
+    present = set(paths)
+    return lambda p: p in present
+
+
+class TestPlan:
+    def test_deleting_the_greek_removes_the_translations(self):
+        assert plan([GR], on_disk(NL, EN)) == ([NL, EN], [])
+
+    def test_deleting_a_translation_keeps_the_post_and_translates_it_again(self):
+        # The bug this fixes: this used to delete the Greek source and Dutch too.
+        assert plan([EN], on_disk(GR, NL)) == ([], [GR])
+
+    def test_deleting_both_translations_translates_the_greek_once(self):
+        assert plan([NL, EN], on_disk(GR)) == ([], [GR])
+
+    def test_deleting_the_greek_and_a_translation_removes_the_rest(self):
+        assert plan([GR, EN], on_disk(NL)) == ([NL], [])
+
+    def test_translations_already_gone_are_not_listed(self):
+        assert plan([GR], on_disk()) == ([], [])
+
+    def test_ignores_paths_without_a_language(self):
+        assert plan([Path("src/content/news/post.md")], on_disk(GR)) == ([], [])
+
+
+class TestMain:
+    def test_deletes_translations_of_a_deleted_greek_post(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        for p in (NL, EN):
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text("x")
+        out = tmp_path / "retranslate.txt"
+        assert main(["--retranslate-to", str(out), str(GR)]) == 0
+        assert not NL.exists() and not EN.exists()
+        assert out.read_text() == ""
+
+    def test_lists_the_greek_when_a_translation_was_deleted(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        for p in (GR, NL):
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text("x")
+        out = tmp_path / "retranslate.txt"
+        assert main(["--retranslate-to", str(out), str(EN)]) == 0
+        assert GR.exists() and NL.exists()
+        assert out.read_text() == f"{GR}\n"

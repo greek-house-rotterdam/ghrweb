@@ -17,7 +17,9 @@ matches it, someone corrected it by hand. When the Greek then changes, that
 translation is kept (not re-translated), its `source_hash` is brought up to date
 so it is flagged once, and it is listed in the file named by $KEPT_REPORT for the
 PR status comment. A target without `translation_hash` is re-translated as before; remove
-the field (or delete the file) to hand a translation back to the bot.
+the field to hand a translation back to the bot from the next Greek change on. To have it
+written again right away, delete the file in a pull request: sync_deletions.py then lists
+its Greek source for translation, and nothing else is deleted.
 
 On every run each existing target also gets the source's shared fields (image,
 date, order, ...), locked or not, without an API call.
@@ -299,8 +301,9 @@ def translate_file(
                         f"{target_path} was written by hand (it has no source_hash) "
                         f"and is not locked, so translating {source_path} would "
                         f"overwrite it. To keep it as it is, add "
-                        f"`translation_locked: true` to its frontmatter. To let it "
-                        f"be regenerated from the Greek, delete the file or add "
+                        f"`translation_locked: true` to its frontmatter. To have it "
+                        f"written again from the Greek, delete this file in the pull "
+                        f"request (only this file: the bot writes it again) or add "
                         f"`source_hash: '{current_hash}'` to it."
                     )
                 elif existing_fm.get("source_hash") == current_hash:
