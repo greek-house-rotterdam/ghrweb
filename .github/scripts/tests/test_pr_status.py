@@ -258,13 +258,20 @@ class TestNextStep:
         assert "βάλε την ανάρτηση στο Ready" in gr and "μόνη της" in gr
         assert "Publish" not in gr and "by itself" in en
 
-    def test_auto_publish_on_says_no_need_to_press_publish(self):
+    def test_auto_publish_on_says_it_goes_live_by_itself(self):
         gr, en = next_step(views(autopublish="on"))
-        assert "Δεν χρειάζεται να πατήσεις Publish" in gr and "don't need to press Publish" in en
+        assert "μόνη της" in gr and "by itself" in en
+        # /admin has no Publish button: never tell editors to press it.
+        assert "Publish" not in gr and "Publish" not in en
 
-    def test_auto_publish_unavailable_still_says_press_publish(self):
-        gr, _ = next_step(views(autopublish="unavailable"))
-        assert gr.endswith("πάτα Publish.")
+    def test_auto_publish_unavailable_says_the_admin_will_publish(self):
+        gr, en = next_step(views(autopublish="unavailable"))
+        assert "διαχειριστής" in gr and "admin" in en
+        assert "Publish" not in gr and "Publish" not in en
+
+    def test_auto_publish_unavailable_alerts_the_admins(self):
+        assert "autopublish" in compute_alerts(views(autopublish="unavailable"))
+        assert "autopublish" not in compute_alerts(views(autopublish="on"))
 
     def test_translation_failure_says_admin_was_told(self):
         gr, _ = next_step(views(translation="fail"))
