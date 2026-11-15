@@ -7,6 +7,8 @@ import BrutCard from "../../components/BrutCard.astro";
 import { entryPath } from "../../lib/entry-path";
 import BrutButton from "../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
+import EventCard from "../../components/EventCard.astro";
+import { nextEvents, splitEvents, toListEvents } from "../../lib/event-list";
 
 export const getStaticPaths = getStaticLangPaths;
 
@@ -18,11 +20,13 @@ const news = allNews
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-const allEvents = await getCollection("events");
-const events = allEvents
-  .filter((event) => event.data.lang === lang)
-  .sort((a, b) => a.data.date.getTime() - b.data.date.getTime())
-  .slice(0, 3);
+// The 3 soonest upcoming events, newest first like the events page.
+const [ttEvents, overlays] = await Promise.all([
+  getCollection("events"),
+  getCollection("eventTranslations"),
+]);
+const { upcoming } = splitEvents(toListEvents(ttEvents, overlays, lang), new Date());
+const events = nextEvents(upcoming, 3);
 ---
 
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
@@ -77,28 +81,22 @@ const events = allEvents
   </section>
   )}
 
-  {/* Upcoming Events */}
+  {/* Upcoming Events (hidden while there are none) */}
+  {events.length > 0 && (
   <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
     <div class="mx-auto max-w-7xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
-          <BrutCard tag="a" href={`/${lang}/events/${event.id.split("/").pop()}`} interactive class="block bg-white p-6">
-            <span class="inline-block border border-black bg-primary-light px-2 py-0.5 text-xs font-bold uppercase">
-              {formatDate(event.data.date, lang)}
-            </span>
-            <h3 class="mt-3 text-lg font-extrabold leading-snug">{event.data.title}</h3>
-            <p class="mt-2 text-sm text-gray-600 line-clamp-2">{event.data.description}</p>
-            {event.data.location && (
-              <p class="mt-3 text-xs font-bold text-gray-500 uppercase tracking-wide">
-                📍 {event.data.location}
-              </p>
-            )}
-          </BrutCard>
-        ))}
+        {events.map((event) => <EventCard event={event} lang={lang} />)}
+      </div>
+      <div class="mt-8">
+        <BrutButton href={`/${lang}/events`} size="sm" class="bg-white text-black hover:bg-accent-gold">
+          {t(lang, "events.all")} →
+        </BrutButton>
       </div>
     </div>
   </section>
+  )}
 
   {/* CTA */}
   <section class="py-16">
