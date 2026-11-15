@@ -146,11 +146,31 @@ async function fetchOnce(auth: string, fetchImpl: typeof fetch): Promise<TTEvent
   return Array.isArray(json.data) ? json.data : [];
 }
 
+// The HTML entities Ticket Tailor descriptions use. Others are left as they are.
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " ",
+  laquo: "«", raquo: "»", lsquo: "‘", rsquo: "’", ldquo: "“", rdquo: "”",
+  ndash: "–", mdash: "—", hellip: "…", euro: "€", middot: "·",
+};
+
+/**
+ * Turns HTML entities into the characters they stand for, in one pass, so
+ * "&amp;lt;" becomes "&lt;" (the text), not "<". Without this the page would
+ * show "&amp;" where Ticket Tailor's text has "&" (Astro escapes it again).
+ */
+export function decodeEntities(text: string): string {
+  return text.replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (whole, code: string) => {
+    if (code[0] === "#") {
+      const n = code[1] === "x" || code[1] === "X" ? parseInt(code.slice(2), 16) : parseInt(code.slice(1), 10);
+      return Number.isFinite(n) && n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : whole;
+    }
+    return NAMED_ENTITIES[code.toLowerCase()] ?? whole;
+  });
+}
+
 export function toSiteEvent(e: TTEvent): SiteEvent {
   const html = e.description ?? "";
-  const plain = html
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
+  const plain = decodeEntities(html.replace(/<[^>]+>/g, " "))
     .replace(/\s+/g, " ")
     .trim();
   return {

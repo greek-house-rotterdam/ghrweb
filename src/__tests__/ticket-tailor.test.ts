@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { isProductionBuild, loadEvents } from "../lib/ticket-tailor";
+import { decodeEntities, isProductionBuild, loadEvents, toSiteEvent } from "../lib/ticket-tailor";
 
 const PRODUCTION = { WORKERS_CI: "1", WORKERS_CI_BRANCH: "main", TT_API_KEY: "sk_test" };
 const PREVIEW = { WORKERS_CI: "1", WORKERS_CI_BRANCH: "cms/news-gr/pascha", TT_API_KEY: "sk_test" };
@@ -123,5 +123,25 @@ describe("events — no key", () => {
       expect(warn).toHaveBeenCalledOnce();
       expect(fetchImpl).not.toHaveBeenCalled();
     }
+  });
+});
+
+describe("events — description text", () => {
+  it("shows & and other characters, not their HTML codes (seen live: «Όθων &amp;amp; Ποθούλα»)", () => {
+    const e = toSiteEvent({ ...EVENT, description: "<p>Όθων &amp; Ποθούλα &laquo;Rotterdam&raquo; &#8211; 20:00&nbsp;&#x20AC;10</p>" });
+    expect(e.description_text).toBe("Όθων & Ποθούλα «Rotterdam» – 20:00 €10");
+  });
+
+  it("decodes once, so an escaped code stays text", () => {
+    expect(decodeEntities("&amp;lt;b&amp;gt;")).toBe("&lt;b&gt;");
+  });
+
+  it("leaves unknown or broken codes as they are", () => {
+    expect(decodeEntities("&unknown; & &#0; &#xZZ;")).toBe("&unknown; & &#0; &#xZZ;");
+  });
+
+  it("keeps the HTML version untouched for the event page", () => {
+    const html = "<p>A &amp; B</p>";
+    expect(toSiteEvent({ ...EVENT, description: html }).description_html).toBe(html);
   });
 });
