@@ -25,13 +25,18 @@
           | openssl dgst -sha384 -binary | openssl base64 -A
       and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview,
       including the badges on the Workflow board cards (workflow-badges.js
-      depends on how Decap draws them).
+      depends on how Decap draws them) and reopening a translated draft (it
+      must show the Greek: open-own-language.js depends on Decap internals).
     -->
+    <!-- Decap starts in open-own-language.js, after it has been patched (#126). -->
+    <script>window.CMS_MANUAL_INIT = true;</script>
     <script
       src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"
       integrity="sha384-A/Gdn928CNLufmnGWGs9RM4Q9o8bSNLeJERqBFrBjwzL7FRpoLT3MPF8Tl0+Wd2p"
       crossorigin="anonymous"
     ></script>
+    <!-- Reopening a draft opens its own language's file, then starts Decap. -->
+    <script src="/admin/open-own-language.js"></script>
     <!-- Preview link, translation and checks on each Workflow board card. -->
     <script type="module" src="/admin/workflow-badges.js"></script>
   </body>
