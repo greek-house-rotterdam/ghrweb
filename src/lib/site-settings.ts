@@ -59,9 +59,6 @@ export const formsSchema = z.object({
       .trim()
       .regex(/^[A-Za-z0-9_-]+$/, "must be only the form ID, not a link"),
   ),
-  member_form_url: httpsUrl,
-  candidate_form_url: httpsUrl,
-  friend_form_url: httpsUrl,
 });
 
 export const SETTINGS_SCHEMAS = {

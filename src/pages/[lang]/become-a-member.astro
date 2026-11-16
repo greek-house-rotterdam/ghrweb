@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
-import { getSiteSettings } from "../../lib/site-settings";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import BrutCard from "../../components/BrutCard.astro";
 import BrutButton from "../../components/BrutButton.astro";
@@ -10,29 +9,25 @@ export const getStaticPaths = getStaticLangPaths;
 
 const { lang } = Astro.params as { lang: Lang };
 
-// Form links come from src/data/forms.yml (edited in /admin). A tier whose
-// link is empty shows no button.
-const { forms } = getSiteSettings();
-
+// No application form here, on purpose (#115): the managers want people to
+// get in touch first, and they send the form themselves. Don't add one back
+// without asking them.
 const tiers = [
   {
     title: t(lang, "member.member.title"),
     desc: t(lang, "member.member.desc"),
-    href: forms.member_form_url,
     color: "bg-primary-light",
     icon: "🏛️",
   },
   {
     title: t(lang, "member.candidate.title"),
     desc: t(lang, "member.candidate.desc"),
-    href: forms.candidate_form_url,
     color: "bg-accent-gold-light",
     icon: "⭐",
   },
   {
     title: t(lang, "member.friend.title"),
     desc: t(lang, "member.friend.desc"),
-    href: forms.friend_form_url,
     color: "bg-green-100",
     icon: "🤝",
   },
@@ -53,20 +48,17 @@ const tiers = [
             <span class="text-4xl">{tier.icon}</span>
             <h3 class="mt-4 text-xl font-extrabold">{tier.title}</h3>
             <p class="mt-2 flex-1 text-sm text-gray-700">{tier.desc}</p>
-            {tier.href && (
-              <BrutButton
-                href={tier.href}
-                size="sm"
-                class="mt-6 self-start bg-primary text-white"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t(lang, "member.cta")} →
-              </BrutButton>
-            )}
           </BrutCard>
         ))}
       </div>
+
+      <BrutCard class="mt-12 p-6 sm:p-8">
+        <h2 class="text-2xl font-extrabold">{t(lang, "member.join.title")}</h2>
+        <p class="mt-3 max-w-2xl text-gray-700">{t(lang, "member.join.text")}</p>
+        <BrutButton href={`/${lang}/contact`} class="mt-6 bg-primary text-white">
+          {t(lang, "member.join.cta")} →
+        </BrutButton>
+      </BrutCard>
     </div>
   </section>
 </Layout>
