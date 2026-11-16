@@ -422,3 +422,36 @@ jobs:
             done
           done
           echo "Deleted $deleted held run(s) on $NEW_SHA."
+
+  # The preview link for /admin's Preview badge and the status comment (#127).
+  # Waits for Cloudflare's "Workers Builds: ghrweb" check run on the PR's final
+  # head (the bot's commit, if it pushed one) and posts its URL as the
+  # `deploy/preview` status. preview-status.yml does the same from
+  # Cloudflare's PR comment, as a fallback: that comment can come late or not
+  # at all. Not a required check; a newer save cancels this run.
+  preview:
+    needs: translate
+    # Never for forks (translate already refuses them; this repeats it here).
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && needs.translate.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    permissions:
+      contents: read        # checkout
+      checks: read          # Cloudflare's check run
+      statuses: write       # deploy/preview
+      pull-requests: write  # the status comment (pr_status.py)
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Post the preview link from Cloudflare's build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.translate.outputs.new_sha || github.event.pull_request.head.sha }}
+        run: python .github/scripts/preview_status.py check-run
