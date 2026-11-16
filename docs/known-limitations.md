@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-10-29_
+_Last updated: 2026-11-16_
 
 ## Images
 
@@ -137,6 +137,15 @@ Each content PR has one status comment (`.github/scripts/pr_status.py`) with Tra
 ### Pushing straight to `main` skips every check
 
 All workflows run on pull requests only. Content pushed straight to `main` isn't translated and its translations go stale, with no alarm. To recover, open a small PR that saves the source file again.
+
+## Page addresses
+
+### Changing a short address breaks the old short link
+
+A news or activity entry can have a short address (`url_slug`). The address that comes from the file name always redirects to it (`src/lib/entry-path.ts`), but an earlier short address does not. If an editor shares `…/news/pascha-2026` and later changes the short address, that link shows "page not found".
+
+- **What to do:** don't change a short address after it has been shared. The field's hint in `/admin` and the editor guide say so.
+- **Possible fix:** keep a list of earlier short addresses on the entry and serve a redirect for each.
 
 ## Site settings
 
