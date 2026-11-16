@@ -157,6 +157,13 @@ class TestRender:
         assert "being built" in render(st, HEAD)
         assert "Open the preview" in render(st, "b" * 40)
 
+    def test_preview_has_one_link_in_both_languages(self):
+        st = State()
+        apply_section(st, "preview", PREV)
+        body = render(st, HEAD)
+        assert f"[Άνοιγμα προεπισκόπησης / Open the preview]({PREV['url']})" in body
+        assert body.count(PREV["url"]) == 1
+
     def test_preview_url_is_checked_again_when_rendering(self):
         st = State()
         apply_section(st, "preview", {**PREV, "url": "https://evil.example/x)"})
@@ -709,7 +716,8 @@ class TestEditLinks:
         assert "[Διόρθωση αγγλικών / Correct the English]" in body
         assert "[Διόρθωση ολλανδικών / Correct the Dutch]" in body
         assert body.index("Correct the English") < body.index("Correct the Dutch")
-        assert "https://github.com/o/r/blob/main/docs/editor-guide.md" in body
+        assert body.count("https://github.com/o/r/blob/main/docs/editor-guide.md") == 1
+        assert "[Οδηγός συντακτών, ενότητα 5 / Editor guide, section 5](" in body
 
     def test_each_entry_gets_its_own_labelled_line(self):
         st = State()
