@@ -73,9 +73,9 @@ collections:
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
-      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime" }
-      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Προαιρετικό. Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. Μην την αλλάξεις αφού μοιραστείς τον σύνδεσμο: η παλιά σύντομη διεύθυνση σταματά να λειτουργεί. / Optional. Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title. Don't change it after you share the link: the old short address stops working." }
+      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
@@ -98,9 +98,9 @@ collections:
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
-      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime" }
-      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Προαιρετικό. Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. Μην την αλλάξεις αφού μοιραστείς τον σύνδεσμο: η παλιά σύντομη διεύθυνση σταματά να λειτουργεί. / Optional. Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title. Don't change it after you share the link: the old short address stops working." }
+      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
@@ -146,7 +146,7 @@ collections:
     preview_path: "nl/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -168,7 +168,7 @@ collections:
     preview_path: "en/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
@@ -221,11 +221,11 @@ collections:
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
-      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "π.χ. / e.g. 💃 🎨 📚" }
+      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Πρόγραμμα / Schedule", name: "schedule", widget: "string", required: false, hint: "π.χ. / e.g. 'Elke donderdag 19:00'" }
-      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Προαιρετικό. Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. Μην την αλλάξεις αφού μοιραστείς τον σύνδεσμο: η παλιά σύντομη διεύθυνση σταματά να λειτουργεί. / Optional. Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title. Don't change it after you share the link: the old short address stops working." }
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
@@ -248,11 +248,11 @@ collections:
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
-      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "π.χ. / e.g. 💃 🎨 📚" }
+      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Πρόγραμμα / Schedule", name: "schedule", widget: "string", required: false, hint: "π.χ. / e.g. 'Every Thursday 19:00'" }
-      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Προαιρετικό. Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. Μην την αλλάξεις αφού μοιραστείς τον σύνδεσμο: η παλιά σύντομη διεύθυνση σταματά να λειτουργεί. / Optional. Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title. Don't change it after you share the link: the old short address stops working." }
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
@@ -300,7 +300,7 @@ collections:
     fields:
       - { label: "Ερώτηση / Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Απάντηση / Answer", name: "answer", widget: "text" }
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -323,7 +323,7 @@ collections:
     fields:
       - { label: "Ερώτηση / Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Απάντηση / Answer", name: "answer", widget: "text" }
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -385,6 +385,7 @@ collections:
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - label: "Κατηγορία / Category"
         name: "category"
+        hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically."
         widget: "select"
         options:
           - { label: "Νομικά / Legal", value: "legal" }
@@ -395,7 +396,7 @@ collections:
           - { label: "Πολιτισμός / Culture", value: "culture" }
           - { label: "Άλλο / Other", value: "other" }
         default: "other"
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
@@ -420,6 +421,7 @@ collections:
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - label: "Κατηγορία / Category"
         name: "category"
+        hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically."
         widget: "select"
         options:
           - { label: "Νομικά / Legal", value: "legal" }
@@ -430,7 +432,7 @@ collections:
           - { label: "Πολιτισμός / Culture", value: "culture" }
           - { label: "Άλλο / Other", value: "other" }
         default: "other"
-      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
