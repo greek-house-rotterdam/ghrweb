@@ -46,3 +46,15 @@ describe("cards: raised = clickable", () => {
     });
   }
 });
+
+// Everything that presses in also shows where keyboard focus is (#122).
+describe("clickable things show keyboard focus", () => {
+  for (const [rel, count] of Object.entries(CLICKABLE_SHADOWS)) {
+    it(`${rel}: every shadowed element has a focus-visible style`, () => {
+      const src = readFileSync(join(ROOT, rel), "utf-8");
+      const focus = src.match(/focus-visible:(outline-4|ring-4)/g) ?? [];
+      // BrutButton holds both sizes in one class list.
+      expect(focus.length).toBeGreaterThanOrEqual(rel.endsWith("BrutButton.astro") ? 1 : count);
+    });
+  }
+});
