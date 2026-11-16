@@ -29,17 +29,30 @@ const hasEarlyCommunity = sectionSlugs.has("early-community");
 <Layout title={t(lang, "history.title")} lang={lang}>
   <section class="py-16">
     <div class="mx-auto max-w-4xl px-4">
-      <h1 class="text-4xl font-extrabold text-black">{t(lang, "history.title")}</h1>
-      <p class="mt-4 text-lg text-gray-600 max-w-2xl">
-        {t(lang, "history.intro")}
-      </p>
-      {hasEarlyCommunity && (
-        <p class="mt-3 text-base text-gray-600 max-w-2xl">
-          <a href={`/${lang}/history/early-community`} class="font-bold underline hover:text-primary">
-            {t(lang, "history.read-early-community")} →
-          </a>
-        </p>
-      )}
+      {/* The association's logo (#116): on phones above the title, on wider
+          screens beside it. */}
+      <div class="flex flex-col-reverse gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-4xl font-extrabold text-black">{t(lang, "history.title")}</h1>
+          <p class="mt-4 text-lg text-gray-600 max-w-2xl">
+            {t(lang, "history.intro")}
+          </p>
+          {hasEarlyCommunity && (
+            <p class="mt-3 text-base text-gray-600 max-w-2xl">
+              <a href={`/${lang}/history/early-community`} class="font-bold underline hover:text-primary">
+                {t(lang, "history.read-early-community")} →
+              </a>
+            </p>
+          )}
+        </div>
+        <img
+          src="/images/vvgn-logo.png"
+          alt={t(lang, "history.logo-alt")}
+          width="480"
+          height="480"
+          class="size-28 shrink-0 sm:size-40"
+        />
+      </div>
 
       <div class="mt-12 relative">
         {/* Timeline line */}
