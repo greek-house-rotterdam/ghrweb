@@ -125,7 +125,7 @@ def test_reposts_when_newest_status_has_other_url():
 
 def test_skips_stale_comment():
     gh = FakeGh(head="9999999999999999999999999999999999999999")
-    assert sync("o/r", "7", REAL_COMMENT, gh).startswith("skip: comment is for")
+    assert sync("o/r", "7", REAL_COMMENT, gh).startswith("skip: preview is for")
     assert gh.posts == []
 
 
@@ -138,4 +138,124 @@ def test_skips_fork_pr():
 def test_skips_closed_pr():
     gh = FakeGh(pr_state="closed")
     assert sync("o/r", "7", REAL_COMMENT, gh) == "skip: PR is not open"
+    assert gh.posts == []
+
+
+# --- Check-run mode (#127): the URL from Cloudflare's check run ------------
+
+from preview_status import parse_check_run, sync_from_check_run  # noqa: E402
+
+# A real "Workers Builds: ghrweb" check run summary (PR #125), verbatim.
+REAL_SUMMARY = (
+    "\nBuild ID: [fd27310d-edfa-47a8-8a7e-8b2750676cfe](https://dash.cloudflare.com/4d332016793fb6b37edf699d14677f2b"
+    "/workers/services/view/ghrweb/production/builds/fd27310d-edfa-47a8-8a7e-8b2750676cfe)\n"
+    "Script: [ghrweb](https://dash.cloudflare.com/4d332016793fb6b37edf699d14677f2b/workers/services/view/ghrweb/production)\n"
+    "Version ID: d886f897-3b1f-4a6b-9067-a45c67e61eeb\n"
+    "Preview URL: https://d886f897-ghrweb.enosi-ellinon-ollandias.workers.dev\n"
+    "Preview Alias URL: https://cms-news-gr-nvidia-ghrweb.enosi-ellinon-ollandias.workers.dev\n"
+)
+RUN_URL_PREVIEW = "https://d886f897-ghrweb.enosi-ellinon-ollandias.workers.dev"
+
+
+def check_run(status="completed", conclusion="success", summary=REAL_SUMMARY, app="cloudflare-workers-and-pages", started="2026-11-16T14:56:00Z"):
+    return {
+        "app": {"slug": app},
+        "status": status,
+        "conclusion": conclusion,
+        "started_at": started,
+        "output": {"summary": summary},
+    }
+
+
+def test_parse_real_check_run():
+    assert parse_check_run(check_run()) == RUN_URL_PREVIEW
+
+
+@pytest.mark.parametrize(
+    "run",
+    [
+        check_run(status="in_progress", conclusion=None),
+        check_run(conclusion="failure"),
+        check_run(app="someone-else"),
+        check_run(summary="Build ID: x\n"),
+        check_run(summary=REAL_SUMMARY.replace(RUN_URL_PREVIEW, "https://evil.example.com")),
+    ],
+)
+def test_parse_check_run_rejects(run):
+    assert parse_check_run(run) is None
+
+
+class CheckRunGh(FakeGh):
+    """FakeGh that also answers the check-runs API, one answer per poll."""
+
+    def __init__(self, polls, **kw):
+        super().__init__(**kw)
+        self.polls = list(polls)
+        self.check_calls = 0
+
+    def __call__(self, *args):
+        if args[0] == "api" and "/check-runs?check_name=" in args[1]:
+            assert args[1] == f"repos/o/r/commits/{HEAD}/check-runs?check_name=Workers%20Builds%3A%20ghrweb"
+            self.check_calls += 1
+            runs = self.polls.pop(0) if len(self.polls) > 1 else self.polls[0]
+            return json.dumps({"check_runs": runs})
+        return super().__call__(*args)
+
+
+class Clock:
+    def __init__(self):
+        self.t = 0.0
+
+    def __call__(self):
+        return self.t
+
+    def sleep(self, s):
+        self.t += s
+
+
+def test_check_run_mode_waits_for_the_build_then_posts():
+    gh = CheckRunGh([[], [check_run(status="in_progress", conclusion=None)], [check_run()]])
+    clock = Clock()
+    out = sync_from_check_run("o/r", "7", HEAD, gh, wait_s=600, sleep=clock.sleep, clock=clock)
+    assert out.startswith("posted deploy/preview")
+    assert gh.check_calls == 3
+    assert any(f"target_url={RUN_URL_PREVIEW}" in a for a in gh.posts[0])
+
+
+def test_check_run_mode_uses_the_newest_run():
+    old = check_run(started="2026-11-16T14:00:00Z", summary=REAL_SUMMARY.replace("d886f897", "aaaaaaaa"))
+    gh = CheckRunGh([[old, check_run(started="2026-11-16T15:00:00Z")]])
+    clock = Clock()
+    sync_from_check_run("o/r", "7", HEAD, gh, wait_s=60, sleep=clock.sleep, clock=clock)
+    assert any(f"target_url={RUN_URL_PREVIEW}" in a for a in gh.posts[0])
+
+
+def test_check_run_mode_gives_up_after_the_wait():
+    gh = CheckRunGh([[]])
+    clock = Clock()
+    out = sync_from_check_run("o/r", "7", HEAD, gh, wait_s=60, sleep=clock.sleep, clock=clock)
+    assert out.startswith("skip: no finished Cloudflare build")
+    assert gh.posts == []
+
+
+def test_check_run_mode_skips_a_failed_build():
+    gh = CheckRunGh([[check_run(conclusion="failure")]])
+    clock = Clock()
+    out = sync_from_check_run("o/r", "7", HEAD, gh, wait_s=60, sleep=clock.sleep, clock=clock)
+    assert "no usable preview URL" in out
+    assert gh.posts == []
+
+
+def test_check_run_mode_skips_when_a_newer_save_moved_the_head():
+    gh = CheckRunGh([[check_run()]], head="f" * 40)
+    clock = Clock()
+
+    # The check runs are looked up for HEAD, but the PR has moved on.
+    def gh_for_old_sha(*args):
+        if args[0] == "api" and "/check-runs?" in args[1]:
+            return json.dumps({"check_runs": [check_run()]})
+        return gh(*args)
+
+    out = sync_from_check_run("o/r", "7", HEAD, gh_for_old_sha, wait_s=60, sleep=clock.sleep, clock=clock)
+    assert out.startswith("skip: preview is for")
     assert gh.posts == []

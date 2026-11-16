@@ -5,9 +5,12 @@ name: Preview Status
 # This copies the preview URL from Cloudflare's comment into a `deploy/preview`
 # status on the PR head.
 #
-# Triggered by the comment, not by Cloudflare's check-run: GitHub skips
-# check_run / check_suite workflows when the commit was pushed by GitHub
-# Actions, and the translation bot's commits are exactly that.
+# This is the fallback (#127). The main path is the `preview` job in
+# translate.yml, which waits for Cloudflare's check run after each save:
+# Cloudflare's comment can come late (17 minutes on #125) or never (#121).
+# Neither can listen for the check run itself: GitHub skips check_run /
+# check_suite workflows when the commit was pushed by GitHub Actions, and the
+# translation bot's commits are exactly that.
 #
 # issue_comment runs the workflow from the default branch, never from PR code.
 # It checks out main only to get preview_status.py.

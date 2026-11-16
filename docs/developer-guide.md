@@ -11,7 +11,8 @@ What the developer does, and what to do when the site asks for help. The editors
 ```
 editor saves in /admin ─► pull request (cms/<collection>/<slug>)
                            ├─ translate.yml: deletions, translations, image shrinking, verify,
-                           │                 content tests, tidy (deletes the bot's held runs)
+                           │                 content tests, tidy (deletes the bot's held runs),
+                           │                 preview (waits for Cloudflare's build, posts the link)
                            ├─ content-review.yml: advisory AI review
                            └─ Cloudflare: preview build (required check "Workers Builds: ghrweb")
 editor sets Ready ─► auto-publish.yml turns on auto-merge ─► merged ─► Cloudflare deploys main
