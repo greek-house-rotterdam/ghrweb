@@ -46,6 +46,7 @@ If an existing translation uses an off-glossary name and the Greek didn't change
 ### A translation the bot keeps or flags
 
 - Hand-corrected translations (text ≠ `translation_hash`) are kept when the Greek changes, and flagged in the status comment.
+- Editors correct a **draft's** translation through the "Correct the English / Correct the Dutch" links in the status comment (#131). They open GitHub's editor on that file in the pull request's branch; the editor commits straight to the branch, and the correction counts as a hand correction like any other. `pr_status.py` builds the links (`edit_paths`, `render_edit_links`) from the content files that differ from `main`, once their Dutch and English files exist on the branch. Editor guide, section 5.
 - To hand one back to the bot: delete that one file in a pull request (rewritten right away), or remove `translation_hash` (rewritten at the next Greek change).
 - To freeze one: `translation_locked: true`.
 

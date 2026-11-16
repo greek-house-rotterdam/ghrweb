@@ -11,6 +11,10 @@ Each workflow reports its own part and this script rewrites only that part:
     review       content-review.yml: the AI review, notes per file
     autopublish  auto-publish.yml: is the post set to go live by itself (C1)
 
+Once the translations exist, the translation section also links to GitHub's
+editor for each changed entry's Dutch and English file on the PR's branch, so
+an editor can correct a draft's translation before it is published (#131).
+
 The comment carries the marker `<!-- pr-status -->`. Every section sits between
 `<!-- pr-status:begin <name> <data> -->` and `<!-- pr-status:end <name> -->`; the
 data in the begin marker (base64 JSON) is what later runs read back, the visible
@@ -41,6 +45,13 @@ Environment:
     RUN_URL         link to the workflow run, shown in the footer
     GITHUB_RUN_ID   orders writes of the same section (newer run wins)
     ADMIN_MENTIONS  who to @-mention on failures, e.g. "@PanoEvJ" (space-separated)
+    HEAD_REF        the PR's branch, for the translation correction links
+    CHANGED_FILES   file listing the content files that differ from main, one per
+                    line, for the translation correction links
+
+HEAD_REF and CHANGED_FILES are environment variables, not options, because the
+workflow comes from main but runs this script from the PR's branch: on a branch
+made before the links existed, the old script ignores them instead of failing.
 """
 
 import argparse
@@ -55,6 +66,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import quote
 
 Runner = Callable[..., str]
 
@@ -72,6 +84,16 @@ AUTOPUBLISH_STATES = ("on", "off", "unavailable")
 CONTENT_PREFIXES = ("src/content/", "src/data/", "public/images/")
 MAX_ITEMS = 20
 MAX_TEXT = 600
+# A content file: src/content/<collection>/<language>/<name>.md
+CONTENT_FILE_RE = re.compile(r"^src/content/([a-z0-9-]+)/(gr|nl|en)/([^/]+\.md)$")
+# Links to correct a draft's translation, in this order (#131)
+EDIT_LANGS = (("en", "Διόρθωση αγγλικών", "Correct the English"),
+              ("nl", "Διόρθωση ολλανδικών", "Correct the Dutch"))
+EDITOR_GUIDE = "docs/editor-guide.md"
+# A Decap draft has one entry. Encoded Greek makes each link up to ~1,300
+# characters, so a bulk PR gets links for its first few entries only, which
+# keeps the comment far below GitHub's 65,536-character limit.
+MAX_EDIT_ENTRIES = 5
 
 
 # ---------------------------------------------------------------------------
@@ -300,6 +322,8 @@ def render_translation(data: dict | None) -> str:
             text += "\n\n" + bullets([f"`{clean(f, 200)}`" for f in data["files"]])
         else:
             text = bi("✅ Οι μεταφράσεις είναι ήδη ενημερωμένες.", "The translations are already up to date.")
+        if links := render_edit_links(data.get("edit")):
+            text += "\n\n" + links
         return f"{title}{sha}\n\n{text}"
     kind = data.get("kind")
     if kind == "non-greek":
@@ -326,14 +350,69 @@ def render_translation(data: dict | None) -> str:
     return f"{title}{sha}\n\n{text}"
 
 
+def github_url(repo: str, kind: str, branch: str, path: str) -> str:
+    """A GitHub page for a file on a branch, e.g. kind "edit" opens GitHub's editor.
+    Branch and path are percent-encoded: both can hold Greek letters."""
+    return f"https://github.com/{repo}/{kind}/{quote(branch, safe='/')}/{quote(path, safe='/')}"
+
+
+def render_edit_links(edit: dict | None) -> str:
+    """Links that open GitHub's editor on the draft's Dutch and English files (#131)."""
+    if not edit or not edit.get("paths"):
+        return ""
+    repo, branch = edit.get("repo", ""), edit.get("branch", "")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo) or not branch:
+        return ""
+    posts: dict[tuple[str, str], dict[str, str]] = {}
+    for path in edit["paths"]:
+        m = CONTENT_FILE_RE.match(path)
+        if m and m.group(2) != "gr":
+            posts.setdefault((m.group(1), m.group(3)), {})[m.group(2)] = path
+    lines = []
+    for (collection, name), by_lang in sorted(posts.items()):
+        links = [f"[{gr} / {en}]({github_url(repo, 'edit', branch, by_lang[lang])})"
+                 for lang, gr, en in EDIT_LANGS if lang in by_lang]
+        lines.append(f"`{clean(name, 200)}` ({clean(collection, 40)}): " + " · ".join(links))
+    if not lines:
+        return ""
+    guide = f"https://github.com/{repo}/blob/main/{EDITOR_GUIDE}"
+    return (
+        bi("✏️ Βρήκες λάθος σε μετάφραση; Διόρθωσέ το εδώ, πριν τη δημοσίευση. Άλλαξε μόνο κείμενο "
+           f"([οδηγός, ενότητα 5]({guide})) και πάτα «Commit changes…» → «Commit directly to the … branch».",
+           "Spotted a mistake in a translation? Correct it here, before publishing. Change only text "
+           f"([guide, section 5]({guide})) and click \"Commit changes…\" → \"Commit directly to the … branch\".")
+        + "\n\n" + bullets(lines)
+    )
+
+
+def edit_paths(changed: list[str], root: Path) -> list[str]:
+    """The Dutch and English files of the entries this PR changes that exist on
+    the branch, so they can be corrected before publishing (#131).
+
+    `changed` is every content file that differs from main (any language), so an
+    image-only save or a save with up-to-date translations still gets the links.
+    At most MAX_EDIT_ENTRIES entries (see there).
+    """
+    entries = {(m.group(1), m.group(3)) for f in changed if (m := CONTENT_FILE_RE.match(f))}
+    paths = []
+    for collection, name in sorted(entries)[:MAX_EDIT_ENTRIES]:
+        for lang, _, _ in EDIT_LANGS:
+            path = f"src/content/{collection}/{lang}/{name}"
+            if (root / path).is_file():
+                paths.append(path)
+    return paths
+
+
 def render_kept(data: dict | None) -> str:
     if not data or not data.get("items"):
         return ""
     text = bi(
         "ℹ️ Η ελληνική εκδοχή άλλαξε, αλλά η ολλανδική ή η αγγλική μετάφραση είχε διορθωθεί με το χέρι, "
-        "οπότε κρατήθηκε όπως ήταν. Μπορεί να μην ταιριάζει πια με το ελληνικό κείμενο: έλεγξέ την στο /admin.",
+        "οπότε κρατήθηκε όπως ήταν. Μπορεί να μην ταιριάζει πια με το ελληνικό κείμενο: έλεγξέ την με τους "
+        "συνδέσμους «Διόρθωση» παραπάνω, ή στο /admin αφού δημοσιευτεί.",
         "The Greek changed, but the Dutch or English translation had been corrected by hand, so it was kept "
-        "as it was. It may no longer match the Greek: check it in /admin.",
+        "as it was. It may no longer match the Greek: check it with the \"Correct\" links above, or in /admin "
+        "once it is published.",
     )
     return text + "\n\n" + bullets([clean(v, 300) for v in data["items"].values()])
 
@@ -644,6 +723,10 @@ def build_data(args: argparse.Namespace) -> dict:
         if args.state == "ok":
             data["files"] = [l.split("\t")[-1] for l in read_lines(args.written)]
             data["nothing"] = bool(args.nothing)
+            branch = os.environ.get("HEAD_REF", "")
+            paths = edit_paths(read_lines(os.environ.get("CHANGED_FILES")), Path.cwd())
+            if paths and branch:
+                data["edit"] = {"repo": os.environ.get("REPO", ""), "branch": branch, "paths": paths}
         else:
             report = Path(args.report) if args.report else None
             if report and report.is_file() and report.stat().st_size:
@@ -692,7 +775,6 @@ def parser() -> argparse.ArgumentParser:
     t.add_argument("--nothing", action="store_true", help="no content to translate")
     t.add_argument("--report", help="TRANSLATE_REPORT json written by translate.py")
     t.add_argument("--missing", help="VERIFY_REPORT: files missing a translation")
-
     k = sub.add_parser("kept")
     k.add_argument("--file", required=True, help="KEPT_REPORT")
 

@@ -54,6 +54,16 @@ When the bot writes a translation it also stores `translation_hash`, a fingerpri
 - **Locked files** (`translation_locked: true`, added by the admin; there is no checkbox in the CMS) are never re-translated, with or without a hash, and are not flagged.
 - **Edge case:** if a run is cancelled by a newer save after the bot pushed but before the list was recorded, it can be missing, because the next run sees the current `source_hash` and does not flag the file again. It is recorded before the push to keep this window small.
 
+### Correcting a draft's translation happens on GitHub, in the raw file
+
+`/admin` shows only the Greek version of a draft. So the status comment links to GitHub's editor for the draft's Dutch and English files ("Correct the English", "Correct the Dutch", #131). The links appear once the translations exist on the branch.
+
+- **The editor sees the whole file**, including the lines between the `---` lines. Title, description, schedule and FAQ question and answer live there, next to `source_hash`, `translation_hash`, `date` and the other fields. The editor guide says which lines to change. A broken line (for example an unquoted `: ` in a title) or a deleted `source_hash` makes the translate job fail, and the status comment mentions the admins.
+- **"Create a new branch" opens a second pull request** with only the correction, outside the draft. The guide says to choose "Commit directly to the … branch". If it happens, close the second pull request and make the correction again on the draft's branch.
+- **Links for at most 5 entries per pull request.** A Decap draft has one entry. A bulk pull request (content-pipeline skill) gets links for its first 5 entries only, because encoded Greek names make the links long and the comment has a size limit.
+- **Branches made before #131 get no links** until their next save from `/admin`, which rebases them onto `main`. They run their own older `pr_status.py`.
+- **Decap rebases the draft's branch when the editor saves again.** The bot's commits survive that, so an editor's commit made on GitHub should too. Not yet tested in practice.
+
 ### A description added later does not reach a kept or locked translation
 
 The description is optional. Without one, the site shows the first 200 characters or so of the text instead (cards, search results, link previews), and the bot adds no description to the Dutch and English files. If an editor adds a description to the Greek later, or removes it, the translations follow on the next run, except for the two cases below.
@@ -203,4 +213,5 @@ The loader reads one page of up to 100 published events (Ticket Tailor's maximum
 
 - **A real Gemini failure.** The failure path was tested on PR #67 with a non-Greek source file (the status comment was re-created with the admin mention, and GitHub's notifications API listed it with reason `mention`), but never with an actual API error.
 - **The `preview` job (#127) on a real CMS draft.** Check on the first draft after it merges: the Preview badge and the status comment's link should appear within a few minutes of a save, even before Cloudflare's PR comment.
+- **The translation correction links (#131) on a real CMS draft.** Check on the first draft after it merges: the links appear in the status comment, a correction made through one shows in the preview, survives the next Greek save in `/admin`, and publishes with the post on Ready.
 - **Cancelling a superseded run.** When an editor saves twice quickly, the older run should be cancelled. In the live test (PR #46) the bot finished before the second save, so this didn't happen.
