@@ -1,21 +1,36 @@
 ---
 /**
- * Brutalist card wrapper. Static container with thick border and offset shadow.
- * For clickable cards, set `interactive` to add the hover-press effect.
- * Pass `tag="a"` and `href` for link cards.
+ * Brutalist card. The rule (#122): raised = clickable, flat = read.
+ *
+ * - With `href` it is a link card: hard offset shadow that presses in on
+ *   hover, and a keyboard focus outline. Never wrap a card in your own <a>.
+ * - Without `href` it is a static card, with no shadow:
+ *   - `variant="rule"` (default): a frame with a heavy top rule, like a
+ *     newspaper column. For cards in grids.
+ *   - `variant="slab"`: a tinted box with a thick left bar. For a single
+ *     "read this" box; pass the tint in `class` (e.g. bg-accent-gold-lighter).
  */
 import type { HTMLAttributes } from "astro/types";
 
 type Props = HTMLAttributes<"div"> & {
-  tag?: "div" | "a";
   href?: string;
-  interactive?: boolean;
+  variant?: "rule" | "slab";
 };
 
-const { tag: Tag = "div", href, interactive = false, class: className, ...rest } = Astro.props;
+const { href, variant = "rule", class: className, ...rest } = Astro.props;
+const Tag = href ? "a" : "div";
 const classes = [
-  "border-2 border-black shadow-[4px_4px_0_0_#000]",
-  interactive && "hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all",
+  href
+    ? [
+        "block border-2 border-black shadow-[4px_4px_0_0_#000]",
+        "transition-[translate,box-shadow] duration-100 motion-reduce:transition-none",
+        "hover:translate-x-1 hover:translate-y-1 hover:shadow-none",
+        "active:translate-x-1 active:translate-y-1 active:shadow-none",
+        "focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary",
+      ]
+    : variant === "slab"
+      ? "border-l-8 border-black"
+      : "border-2 border-t-8 border-black",
   className,
 ];
 ---

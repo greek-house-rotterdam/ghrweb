@@ -97,9 +97,7 @@ const hasEarlyCommunity = sectionSlugs.has("early-community");
                 {/* Content */}
                 <div class:list={["ml-14 sm:ml-0 sm:w-[calc(50%-2rem)]", i % 2 === 0 ? "sm:pr-8 sm:text-right" : "sm:pl-8"]}>
                   {link ? (
-                    <a href={link} class="block no-underline transition-transform hover:-translate-y-0.5">
-                      <BrutCard class="bg-white p-5">{cardInner}</BrutCard>
-                    </a>
+                    <BrutCard href={link} class="bg-white p-5 no-underline">{cardInner}</BrutCard>
                   ) : (
                     <BrutCard class="bg-white p-5">{cardInner}</BrutCard>
                   )}

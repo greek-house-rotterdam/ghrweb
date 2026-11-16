@@ -24,7 +24,7 @@ const news = allNews
 
       <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {news.map((post) => (
-          <BrutCard tag="a" href={entryPath("news", post)} interactive class="block bg-white overflow-hidden">
+          <BrutCard href={entryPath("news", post)} class="bg-white overflow-hidden">
             {post.data.image && (
               <img
                 src={post.data.image}

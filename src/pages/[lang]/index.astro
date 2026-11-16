@@ -64,7 +64,7 @@ const events = nextEvents(upcoming, 3);
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.latest-news")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {news.map((post) => (
-          <BrutCard tag="a" href={entryPath("news", post)} interactive class="block bg-white p-6">
+          <BrutCard href={entryPath("news", post)} class="bg-white p-6">
             <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
               {formatDate(post.data.date, lang)}
             </span>
@@ -102,7 +102,7 @@ const events = nextEvents(upcoming, 3);
   {/* CTA */}
   <section class="py-16">
     <div class="mx-auto max-w-3xl px-4 text-center">
-      <div class="border-4 border-black bg-white p-10 shadow-[8px_8px_0_0_#000]">
+      <div class="border-l-8 border-black bg-accent-gold-lighter p-10">
         <h2 class="text-3xl font-extrabold">{t(lang, "home.cta.title")}</h2>
         <p class="mt-4 text-gray-600">{t(lang, "home.cta.subtitle")}</p>
         <BrutButton href={`/${lang}/become-a-member`} class="mt-8 bg-primary text-white text-lg">

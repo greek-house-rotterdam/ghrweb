@@ -13,7 +13,7 @@ interface Props {
 const { event, lang } = Astro.props;
 ---
 
-<BrutCard tag="a" href={`/${lang}/events/${event.id}`} interactive class="block bg-white overflow-hidden">
+<BrutCard href={`/${lang}/events/${event.id}`} class="bg-white overflow-hidden">
   {event.imageUrl && (
     <img
       src={event.imageUrl}

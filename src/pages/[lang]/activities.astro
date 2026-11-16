@@ -31,7 +31,7 @@ const activities = allActivities
 
       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {activities.map((activity) => (
-          <BrutCard tag="a" href={entryPath("activities", activity)} interactive class="block p-6 bg-white">
+          <BrutCard href={entryPath("activities", activity)} class="p-6 bg-white">
             {activity.data.emoji && (
               <span class="text-4xl">{activity.data.emoji}</span>
             )}
@@ -52,7 +52,7 @@ const activities = allActivities
         </div>
       )}
 
-      <BrutCard class="mt-12 bg-accent-gold-lighter p-6 max-w-3xl">
+      <BrutCard variant="slab" class="mt-12 bg-accent-gold-lighter p-6 max-w-3xl">
         <h2 class="text-xl font-extrabold">{t(lang, "activities.join.title")}</h2>
         <p class="mt-2 text-gray-700">{t(lang, "activities.join.text")}</p>
         <BrutButton href={`/${lang}/contact`} size="sm" class="mt-4 bg-white text-black hover:bg-accent-gold">
