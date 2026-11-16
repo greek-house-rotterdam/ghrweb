@@ -288,6 +288,37 @@ describe("Decap CMS config — optional description", () => {
   }
 });
 
+describe("Decap CMS config — fields copied from the Greek entry", () => {
+  // The translation step translates these fields and the body. It copies every
+  // other field from the Greek entry on every run, so a change made to it on a
+  // Dutch or English entry is lost.
+  const translateScript = readFileSync(join(ROOT, ".github/scripts/translate.py"), "utf-8");
+  const translated = new Set(
+    [...translateScript.match(/^TRANSLATABLE_FIELDS = \{([^}]*)\}/m)![1].matchAll(/"([a-z_]+)"/g)].map(
+      (m) => m[1],
+    ),
+  );
+  translated.add("body");
+  const COPIED_HINT =
+    "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically.";
+
+  it("reads the translated fields from translate.py", () => {
+    expect(translated).toContain("title");
+    expect(translated).toContain("description");
+  });
+
+  for (const type of CONTENT_TYPES) {
+    for (const lang of ["nl", "en"]) {
+      for (const f of getCollection(type, lang).fields) {
+        if (f.widget === "hidden" || translated.has(f.name)) continue;
+        it(`${type}-${lang}.${f.name} says to change it on the Greek entry`, () => {
+          expect(f.hint).toBe(COPIED_HINT);
+        });
+      }
+    }
+  }
+});
+
 describe("Decap CMS config — max length constraints", () => {
   for (const type of CONTENT_TYPES) {
     const expected = EXPECTED_FIELDS[type];
