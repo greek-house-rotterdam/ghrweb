@@ -122,8 +122,8 @@ describe("parseSettings", () => {
   });
 
   it("rejects text that is not a link", () => {
-    expect(failure({ ...valid(), "../data/forms.yml": "member_form_url: soon\n" })).toContain(
-      "member_form_url",
+    expect(failure({ ...valid(), "../data/contact.yml": "facebook_url: soon\n" })).toContain(
+      "facebook_url",
     );
   });
 

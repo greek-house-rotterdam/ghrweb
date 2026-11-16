@@ -473,6 +473,3 @@ collections:
         file: src/data/forms.yml
         fields:
           - { label: "Κωδικός φόρμας επικοινωνίας", name: "contact_form_id", widget: "string", required: false, pattern: ['^[A-Za-z0-9_-]*$', "Μόνο ο κωδικός της φόρμας, όχι ολόκληρος ο σύνδεσμος"], hint: "Ο κωδικός είναι το κομμάτι του συνδέσμου ανάμεσα στο /d/e/ και στο /viewform. Αν μείνει κενός, η σελίδα Επικοινωνία δείχνει το email αντί για φόρμα." }
-          - { label: "Φόρμα Τακτικού Μέλους", name: "member_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }
-          - { label: "Φόρμα Υποψήφιου Μέλους", name: "candidate_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }
-          - { label: "Φόρμα Φίλου", name: "friend_form_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος της φόρμας. Αν μείνει κενό, κρύβεται το κουμπί." }
