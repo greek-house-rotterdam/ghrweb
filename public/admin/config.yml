@@ -46,14 +46,14 @@ collections:
     preview_path: "gr/news/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: news-nl
     label: "Nieuws (Nederlands)"
@@ -71,14 +71,14 @@ collections:
     preview_path: "nl/news/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: news-en
     label: "News (English)"
@@ -96,14 +96,14 @@ collections:
     preview_path: "en/news/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Date", name: "date", widget: "datetime" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Ημερομηνία / Date", name: "date", widget: "datetime" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   # ── Event translations (Ticket Tailor is the source of truth for dates,
   # ── location, prices, tickets — these collections only translate title/description/body.
@@ -124,11 +124,11 @@ collections:
     preview_path: "gr/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown", required: false, hint: "Προαιρετικό. Εμφανίζεται στη σελίδα της εκδήλωσης, κάτω από την περιγραφή. / Optional. Shown on the event's page, below the description." }
 
   - name: event-translations-nl
     label: "Evenementen (Nederlands)"
@@ -146,11 +146,11 @@ collections:
     preview_path: "nl/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown", required: false, hint: "Προαιρετικό. Εμφανίζεται στη σελίδα της εκδήλωσης, κάτω από την περιγραφή. / Optional. Shown on the event's page, below the description." }
 
   - name: event-translations-en
     label: "Events (English)"
@@ -168,11 +168,11 @@ collections:
     preview_path: "en/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Ticket Tailor Event ID", name: "tt_event_id", widget: "string", hint: "Find it in the Ticket Tailor dashboard → Events → click event → copy the event ID, e.g. ev_8112397." }
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
+      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown", required: false, hint: "Optional rich text shown on the detail page below the description." }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown", required: false, hint: "Προαιρετικό. Εμφανίζεται στη σελίδα της εκδήλωσης, κάτω από την περιγραφή. / Optional. Shown on the event's page, below the description." }
 
   # ── Activities ────────────────────────────────────────────────────
 
@@ -192,16 +192,16 @@ collections:
     preview_path: "gr/activities/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
-      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "π.χ. / e.g. 💃 🎨 📚" }
+      - { label: "Πρόγραμμα / Schedule", name: "schedule", widget: "string", required: false, hint: "π.χ. «Κάθε Πέμπτη 19:00» / e.g. 'Every Thursday 19:00'" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: activities-nl
     label: "Activiteiten (Nederlands)"
@@ -219,16 +219,16 @@ collections:
     preview_path: "nl/activities/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
-      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Elke donderdag 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "π.χ. / e.g. 💃 🎨 📚" }
+      - { label: "Πρόγραμμα / Schedule", name: "schedule", widget: "string", required: false, hint: "π.χ. / e.g. 'Elke donderdag 19:00'" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: activities-en
     label: "Activities (English)"
@@ -246,16 +246,16 @@ collections:
     preview_path: "en/activities/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Emoji", name: "emoji", widget: "string", required: false, hint: "e.g. 💃 🎨 📚" }
-      - { label: "Schedule", name: "schedule", widget: "string", required: false, hint: "e.g. 'Every Thursday 19:00'" }
-      - { label: "Image", name: "image", widget: "image", required: false, hint: "Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
-      - { label: "Σύντομη διεύθυνση (προαιρετικό)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο." }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Εικονίδιο (emoji) / Emoji", name: "emoji", widget: "string", required: false, hint: "π.χ. / e.g. 💃 🎨 📚" }
+      - { label: "Πρόγραμμα / Schedule", name: "schedule", widget: "string", required: false, hint: "π.χ. / e.g. 'Every Thursday 19:00'" }
+      - { label: "Φωτογραφία / Image", name: "image", widget: "image", required: false, hint: "JPEG, PNG ή WebP. Οι μεγάλες φωτογραφίες μικραίνουν αυτόματα στα 2560 px μετά την αποθήκευση. / Use JPEG, PNG or WebP. Big photos are shrunk to 2560 px automatically after you save." }
+      - { label: "Σύντομη διεύθυνση (προαιρετικό) / Short address (optional)", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. / Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title." }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   # ── FAQ ───────────────────────────────────────────────────────────
 
@@ -275,9 +275,9 @@ collections:
     preview_path: "gr/faq"
     editor: { preview: false }
     fields:
-      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Answer", name: "answer", widget: "text" }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Ερώτηση / Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Απάντηση / Answer", name: "answer", widget: "text" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -298,9 +298,9 @@ collections:
     preview_path: "nl/faq"
     editor: { preview: false }
     fields:
-      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Answer", name: "answer", widget: "text" }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Ερώτηση / Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Απάντηση / Answer", name: "answer", widget: "text" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -321,9 +321,9 @@ collections:
     preview_path: "en/faq"
     editor: { preview: false }
     fields:
-      - { label: "Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - { label: "Answer", name: "answer", widget: "text" }
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Ερώτηση / Question", name: "question", widget: "string", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - { label: "Απάντηση / Answer", name: "answer", widget: "text" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
       - { label: "Body", name: "body", widget: "hidden", default: "" }
@@ -346,17 +346,24 @@ collections:
     preview_path: "gr/resources"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - label: "Category"
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - label: "Κατηγορία / Category"
         name: "category"
         widget: "select"
-        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        options:
+          - { label: "Νομικά / Legal", value: "legal" }
+          - { label: "Υγεία / Healthcare", value: "healthcare" }
+          - { label: "Εκπαίδευση / Education", value: "education" }
+          - { label: "Στέγαση / Housing", value: "housing" }
+          - { label: "Οικονομικά / Finance", value: "finance" }
+          - { label: "Πολιτισμός / Culture", value: "culture" }
+          - { label: "Άλλο / Other", value: "other" }
         default: "other"
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: resources-nl
     label: "Nuttige informatie (Nederlands)"
@@ -374,17 +381,24 @@ collections:
     preview_path: "nl/resources"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - label: "Category"
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - label: "Κατηγορία / Category"
         name: "category"
         widget: "select"
-        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        options:
+          - { label: "Νομικά / Legal", value: "legal" }
+          - { label: "Υγεία / Healthcare", value: "healthcare" }
+          - { label: "Εκπαίδευση / Education", value: "education" }
+          - { label: "Στέγαση / Housing", value: "housing" }
+          - { label: "Οικονομικά / Finance", value: "finance" }
+          - { label: "Πολιτισμός / Culture", value: "culture" }
+          - { label: "Άλλο / Other", value: "other" }
         default: "other"
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   - name: resources-en
     label: "Useful Information (English)"
@@ -402,17 +416,24 @@ collections:
     preview_path: "en/resources"
     editor: { preview: false }
     fields:
-      - { label: "Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Max 100 characters"] }
-      - { label: "Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου.", pattern: ['^.{0,200}$', "Max 200 characters"] }
-      - label: "Category"
+      - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
+      - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
+      - label: "Κατηγορία / Category"
         name: "category"
         widget: "select"
-        options: ["legal", "healthcare", "education", "housing", "finance", "culture", "other"]
+        options:
+          - { label: "Νομικά / Legal", value: "legal" }
+          - { label: "Υγεία / Healthcare", value: "healthcare" }
+          - { label: "Εκπαίδευση / Education", value: "education" }
+          - { label: "Στέγαση / Housing", value: "housing" }
+          - { label: "Οικονομικά / Finance", value: "finance" }
+          - { label: "Πολιτισμός / Culture", value: "culture" }
+          - { label: "Άλλο / Other", value: "other" }
         default: "other"
-      - { label: "Display Order", name: "order", widget: "number", default: 100, hint: "Lower numbers appear first" }
+      - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Κείμενο / Body", name: "body", widget: "markdown" }
 
   # ── history-sections, about-sections, and history-milestones are       ──
   # ── intentionally NOT exposed in Decap. They're programmatic-only       ──
@@ -433,43 +454,43 @@ collections:
     # for translations and checks). The admin account may skip the ruleset,
     # so its Publish could merge before the translations exist.
     publish: false
-    description: "Στοιχεία που είναι ίδια σε όλες τις γλώσσες: μέλη του Διοικητικού Συμβουλίου, στοιχεία επικοινωνίας και φόρμες. Δεν μεταφράζονται. Αν αφήσεις ένα πεδίο κενό, δεν εμφανίζεται στον ιστότοπο."
+    description: "Στοιχεία που είναι ίδια σε όλες τις γλώσσες: μέλη του Διοικητικού Συμβουλίου, στοιχεία επικοινωνίας και φόρμα επικοινωνίας. Δεν μεταφράζονται. Αν αφήσεις ένα πεδίο κενό, δεν εμφανίζεται στον ιστότοπο. / Facts that are the same in every language: board members, contact details and the contact form. They are not translated. A field left empty doesn't show on the site."
     editor: { preview: false }
     files:
       - name: board
-        label: "Διοικητικό Συμβούλιο"
+        label: "Διοικητικό Συμβούλιο / Board"
         file: src/data/board.yml
         fields:
-          - label: "Μέλη"
+          - label: "Μέλη / Members"
             name: "members"
             widget: "list"
             summary: "{{fields.role}} · {{fields.name}}"
-            hint: "Η σειρά εδώ είναι η σειρά στη σελίδα «Σχετικά». Η ονομασία του ρόλου μεταφράζεται αυτόματα στα ολλανδικά και στα αγγλικά."
+            hint: "Η σειρά εδώ είναι η σειρά στη σελίδα «Σχετικά». Η ονομασία του ρόλου μεταφράζεται αυτόματα στα ολλανδικά και στα αγγλικά. / The order here is the order on the About page. Role names are translated into Dutch and English automatically."
             fields:
-              - label: "Ρόλος"
+              - label: "Ρόλος / Role"
                 name: "role"
                 widget: "select"
                 options:
-                  - { label: "Πρόεδρος", value: "president" }
-                  - { label: "Αντιπρόεδρος", value: "vice_president" }
-                  - { label: "Γραμματέας", value: "secretary" }
-                  - { label: "Ταμίας", value: "treasurer" }
-                  - { label: "Μέλος Δ.Σ.", value: "member" }
+                  - { label: "Πρόεδρος / President", value: "president" }
+                  - { label: "Αντιπρόεδρος / Vice-president", value: "vice_president" }
+                  - { label: "Γραμματέας / Secretary", value: "secretary" }
+                  - { label: "Ταμίας / Treasurer", value: "treasurer" }
+                  - { label: "Μέλος Δ.Σ. / Board member", value: "member" }
                 default: "member"
-              - { label: "Ονοματεπώνυμο", name: "name", widget: "string", required: false, hint: "Αν μείνει κενό, η σελίδα δείχνει προσωρινά μόνο τον ρόλο." }
+              - { label: "Ονοματεπώνυμο / Full name", name: "name", widget: "string", required: false, hint: "Αν μείνει κενό, η σελίδα δείχνει προσωρινά μόνο τον ρόλο. / If empty, the page shows only the role for now." }
 
       - name: contact
-        label: "Στοιχεία επικοινωνίας"
+        label: "Στοιχεία επικοινωνίας / Contact details"
         file: src/data/contact.yml
         fields:
-          - { label: "Διεύθυνση", name: "address", widget: "string", required: false, hint: "Π.χ. Van Vollenhovenstraat 18, 3016 BH Rotterdam. Χρησιμοποιείται και για τον χάρτη. Αν μείνει κενό, κρύβονται η διεύθυνση και ο χάρτης." }
-          - { label: "Email Ένωσης", name: "union_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email"], hint: "Αν μείνει κενό, δεν εμφανίζεται στη σελίδα Επικοινωνία." }
-          - { label: "Email Ελληνικού Σπιτιού", name: "house_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email"], hint: "Εμφανίζεται και στη θέση της φόρμας όταν δεν υπάρχει φόρμα επικοινωνίας." }
-          - { label: "Instagram", name: "instagram_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.instagram.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο." }
-          - { label: "Facebook", name: "facebook_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.facebook.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο." }
+          - { label: "Διεύθυνση / Address", name: "address", widget: "string", required: false, hint: "Π.χ. Van Vollenhovenstraat 18, 3016 BH Rotterdam. Χρησιμοποιείται και για τον χάρτη. Αν μείνει κενό, κρύβονται η διεύθυνση και ο χάρτης. / E.g. Van Vollenhovenstraat 18, 3016 BH Rotterdam. Also used for the map. If empty, the address and the map are hidden." }
+          - { label: "Email Ένωσης / Association email", name: "union_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email / Enter a valid email address"], hint: "Αν μείνει κενό, δεν εμφανίζεται στη σελίδα Επικοινωνία. / If empty, it doesn't show on the Contact page." }
+          - { label: "Email Ελληνικού Σπιτιού / Greek House email", name: "house_email", widget: "string", required: false, pattern: ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Γράψε μια έγκυρη διεύθυνση email / Enter a valid email address"], hint: "Εμφανίζεται και στη θέση της φόρμας όταν δεν υπάρχει φόρμα επικοινωνίας. / Also shown in place of the form when there is no contact form." }
+          - { label: "Σύνδεσμος Instagram / Instagram link", name: "instagram_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https:// / The link must start with https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.instagram.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο. / The full link, e.g. https://www.instagram.com/... If empty, the icon doesn't show." }
+          - { label: "Σύνδεσμος Facebook / Facebook link", name: "facebook_url", widget: "string", required: false, pattern: ['^https://\S+$', "Ο σύνδεσμος πρέπει να ξεκινά με https:// / The link must start with https://"], hint: "Ολόκληρος ο σύνδεσμος, π.χ. https://www.facebook.com/... Αν μείνει κενό, δεν εμφανίζεται το εικονίδιο. / The full link, e.g. https://www.facebook.com/... If empty, the icon doesn't show." }
 
       - name: forms
-        label: "Φόρμες Google"
+        label: "Φόρμα επικοινωνίας / Contact form"
         file: src/data/forms.yml
         fields:
-          - { label: "Κωδικός φόρμας επικοινωνίας", name: "contact_form_id", widget: "string", required: false, pattern: ['^[A-Za-z0-9_-]*$', "Μόνο ο κωδικός της φόρμας, όχι ολόκληρος ο σύνδεσμος"], hint: "Ο κωδικός είναι το κομμάτι του συνδέσμου ανάμεσα στο /d/e/ και στο /viewform. Αν μείνει κενός, η σελίδα Επικοινωνία δείχνει το email αντί για φόρμα." }
+          - { label: "Κωδικός φόρμας επικοινωνίας / Contact form ID", name: "contact_form_id", widget: "string", required: false, pattern: ['^[A-Za-z0-9_-]*$', "Μόνο ο κωδικός της φόρμας, όχι ολόκληρος ο σύνδεσμος / Only the form ID, not the whole link"], hint: "Ο κωδικός είναι το κομμάτι του συνδέσμου ανάμεσα στο /d/e/ και στο /viewform. Αν μείνει κενός, η σελίδα Επικοινωνία δείχνει το email αντί για φόρμα. / The ID is the part of the link between /d/e/ and /viewform. If empty, the Contact page shows the email address instead of a form." }
