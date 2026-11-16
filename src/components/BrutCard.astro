@@ -7,8 +7,8 @@
  * - Without `href` it is a static card, with no shadow:
  *   - `variant="rule"` (default): a frame with a heavy top rule, like a
  *     newspaper column. For cards in grids.
- *   - `variant="slab"`: a tinted box with a thick left bar. For a single
- *     "read this" box; pass the tint in `class` (e.g. bg-accent-gold-lighter).
+ *   - `variant="slab"`: a framed, tinted box with a thick left bar, like a
+ *     newspaper callout. For a single "read this" box; pass the tint in `class` (e.g. bg-accent-gold-lighter).
  */
 import type { HTMLAttributes } from "astro/types";
 
@@ -29,7 +29,7 @@ const classes = [
         "focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary",
       ]
     : variant === "slab"
-      ? "border-l-8 border-black"
+      ? "border-2 border-l-8 border-black"
       : "border-2 border-t-8 border-black",
   className,
 ];
