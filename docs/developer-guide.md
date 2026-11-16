@@ -104,6 +104,7 @@ A Dutch or English file exists without its Greek file, usually after something w
 - Pages read `news`, `activities`, `resources` and `faq` through `getVisible()`, never `getCollection()` (a test enforces it).
 - Tests that read real content check its shape, never its current values (#88, #90 broke such tests).
 - `ui.ts` changes need all three languages.
+- **Raised = clickable, flat = read (#122).** Only links and buttons have the hard offset shadow and press in. `<BrutCard href=…>` is a link card; without `href` it is static: `variant="rule"` (default, cards in grids) or `variant="slab"` (one framed, tinted box with a thick left bar). Never wrap a card in your own `<a>`. `cards.test.ts` enforces this.
 - Every label, hint and validation message in `/admin` is Greek, then ` / `, then English (`admin.test.ts` checks it). Decap's own buttons stay in English: its Greek translation is poor ("Saving…" becomes «Εξοικονόμηση…») and the editor guide names the English buttons.
 - The membership page has no application form, on purpose (#115): the managers send the form to people who get in touch. `membership.test.ts` fails if a Google Form link appears in the code or the site settings. Ask the managers before changing this.
 - Keep `/admin` without Delete and Publish buttons (`delete: false`, `publish: false`; tests enforce both). Your account may skip the ruleset, so either button would bypass the translations and checks. Publish with Ready, like editors; in an emergency, merge on GitHub.
