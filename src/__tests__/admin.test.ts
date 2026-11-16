@@ -434,3 +434,71 @@ describe("Decap CMS admin page — pinned script", () => {
     );
   });
 });
+
+// One interface language rule (#106): everything an editor reads in /admin
+// is Greek first, then " / ", then English. Collection names are the
+// exception: each names its own language (e.g. "Nieuws (Nederlands)").
+describe("Decap CMS config — Greek / English labels and hints", () => {
+  const GREEK_THEN_ENGLISH = /^[^/]*[Ͱ-Ͽἀ-῿].* \/ .*[A-Za-z]/s;
+
+  interface Node {
+    name?: string;
+    label?: string;
+    widget?: string;
+    hint?: string;
+    description?: string;
+    pattern?: [string, string];
+    options?: unknown[];
+    fields?: Node[];
+    files?: Node[];
+  }
+
+  // Every text an editor can see, with where it comes from.
+  const texts: [string, string][] = [];
+  const walk = (node: Node, where: string) => {
+    for (const f of node.fields ?? []) {
+      const at = `${where}.${f.name}`;
+      if (f.widget === "hidden") continue;
+      texts.push([`${at} label`, f.label ?? ""]);
+      if (f.hint) texts.push([`${at} hint`, f.hint]);
+      if (f.pattern) texts.push([`${at} pattern message`, f.pattern[1]]);
+      for (const o of f.options ?? []) {
+        if (typeof o === "object" && o && "label" in o) texts.push([`${at} option`, String(o.label)]);
+      }
+      walk(f, at);
+    }
+  };
+  for (const col of config.collections as Node[]) {
+    if (col.description) texts.push([`${col.name} description`, col.description]);
+    for (const file of col.files ?? []) {
+      texts.push([`${col.name}/${file.name} label`, file.label ?? ""]);
+      walk(file, `${col.name}/${file.name}`);
+    }
+    walk(col, col.name ?? "");
+  }
+
+  it("finds the texts to check", () => {
+    expect(texts.length).toBeGreaterThan(100);
+  });
+
+  for (const [where, text] of texts) {
+    it(`${where} is Greek / English`, () => {
+      expect(text).toMatch(GREEK_THEN_ENGLISH);
+    });
+  }
+
+  it("resource categories show a readable name, and every value has a page heading", () => {
+    const ui = readFileSync(join(ROOT, "src/i18n/ui.ts"), "utf-8");
+    for (const lang of LANGUAGES) {
+      const f = getField(getCollection("resources", lang), "category") as unknown as {
+        options: { label: string; value: string }[];
+      };
+      expect(f.options.length).toBeGreaterThan(0);
+      for (const o of f.options) {
+        expect(o.label).toMatch(GREEK_THEN_ENGLISH);
+        // One heading per language in ui.ts.
+        expect(ui.match(new RegExp(`"resources\\.category\\.${o.value}":`, "g"))).toHaveLength(3);
+      }
+    }
+  });
+});

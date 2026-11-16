@@ -1,6 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { t } from "../../i18n/ui";
+import { t, isUIKey } from "../../i18n/ui";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { getVisible } from "../../lib/visible";
 import BrutCard from "../../components/BrutCard.astro";
@@ -16,6 +16,13 @@ const resources = allResources
   .sort((a, b) => a.data.order - b.data.order);
 
 const categories = [...new Set(resources.map((r) => r.data.category))];
+
+// Category headings in the page's language. The values come from the
+// "Category" select in /admin; an unknown value is shown as it is.
+function categoryLabel(category: string): string {
+  const key = `resources.category.${category}`;
+  return isUIKey(key) ? t(lang, key) : category;
+}
 ---
 
 <Layout title={t(lang, "resources.title")} lang={lang}>
@@ -28,8 +35,8 @@ const categories = [...new Set(resources.map((r) => r.data.category))];
 
       {categories.map((category) => (
         <div class="mt-12">
-          <h2 class="text-2xl font-extrabold text-black capitalize border-b-2 border-black pb-2">
-            {category}
+          <h2 class="text-2xl font-extrabold text-black border-b-2 border-black pb-2">
+            {categoryLabel(category)}
           </h2>
           <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {resources

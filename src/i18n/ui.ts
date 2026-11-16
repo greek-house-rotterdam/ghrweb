@@ -95,6 +95,13 @@ const ui = {
     "resources.title": "Χρήσιμες Πληροφορίες",
     "resources.intro": "Πρακτικές πληροφορίες για Έλληνες στην Ολλανδία.",
     "resources.none": "Δεν υπάρχουν πληροφορίες ακόμα.",
+    "resources.category.legal": "Νομικά",
+    "resources.category.healthcare": "Υγεία",
+    "resources.category.education": "Εκπαίδευση",
+    "resources.category.housing": "Στέγαση",
+    "resources.category.finance": "Οικονομικά",
+    "resources.category.culture": "Πολιτισμός",
+    "resources.category.other": "Άλλο",
     "common.manually-edited": "Χειροκίνητη μετάφραση",
   },
   nl: {
@@ -191,6 +198,13 @@ const ui = {
     "resources.title": "Nuttige Informatie",
     "resources.intro": "Praktische informatie voor Grieken in Nederland.",
     "resources.none": "Nog geen informatie.",
+    "resources.category.legal": "Juridisch",
+    "resources.category.healthcare": "Gezondheid",
+    "resources.category.education": "Onderwijs",
+    "resources.category.housing": "Wonen",
+    "resources.category.finance": "Financiën",
+    "resources.category.culture": "Cultuur",
+    "resources.category.other": "Overig",
     "common.manually-edited": "Handmatig vertaald",
   },
   en: {
@@ -287,6 +301,13 @@ const ui = {
     "resources.title": "Useful Information",
     "resources.intro": "Practical information for Greeks in the Netherlands.",
     "resources.none": "No information yet.",
+    "resources.category.legal": "Legal",
+    "resources.category.healthcare": "Healthcare",
+    "resources.category.education": "Education",
+    "resources.category.housing": "Housing",
+    "resources.category.finance": "Finance",
+    "resources.category.culture": "Culture",
+    "resources.category.other": "Other",
     "common.manually-edited": "Manually translated",
   },
 } as const;
@@ -295,4 +316,9 @@ export type UIKey = keyof (typeof ui)["gr"];
 
 export function t(lang: Lang, key: UIKey): string {
   return ui[lang][key];
+}
+
+/** True when `key` is a page text, for keys built at run time. */
+export function isUIKey(key: string): key is UIKey {
+  return key in ui.gr;
 }
