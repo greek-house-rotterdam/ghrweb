@@ -656,3 +656,167 @@ class TestCli:
 
         assert pr_status.main(["preview", "--sha", HEAD, "--url", PREV["url"]], broken) == 0
         assert "::warning" in capsys.readouterr().out
+
+
+# ---------------------------------------------------------------------------
+# Links to correct a draft's translation (#131)
+# ---------------------------------------------------------------------------
+
+GREEK_NAME = "πασχαλινό-γλέντι.md"
+BRANCH = "cms/news-gr/πασχαλινό-γλέντι"
+
+
+def write_entry(root, collection, name, langs=("gr", "nl", "en")):
+    for lang in langs:
+        f = root / "src/content" / collection / lang / name
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_text("---\ntitle: x\n---\n", encoding="utf-8")
+
+
+def edit_data(paths, repo="o/r", branch=BRANCH):
+    return {"repo": repo, "branch": branch, "paths": list(paths)}
+
+
+class TestEditLinks:
+    def test_paths_are_the_dutch_and_english_files_that_exist(self, tmp_path):
+        write_entry(tmp_path, "news", GREEK_NAME)
+        paths = pr_status.edit_paths([f"src/content/news/gr/{GREEK_NAME}"], tmp_path)
+        assert paths == [f"src/content/news/en/{GREEK_NAME}", f"src/content/news/nl/{GREEK_NAME}"]
+
+    def test_paths_also_come_from_a_changed_translation(self, tmp_path):
+        write_entry(tmp_path, "faq", "x.md")
+        assert pr_status.edit_paths(["src/content/faq/nl/x.md"], tmp_path) == [
+            "src/content/faq/en/x.md", "src/content/faq/nl/x.md"]
+
+    def test_no_paths_before_the_translations_exist(self, tmp_path):
+        write_entry(tmp_path, "news", "x.md", langs=("gr", "nl"))
+        assert pr_status.edit_paths(["src/content/news/gr/x.md"], tmp_path) == ["src/content/news/nl/x.md"]
+        write_entry(tmp_path, "news", "y.md", langs=("gr",))
+        assert pr_status.edit_paths(["src/content/news/gr/y.md"], tmp_path) == []
+
+    def test_no_paths_for_settings_or_images(self, tmp_path):
+        assert pr_status.edit_paths(["src/data/board.yml", "public/images/a.jpg"], tmp_path) == []
+
+    def test_links_open_githubs_editor_on_the_branch_with_greek_encoded(self):
+        st = State()
+        apply_section(st, "translation", {**TR_OK, "edit": edit_data(
+            [f"src/content/news/en/{GREEK_NAME}", f"src/content/news/nl/{GREEK_NAME}"])})
+        body = render(st, HEAD)
+        enc_slug = "%CF%80%CE%B1%CF%83%CF%87%CE%B1%CE%BB%CE%B9%CE%BD%CF%8C-%CE%B3%CE%BB%CE%AD%CE%BD%CF%84%CE%B9"
+        base = f"https://github.com/o/r/edit/cms/news-gr/{enc_slug}"
+        assert f"({base}/src/content/news/en/{enc_slug}.md)" in body
+        assert f"({base}/src/content/news/nl/{enc_slug}.md)" in body
+        assert "[Διόρθωση αγγλικών / Correct the English]" in body
+        assert "[Διόρθωση ολλανδικών / Correct the Dutch]" in body
+        assert body.index("Correct the English") < body.index("Correct the Dutch")
+        assert "https://github.com/o/r/blob/main/docs/editor-guide.md" in body
+
+    def test_each_entry_gets_its_own_labelled_line(self):
+        st = State()
+        apply_section(st, "translation", {**TR_OK, "edit": edit_data(
+            ["src/content/news/en/a.md", "src/content/news/nl/a.md", "src/content/faq/nl/b.md"])})
+        body = render(st, HEAD)
+        assert "- `a.md` (news): [Διόρθωση αγγλικών" in body
+        assert "- `b.md` (faq): [Διόρθωση ολλανδικών / Correct the Dutch]" in body
+        assert body.count("/edit/") == 3
+
+    def test_no_greek_link_even_if_one_slips_in(self):
+        st = State()
+        apply_section(st, "translation", {**TR_OK, "edit": edit_data(["src/content/news/gr/a.md"])})
+        assert "/edit/" not in render(st, HEAD)
+
+    def test_no_links_while_pending_or_after_a_failure(self):
+        st = State()
+        assert "/edit/" not in render(st, HEAD)
+        apply_section(st, "translation", {**TR_OK, "edit": edit_data(["src/content/news/nl/a.md"])})
+        assert "/edit/" in render(st, HEAD)
+        apply_section(st, "translation", TR_FAIL)
+        assert "/edit/" not in render(st, HEAD)
+
+    def test_links_survive_other_sections_updating(self):
+        gh = FakeGitHub()
+        upd(gh, "translation", {**TR_OK, "edit": edit_data(["src/content/news/nl/a.md"])})
+        upd(gh, "images", IMG_OK)
+        upd(gh, "preview", PREV)
+        assert "Correct the Dutch" in gh.status_bodies()[0]
+
+    def test_a_bad_repo_or_missing_branch_shows_no_links(self):
+        for edit in (edit_data(["src/content/news/nl/a.md"], repo="o/r) [x](https://evil"),
+                     edit_data(["src/content/news/nl/a.md"], branch="")):
+            st = State()
+            apply_section(st, "translation", {**TR_OK, "edit": edit})
+            assert "/edit/" not in render(st, HEAD)
+
+    def test_link_characters_are_encoded_so_markdown_cannot_break(self):
+        st = State()
+        apply_section(st, "translation", {**TR_OK, "edit": edit_data(
+            ["src/content/news/nl/a(b) [c].md"], branch="cms/x y@z")})
+        body = render(st, HEAD)
+        assert "/edit/cms/x%20y%40z/src/content/news/nl/a%28b%29%20%5Bc%5D.md)" in body
+
+    def test_kept_notice_points_to_the_links(self):
+        st = State()
+        apply_section(st, "kept", {"items": {"src/content/news/nl/x.md": "`src/content/news/nl/x.md`"}})
+        assert "Correct\" links above" in render(st, HEAD)
+
+
+class TestCliEditLinks:
+    @pytest.fixture(autouse=True)
+    def env(self, monkeypatch, tmp_path):
+        monkeypatch.setenv("REPO", "o/r")
+        monkeypatch.setenv("PR_NUMBER", "7")
+        monkeypatch.setenv("GITHUB_RUN_ID", "42")
+        monkeypatch.setattr(pr_status.time, "sleep", lambda s: None)
+        monkeypatch.chdir(tmp_path)
+        write_entry(tmp_path, "news", "x.md")
+        (tmp_path / "changed.txt").write_text("src/content/news/gr/x.md\n")
+
+    def test_translation_ok_stores_the_links(self, tmp_path, monkeypatch):
+        monkeypatch.setenv("HEAD_REF", "cms/news-gr/x")
+        monkeypatch.setenv("CHANGED_FILES", str(tmp_path / "changed.txt"))
+        gh = FakeGitHub()
+        pr_status.main(["translation", "--state", "ok", "--sha", HEAD, "--written", "none"], gh)
+        assert gh.state().sections["translation"]["edit"] == {
+            "repo": "o/r", "branch": "cms/news-gr/x",
+            "paths": ["src/content/news/en/x.md", "src/content/news/nl/x.md"]}
+        assert "/o/r/edit/cms/news-gr/x/src/content/news/en/x.md" in gh.status_bodies()[0]
+
+    def test_no_links_without_a_branch(self, tmp_path, monkeypatch):
+        monkeypatch.delenv("HEAD_REF", raising=False)
+        monkeypatch.setenv("CHANGED_FILES", str(tmp_path / "changed.txt"))
+        gh = FakeGitHub()
+        pr_status.main(["translation", "--state", "ok", "--sha", HEAD], gh)
+        assert "edit" not in gh.state().sections["translation"]
+
+    def test_without_the_variables_it_works_as_before(self, monkeypatch):
+        """An older workflow, or a failure run, sets neither variable."""
+        monkeypatch.delenv("HEAD_REF", raising=False)
+        monkeypatch.delenv("CHANGED_FILES", raising=False)
+        gh = FakeGitHub()
+        assert pr_status.main(["translation", "--state", "ok", "--sha", HEAD], gh) == 0
+        t = gh.state().sections["translation"]
+        assert t["state"] == "ok" and "edit" not in t
+
+    def test_the_workflow_passes_the_variables_and_no_new_options(self):
+        """Branches made before #131 run their own older pr_status.py, which
+        would reject new options; environment variables are ignored instead."""
+        from pathlib import Path
+        workflow = (Path(pr_status.__file__).parents[1] / "workflows/translate.yml").read_text(encoding="utf-8")
+        assert "HEAD_REF: ${{ github.head_ref }}" in workflow
+        assert "CHANGED_FILES: /tmp/changed.txt" in workflow
+        assert "--changed" not in workflow and "--branch" not in workflow
+
+
+def test_many_greek_entries_keep_the_comment_under_githubs_limit(tmp_path):
+    # Titles are at most 100 characters, so a slug is at most about 100 letters.
+    slug = ("πολύ-μεγάλος-ελληνικός-τίτλος-" * 4)[:96]
+    names = [f"{slug}{i:03}.md" for i in range(100)]
+    for name in names:
+        write_entry(tmp_path, "news", name)
+    paths = pr_status.edit_paths([f"src/content/news/gr/{n}" for n in names], tmp_path)
+    assert len(paths) == 2 * pr_status.MAX_EDIT_ENTRIES
+    st = State()
+    apply_section(st, "translation", {**TR_OK, "edit": edit_data(paths, branch=f"cms/news-gr/{slug}")})
+    for name, section in (("images", IMG_OK), ("preview", PREV)):
+        apply_section(st, name, section)
+    assert len(render(st, HEAD)) < 30000

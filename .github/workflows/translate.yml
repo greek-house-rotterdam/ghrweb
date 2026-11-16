@@ -154,6 +154,11 @@ jobs:
         continue-on-error: true  # the comment is a courtesy, never a blocker
         env:
           GH_TOKEN: ${{ github.token }}
+          # Links to correct the draft's Dutch and English files on GitHub
+          # before publishing (#131). Environment variables, not options: an
+          # older branch runs its own older pr_status.py, which ignores them.
+          HEAD_REF: ${{ github.head_ref }}
+          CHANGED_FILES: /tmp/changed.txt
         run: |
           SHA=$(git rev-parse HEAD)
           if [ "${{ steps.translate.outcome }}" = "success" ] \
