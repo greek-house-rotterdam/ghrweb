@@ -39,11 +39,27 @@ const activities = (await getVisible("activities"))
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
   {/* Hero */}
   <section
-    class="relative border-b-4 border-black py-20 sm:py-28 bg-primary bg-cover bg-center"
+    class="relative border-b-4 border-black pt-12 pb-20 sm:pt-16 sm:pb-28 bg-primary bg-cover bg-center"
     style="background-image: linear-gradient(rgba(13, 94, 175, 0.75), rgba(9, 74, 141, 0.85)), url('/images/rotterdam.jpeg');"
   >
     <div class="relative mx-auto max-w-4xl px-4 text-center">
-      <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+      {/* The Greek House is the association's cultural group: the board asked to keep that link visible (2026-11-17). */}
+      <a href={`/${lang}/about`} class="group inline-flex flex-col items-center gap-3 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-white">
+        {/* The badge is transparent around the ring text, so it sits on a white disc to stay readable on the blue. */}
+        <span class="block rounded-full border-2 border-black bg-white p-1">
+          <img
+            src="/images/vvgn-logo.png"
+            alt={t(lang, "history.logo-alt")}
+            width="480"
+            height="480"
+            class="block size-20 sm:size-24"
+          />
+        </span>
+        <span class="text-sm font-semibold text-white underline-offset-4 group-hover:underline sm:text-base">
+          {t(lang, "home.hero.union")}
+        </span>
+      </a>
+      <h1 class="mt-6 text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
         {t(lang, "home.hero.title")}
       </h1>
       <p class="mt-6 text-lg font-semibold text-white sm:text-xl max-w-2xl mx-auto">
