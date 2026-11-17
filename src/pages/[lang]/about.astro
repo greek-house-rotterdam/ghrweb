@@ -2,7 +2,7 @@
 import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import { t } from "../../i18n/ui";
-import { getSiteSettings } from "../../lib/site-settings";
+import { boardName, getSiteSettings } from "../../lib/site-settings";
 import { getStaticLangPaths, type Lang } from "../../i18n/utils";
 import { Avatar, AvatarFallback } from "@/components/starwind/avatar";
 import BrutCard from "../../components/BrutCard.astro";
@@ -28,8 +28,9 @@ const aboutSections = (await getCollection(
 
 // Board members come from src/data/board.yml (edited in /admin). A member
 // without a name shows the role as a placeholder until a name is entered.
+// Dutch and English pages show the Latin spelling (boardName).
 const members = getSiteSettings().board.members.map((member) => ({
-  name: member.name ?? t(lang, `board.placeholder.${member.role}`),
+  name: boardName(member, lang) ?? t(lang, `board.placeholder.${member.role}`),
   role: t(lang, `board.role.${member.role}`),
 }));
 ---

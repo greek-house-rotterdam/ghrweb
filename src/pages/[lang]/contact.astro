@@ -69,6 +69,14 @@ const fallbackEmail = houseEmail ?? unionEmail;
                 </div>
               </div>
               )}
+              {/* Opening hours: also in the FAQ entry about when the House is open. Change both. */}
+              <div class="flex items-start gap-3">
+                <span class="text-lg">🕒</span>
+                <div>
+                  <p class="font-bold text-sm">{t(lang, "contact.hours.label")}</p>
+                  <p class="text-sm text-gray-700">{t(lang, "contact.hours.text")}</p>
+                </div>
+              </div>
               {unionEmail && (
               <div class="flex items-start gap-3">
                 <span class="text-lg">✉️</span>

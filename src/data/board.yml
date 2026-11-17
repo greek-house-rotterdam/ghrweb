@@ -1,14 +1,20 @@
 # Board members. Edited in /admin under "Ρυθμίσεις ιστότοπου".
 # `role` is a fixed key; the page shows its name in Greek, Dutch or English.
-# An empty `name` shows the role as a placeholder.
+# `name` is the Greek spelling (Greek pages); `name_latin` the Latin spelling
+# (Dutch and English pages). An empty `name` shows the role as a placeholder.
 members:
   - role: president
-    name: ""
+    name: "Παναγιώτης Παπαγιαννάκης"
+    name_latin: "Panagiotis Papagiannakis"
   - role: vice_president
-    name: ""
+    name: "Ελένη Βασιλάκου"
+    name_latin: "Eleni Vasilakou"
   - role: secretary
-    name: ""
+    name: "Μιχάλης Πανάρετος"
+    name_latin: "Michalis Panaretos"
   - role: treasurer
-    name: ""
+    name: "Κωνσταντίνος Βελαλής"
+    name_latin: "Konstantinos Velalis"
   - role: member
-    name: ""
+    name: "Γιάννης Σχιστός"
+    name_latin: "Giannis Schistos"
