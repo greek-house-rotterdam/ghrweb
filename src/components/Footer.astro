@@ -21,8 +21,8 @@ const quickLinks = [
 
 const infoLinks = [
   { href: `/${lang}/about`, label: t(lang, "nav.about") },
-  { href: `/${lang}/resources`, label: t(lang, "nav.resources") },
-  { href: `/${lang}/faq`, label: t(lang, "nav.faq") },
+  { href: `/${lang}/resources`, label: t(lang, "resources.title") },
+  { href: `/${lang}/faq`, label: t(lang, "faq.title") },
   { href: `/${lang}/contact`, label: t(lang, "nav.contact") },
   { href: `/${lang}/become-a-member`, label: t(lang, "nav.become-a-member") },
 ];
@@ -77,7 +77,7 @@ const socialLinks = [
       {/* Info links */}
       <div>
         <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-white pb-2 mb-3">
-          Info
+          {t(lang, "footer.info")}
         </h3>
         <ul class="space-y-2">
           {infoLinks.map((link) => (
@@ -94,7 +94,7 @@ const socialLinks = [
       {socialLinks.length > 0 && (
         <div>
           <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-white pb-2 mb-3">
-            Social
+            {t(lang, "footer.social")}
           </h3>
           <div class="flex flex-wrap gap-3 mt-3">
             {socialLinks.map((link) => (
