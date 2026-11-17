@@ -82,6 +82,24 @@ describe("build smoke test", () => {
   it("writes a 404 page", () => {
     expect(readFileSync(join(ROOT, "dist/404.html"), "utf-8")).toContain("404");
   });
+
+  // Greek pages must say lang="el", not the site's own code "gr": browsers drop
+  // the accents from Greek capitals (the menu, footer titles) only for "el".
+  it.each([
+    ["gr", "el"],
+    ["nl", "nl"],
+    ["en", "en"],
+  ])("the %s pages declare <html lang=\"%s\">", (lang, code) => {
+    const html = readFileSync(join(ROOT, `dist/${lang}/index.html`), "utf-8");
+    expect(html).toContain(`<html lang="${code}"`);
+  });
+
+  it("the 404 page marks its Greek message as el, never gr", () => {
+    const html = readFileSync(join(ROOT, "dist/404.html"), "utf-8");
+    expect(html).toContain('<html lang="el"');
+    expect(html).toContain('<li lang="el"');
+    expect(html).not.toMatch(/lang="gr"/);
+  });
 }, 90_000);
 
 // src/oauth.ts hands every request it doesn't handle to env.ASSETS. Without the

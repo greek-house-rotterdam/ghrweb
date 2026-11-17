@@ -18,6 +18,20 @@ export function getStaticLangPaths() {
   return Object.keys(LANGUAGES).map((lang) => ({ params: { lang } }));
 }
 
+// The language code written into the page (<html lang>, lang="…").
+// `gr` is the site's own code (URLs, content folders, ui.ts), but it is not a
+// real language code: Greek is `el`. Browsers drop the accents from Greek
+// capitals (CSS `uppercase`) only when the page says `el`.
+const HTML_LANGS: Record<Lang, string> = {
+  gr: "el",
+  nl: "nl",
+  en: "en",
+};
+
+export function htmlLang(lang: Lang): string {
+  return HTML_LANGS[lang];
+}
+
 // Locales chosen so every language renders dd/mm/yyyy (European style).
 const DATE_LOCALES: Record<Lang, string> = {
   gr: "el-GR",

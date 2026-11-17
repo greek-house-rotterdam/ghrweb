@@ -4,6 +4,7 @@
 // so the page speaks all three and links to each home page.
 import Layout from "../layouts/Layout.astro";
 import BrutButton from "../components/BrutButton.astro";
+import { htmlLang } from "../i18n/utils";
 
 const messages = [
   { lang: "gr", text: "Η σελίδα δεν βρέθηκε.", home: "Αρχική" },
@@ -18,7 +19,7 @@ const messages = [
       <h1 class="text-5xl font-extrabold text-black">404</h1>
       <ul class="mt-8 space-y-6">
         {messages.map((m) => (
-          <li lang={m.lang}>
+          <li lang={htmlLang(m.lang)}>
             <p class="text-lg text-gray-700">{m.text}</p>
             <BrutButton href={`/${m.lang}/`} size="sm" class="mt-2 bg-white text-black hover:bg-accent-gold">
               {m.home} ({m.lang.toUpperCase()})
