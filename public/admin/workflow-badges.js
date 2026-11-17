@@ -21,7 +21,7 @@ export const PREVIEW_PATHS = {
   "event-translations": "events/{slug}",
   activities: "activities/{slug}",
   faq: "faq",
-  resources: "resources",
+  resources: "resources/{slug}",
 };
 
 // Collections made of single files (config.yml `files:`). Decap links a card

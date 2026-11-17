@@ -1,0 +1,61 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { t } from "../../../i18n/ui";
+import type { Lang } from "../../../i18n/utils";
+import { render } from "astro:content";
+import { getVisible } from "../../../lib/visible";
+import BrutButton from "../../../components/BrutButton.astro";
+import { descriptionOrExcerpt } from "../../../lib/excerpt";
+import RedirectPage from "../../../components/RedirectPage.astro";
+import { buildEntryRoutes } from "../../../lib/entry-path";
+import { categoryLabel } from "../../../lib/resource-category";
+
+// One page per "useful information" entry. The list page shows only the
+// title and a short excerpt; the links, contacts and the rest are here.
+export async function getStaticPaths() {
+  return buildEntryRoutes("resources", await getVisible("resources"));
+}
+
+const { entry: resource, redirectTo } = Astro.props;
+const { lang } = Astro.params as { lang: Lang };
+const { Content } = redirectTo ? { Content: null } : await render(resource);
+// The lead paragraph shows only a description the editor wrote: the body is
+// right below it. The page description (search results, link previews) falls
+// back to the start of the body.
+const pageDescription = descriptionOrExcerpt(resource.data.description, resource.body);
+---
+
+{redirectTo ? (
+  <RedirectPage to={redirectTo} />
+) : (
+<Layout title={resource.data.title} description={pageDescription} lang={lang}>
+  <article class="py-16">
+    <div class="mx-auto max-w-3xl px-4">
+      <BrutButton href={`/${lang}/resources`} size="sm" class="bg-white text-black hover:bg-accent-gold">
+        ← {t(lang, "common.back")}
+      </BrutButton>
+
+      <div class="mt-8">
+        <div class="flex flex-wrap gap-2">
+          <span class="inline-block border border-black bg-accent-gold px-2 py-0.5 text-xs font-bold uppercase">
+            {categoryLabel(lang, resource.data.category)}
+          </span>
+          {resource.data.translation_locked && (
+            <span class="inline-block border border-black bg-blue-100 px-2 py-0.5 text-xs font-bold uppercase">
+              {t(lang, "common.manually-edited")}
+            </span>
+          )}
+        </div>
+        <h1 class="mt-3 text-3xl font-extrabold text-black sm:text-4xl">{resource.data.title}</h1>
+        {resource.data.description && (
+          <p class="mt-3 text-lg text-gray-600">{resource.data.description}</p>
+        )}
+      </div>
+
+      <div class="mt-10 border-t-2 border-black pt-8 prose prose-lg max-w-none prose-headings:font-extrabold prose-a:text-primary prose-a:underline prose-a:decoration-2">
+        <Content />
+      </div>
+    </div>
+  </article>
+</Layout>
+)}

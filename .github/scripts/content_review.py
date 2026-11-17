@@ -96,7 +96,7 @@ COLLECTION_FIELDS: dict[str, dict[str, list[str]]] = {
     },
     "resources": {
         "required": ["title", "category", "lang"],
-        "optional": ["description", "order", "hidden"],
+        "optional": ["description", "order", "url_slug", "hidden"],
         "has_body": True,
     },
     "faq": {

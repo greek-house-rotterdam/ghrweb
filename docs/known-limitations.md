@@ -178,7 +178,7 @@ All workflows run on pull requests only. Content pushed straight to `main` isn't
 
 ### Changing a short address breaks the old short link
 
-A news or activity entry can have a short address (`url_slug`). The address that comes from the file name always redirects to it (`src/lib/entry-path.ts`), but an earlier short address does not. If an editor shares `…/news/pascha-2026` and later changes the short address, that link shows "page not found".
+A news, activity or resource («Χρήσιμες Πληροφορίες») entry can have a short address (`url_slug`). The address that comes from the file name always redirects to it (`src/lib/entry-path.ts`), but an earlier short address does not. If an editor shares `…/news/pascha-2026` and later changes the short address, that link shows "page not found".
 
 - **What to do:** don't change a short address after it has been shared. The field's hint in `/admin` and the editor guide say so.
 - **Possible fix:** keep a list of earlier short addresses on the entry and serve a redirect for each.

@@ -152,16 +152,17 @@ Body: leave empty — the timeline card only renders the optional photo, year + 
 
 ## `resources`
 
-Durable "useful information" pages (gemeente registration, healthcare, education, etc.). Listed on `/resources` grouped by `category`.
+Durable "useful information" pages (gemeente registration, healthcare, education, etc.). Listed on `/<lang>/resources` grouped by `category`: each card shows the title and description (or the start of the body) and opens the entry's own page at `/<lang>/resources/<slug>`, which shows the whole body.
 
 **Path:** `src/content/resources/<lang>/<slug>.md`
-**Slug:** kebab-case of the resource title.
+**Slug:** kebab-case of the resource title, in Latin letters. It is the page address unless `url_slug` is set.
 
 ```yaml
 title: string                    # required, ≤ 100 chars
 description: string              # optional, ≤ 200 chars; if empty the site uses the start of the body
 category: "legal" | "healthcare" | "education" | "housing" | "finance" | "culture" | "other"
 order: number                    # default 100
+url_slug: string                 # optional short page address (see SKILL.md rule 8)
 lang: "gr" | "nl" | "en"         # required
 ```
 
