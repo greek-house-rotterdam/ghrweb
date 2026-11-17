@@ -18,3 +18,9 @@ export async function getVisible<C extends EditableCollection>(name: C): Promise
   const entries = (await getCollection(name)) as CollectionEntry<C>[];
   return entries.filter((e) => isVisible(e as { data: { hidden?: boolean } }));
 }
+
+// The menus show "News" only while this language has at least one visible
+// post, so an empty News page is never linked. It comes back with the first post.
+export async function hasNews(lang: string): Promise<boolean> {
+  return (await getVisible("news")).some((post) => post.data.lang === lang);
+}
