@@ -104,6 +104,12 @@ Since 2026-11-15 the `tidy` job in `translate.yml` deletes these held runs on th
 
 Since 2026-11-15 the tests that read the real content (`src/__tests__/site-settings.test.ts`, `.github/scripts/tests/test_content_hashes.py`) also run on every pull request, after the bot's commit (the `content-tests` job in `translate.yml`). If one fails, the pull request can still be published, and an issue "The content tests failed" mentions the admins. It doesn't block, because a broken test is the developer's problem, not the editor's. New tests that read the content must check its shape, never its current values.
 
+### `test-python` fails on a pull request that changes both code and existing Greek text
+
+`test.yml` runs only when a pull request changes code (`.ts`, `.astro`, `.py`, `public/admin/`, …). It runs every Python test on the developer's own commit, before the bot has translated. So `test_content_hashes.py` finds Dutch and English files whose `source_hash` no longer matches the changed Greek text, and `test-python` fails. The bot's commit gets no usable `test.yml` run (see "The bot's commits create runs that wait for approval"), so the red ✗ stays on the older commit.
+
+It isn't a required check, and the same test runs again after translation, in the `content-tests` job: that's the result that counts. To turn `test-python` green, push one more commit after the bot's, one that changes no existing Greek text: the run checks the whole pull request again. Editors' pull requests change no code, so they never hit this. First seen on #139.
+
 ### Translations aren't reviewed separately
 
 Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
