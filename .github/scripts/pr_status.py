@@ -382,10 +382,11 @@ def render_edit_links(edit: dict | None) -> str:
     guide = f"https://github.com/{repo}/blob/main/{EDITOR_GUIDE}"
     return (
         bi("✏️ Βρήκες λάθος σε μετάφραση; Διόρθωσέ το εδώ, πριν τη δημοσίευση. Άλλαξε μόνο κείμενο "
-           f"([οδηγός, ενότητα 5]({guide})) και πάτα «Commit changes…» → «Commit directly to the … branch».",
+           "και πάτα «Commit changes…» → «Commit directly to the … branch».",
            "Spotted a mistake in a translation? Correct it here, before publishing. Change only text "
-           f"([guide, section 5]({guide})) and click \"Commit changes…\" → \"Commit directly to the … branch\".")
+           "and click \"Commit changes…\" → \"Commit directly to the … branch\".")
         + "\n\n" + bullets(lines)
+        + f"\n\n[Οδηγός συντακτών, ενότητα 5 / Editor guide, section 5]({guide})"
     )
 
 
@@ -443,7 +444,7 @@ def render_preview(data: dict | None, ok: bool) -> str:
     if ok and data and URL_RE.match(data.get("url", "")):
         return (
             f"{title} · commit `{short(data.get('sha'))}`\n\n"
-            + bi(f"✅ [Άνοιγμα προεπισκόπησης]({data['url']})", f"[Open the preview]({data['url']})")
+            + f"✅ [Άνοιγμα προεπισκόπησης / Open the preview]({data['url']})"
         )
     return f"{title}\n\n" + bi("⏳ Η προεπισκόπηση ετοιμάζεται…", "The preview is being built…")
 
