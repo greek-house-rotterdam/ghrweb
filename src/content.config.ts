@@ -114,6 +114,7 @@ const resources = defineCollection({
     description: z.string().max(200).optional(),
     category: z.string(),
     order: z.number().default(100),
+    url_slug: urlSlug,
     hidden,
     lang: langEnum,
     ...translationMeta,

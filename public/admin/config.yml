@@ -349,7 +349,7 @@ collections:
     delete: false
     create: true
     slug: "{{slug}}"
-    preview_path: "gr/resources"
+    preview_path: "gr/resources/{{slug}}"
     editor: { preview: false }
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
@@ -366,6 +366,7 @@ collections:
           - { label: "Πολιτισμός / Culture", value: "culture" }
           - { label: "Άλλο / Other", value: "other" }
         default: "other"
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Προαιρετικό. Λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026. Αν μείνει κενό, η διεύθυνση βγαίνει από τον τίτλο. Μην την αλλάξεις αφού μοιραστείς τον σύνδεσμο: η παλιά σύντομη διεύθυνση σταματά να λειτουργεί. / Optional. Lowercase Latin letters, numbers and hyphens, e.g. pascha-2026. If empty, the address comes from the title. Don't change it after you share the link: the old short address stops working." }
       - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Οι μικρότεροι αριθμοί εμφανίζονται πρώτοι. / Lower numbers appear first." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Ενεργοποίησέ το για να φύγει η καταχώρηση από τον ιστότοπο, σε όλες τις γλώσσες, μόλις δημοσιευτεί. Δεν διαγράφεται τίποτα: απενεργοποίησέ το για να ξαναεμφανιστεί. Το κείμενο μένει ορατό στο GitHub: για προσωπικά δεδομένα, ζήτησε από τον διαχειριστή να το σβήσει οριστικά. / Turn on to take this entry off the site in all languages once published. Nothing is deleted: turn it off to bring it back. The text stays visible on GitHub: for personal data, ask the admin to erase it for good." }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -384,7 +385,7 @@ collections:
     # deleted from its Greek entry, which removes all three languages.
     delete: false
     slug: "{{slug}}"
-    preview_path: "nl/resources"
+    preview_path: "nl/resources/{{slug}}"
     editor: { preview: false }
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
@@ -402,6 +403,7 @@ collections:
           - { label: "Πολιτισμός / Culture", value: "culture" }
           - { label: "Άλλο / Other", value: "other" }
         default: "other"
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -420,7 +422,7 @@ collections:
     # deleted from its Greek entry, which removes all three languages.
     delete: false
     slug: "{{slug}}"
-    preview_path: "en/resources"
+    preview_path: "en/resources/{{slug}}"
     editor: { preview: false }
     fields:
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
@@ -438,6 +440,7 @@ collections:
           - { label: "Πολιτισμός / Culture", value: "culture" }
           - { label: "Άλλο / Other", value: "other" }
         default: "other"
+      - { label: "Σύντομη διεύθυνση / Short address", name: "url_slug", widget: "string", required: false, pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', "Μόνο λατινικά πεζά γράμματα, αριθμοί και παύλες, π.χ. pascha-2026 / Only lowercase Latin letters, numbers and hyphens, e.g. pascha-2026"], hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Σειρά εμφάνισης / Display order", name: "order", widget: "number", default: 100, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Απόκρυψη από τον ιστότοπο / Hide from site", name: "hidden", widget: "boolean", required: false, default: false, hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }

@@ -104,7 +104,7 @@ const EXPECTED_FIELDS: Record<
   },
   resources: {
     required: ["title", "category", "lang"],
-    optional: ["description", "order", "hidden"],
+    optional: ["description", "order", "url_slug", "hidden"],
     maxLengths: { title: 100, description: 200 },
     defaults: { order: 100, hidden: false },
   },
@@ -182,7 +182,7 @@ const PREVIEW_PATH: Record<string, (lang: string) => string> = {
   "event-translations": (lang) => `${lang}/events/{{slug}}`,
   activities: (lang) => `${lang}/activities/{{slug}}`,
   faq: (lang) => `${lang}/faq`,
-  resources: (lang) => `${lang}/resources`,
+  resources: (lang) => `${lang}/resources/{{slug}}`,
 };
 
 describe("Decap CMS config — preview", () => {

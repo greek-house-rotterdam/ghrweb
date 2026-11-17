@@ -47,6 +47,39 @@ describe("cards: raised = clickable", () => {
   }
 });
 
+// A card that shows only the start of a text (an excerpt, cut with "…") must
+// open the whole text. Otherwise the rest, such as links and contact details,
+// can't be reached: this happened on the resources page.
+const CARD = /<BrutCard\b((?:=>|[^>])*)>([\s\S]*?)<\/BrutCard>/g;
+const SHORTENS_TEXT = /\b(descriptionOrExcerpt|excerpt)\(/;
+
+describe("cards: a card that shortens a text links to the whole text", () => {
+  const excerptCards: string[] = [];
+
+  for (const file of SOURCES) {
+    const rel = relative(ROOT, file);
+    const src = readFileSync(file, "utf-8");
+    for (const [, attributes, inner] of src.matchAll(CARD)) {
+      if (!SHORTENS_TEXT.test(inner)) continue;
+      excerptCards.push(rel);
+      it(`${rel}: the card with an excerpt has an href`, () => {
+        expect(attributes).toMatch(/\bhref=/);
+      });
+    }
+  }
+
+  it("finds the excerpt cards (news, activities, resources)", () => {
+    for (const page of [
+      "src/pages/[lang]/index.astro",
+      "src/pages/[lang]/news/index.astro",
+      "src/pages/[lang]/activities.astro",
+      "src/pages/[lang]/resources.astro",
+    ]) {
+      expect(excerptCards).toContain(page);
+    }
+  });
+});
+
 // Everything that presses in also shows where keyboard focus is (#122).
 describe("clickable things show keyboard focus", () => {
   for (const [rel, count] of Object.entries(CLICKABLE_SHADOWS)) {

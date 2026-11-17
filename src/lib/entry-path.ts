@@ -1,4 +1,5 @@
-// One place that decides the page address of a news or activity entry.
+// One place that decides the page address of a news, activity or resource
+// ("useful information") entry.
 //
 // An entry file lives at src/content/<type>/<lang>/<file-name>.md. Its entry
 // id is "<lang>/<file-name>". By default the page is served at

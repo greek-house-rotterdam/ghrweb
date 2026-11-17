@@ -115,7 +115,7 @@ describe("buildEntryRoutes", () => {
 describe("url_slug in the CMS config", () => {
   const config = parseYaml(readFileSync(join(__dirname, "../../public/admin/config.yml"), "utf-8"));
 
-  for (const type of ["news", "activities"]) {
+  for (const type of ["news", "activities", "resources"]) {
     for (const lang of ["gr", "nl", "en"]) {
       it(`${type}-${lang} has an optional url_slug with the same format rule as the site`, () => {
         const col = config.collections.find((c: { name: string }) => c.name === `${type}-${lang}`);
@@ -129,7 +129,7 @@ describe("url_slug in the CMS config", () => {
 
   it("has no url_slug where entries have no page of their own", () => {
     for (const c of config.collections as { name: string; fields: { name: string }[] }[]) {
-      if (/^(faq|resources|event-translations)-/.test(c.name)) {
+      if (/^(faq|event-translations)-/.test(c.name)) {
         expect(c.fields.map((f) => f.name)).not.toContain("url_slug");
       }
     }
