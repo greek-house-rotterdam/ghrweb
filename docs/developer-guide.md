@@ -35,7 +35,7 @@ Decision D9: the home welcome, the About mission, the membership categories and 
 
 - Change all three languages by hand; the bot doesn't translate `ui.ts`.
 - The fees appear **only** on the Become a member page. Content entries (the FAQ) point there; keep it that way.
-- The Greek House's opening hours are in two places: the Contact page (`contact.hours.*`) and the FAQ entry `faq/gr/opening-hours.md`. Change both together.
+- The Greek House's opening hours are in three places: the Contact page (`contact.hours.*`), the FAQ entry `faq/gr/opening-hours.md`, and the Μπιζ Μπιζέ activity `activities/gr/biz-bize.md` (its `schedule` and its text). Change all three together.
 - Use the glossary names (below).
 
 ### The translation glossary

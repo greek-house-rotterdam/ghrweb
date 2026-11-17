@@ -1,7 +1,8 @@
 ---
 title: Μαθήματα Φωτογραφίας
 emoji: "📷"
-order: 110
+image: /images/activity-photography-classes.jpg
+order: 190
 lang: gr
 ---
 

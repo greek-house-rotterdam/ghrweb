@@ -1,7 +1,7 @@
 ---
 title: Theatre Workshop
 emoji: 🎭
-image: /images/activity-theatre-workshop.png
+image: /images/activity-theatre-workshop.jpg
 order: 30
 lang: en
 source_hash: '2e720c2c9b4c'

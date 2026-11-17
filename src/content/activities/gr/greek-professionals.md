@@ -2,7 +2,7 @@
 title: Greek Professionals Networking
 emoji: "🤝"
 image: /images/activity-greek-professionals.jpg
-order: 90
+order: 150
 lang: gr
 ---
 

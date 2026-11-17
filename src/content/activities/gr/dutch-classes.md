@@ -2,7 +2,7 @@
 title: Μαθήματα Ολλανδικών
 emoji: "🇳🇱"
 image: /images/activity-dutch-classes.jpg
-order: 40
+order: 60
 lang: gr
 ---
 

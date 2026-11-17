@@ -2,7 +2,7 @@
 title: Workshops Μαγειρικής
 emoji: "🍲"
 image: /images/activity-cooking.jpg
-order: 70
+order: 170
 lang: gr
 ---
 
