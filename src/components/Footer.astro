@@ -1,6 +1,7 @@
 ---
 import { t } from "../i18n/ui";
 import { getSiteSettings } from "../lib/site-settings";
+import { hasNews } from "../lib/visible";
 import type { Lang } from "../i18n/utils";
 
 interface Props {
@@ -9,16 +10,18 @@ interface Props {
 
 const { lang } = Astro.props;
 
+// Columns agreed with the managers (2026-11-17). "News" shows only while
+// there are posts (hasNews), as in the header.
 const quickLinks = [
   { href: `/${lang}/events`, label: t(lang, "nav.events") },
   { href: `/${lang}/activities`, label: t(lang, "nav.activities") },
-  { href: `/${lang}/news`, label: t(lang, "nav.news") },
-  { href: `/${lang}/resources`, label: t(lang, "nav.resources") },
+  ...((await hasNews(lang)) ? [{ href: `/${lang}/news`, label: t(lang, "nav.news") }] : []),
+  { href: `/${lang}/history`, label: t(lang, "nav.history") },
 ];
 
 const infoLinks = [
   { href: `/${lang}/about`, label: t(lang, "nav.about") },
-  { href: `/${lang}/history`, label: t(lang, "nav.history") },
+  { href: `/${lang}/resources`, label: t(lang, "nav.resources") },
   { href: `/${lang}/faq`, label: t(lang, "nav.faq") },
   { href: `/${lang}/contact`, label: t(lang, "nav.contact") },
   { href: `/${lang}/become-a-member`, label: t(lang, "nav.become-a-member") },
@@ -30,10 +33,13 @@ const { contact } = getSiteSettings();
 const socialLinks = [
   { label: "Instagram", href: contact.instagram_url, icon: "M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7ZM17.5 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z" },
   { label: "Facebook", href: contact.facebook_url, icon: "M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.988h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12Z" },
+  { label: "Ticket Tailor", href: contact.tickettailor_url, icon: "M22 10V6c0-1.11-.9-2-2-2H4c-1.1 0-1.99.89-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2Zm-2-1.46c-1.19.69-2 1.99-2 3.46s.81 2.77 2 3.46V18H4v-2.54c1.19-.69 2-1.99 2-3.46 0-1.48-.8-2.77-1.99-3.46L4 6h16v2.54ZM11 15h2v2h-2Zm0-4h2v2h-2Zm0-4h2v2h-2Z" },
+  { label: "Spotify", href: contact.spotify_url, icon: "M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0Zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02Zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2Zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3Z" },
+  { label: "YouTube", href: contact.youtube_url, icon: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z" },
 ].filter((link): link is typeof link & { href: string } => Boolean(link.href));
 ---
 
-<footer class="border-t-4 border-black bg-white">
+<footer class="border-t-4 border-black bg-primary text-white">
   <div class="mx-auto max-w-7xl px-4 py-12">
     <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
       {/* Brand */}
@@ -47,20 +53,20 @@ const socialLinks = [
             height="64"
           />
         </a>
-        <p class="mt-3 text-sm text-gray-600 leading-relaxed">
+        <p class="mt-3 text-sm text-primary-content leading-relaxed">
           {t(lang, "footer.tagline")}
         </p>
       </div>
 
       {/* Quick links */}
       <div>
-        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-white pb-2 mb-3">
           {t(lang, "nav.home")}
         </h3>
         <ul class="space-y-2">
           {quickLinks.map((link) => (
             <li>
-              <a href={link.href} class="text-sm text-gray-700 hover:text-black hover:underline decoration-accent-gold decoration-2 underline-offset-2">
+              <a href={link.href} class="text-sm text-white hover:underline decoration-accent-gold decoration-2 underline-offset-2">
                 {link.label}
               </a>
             </li>
@@ -70,13 +76,13 @@ const socialLinks = [
 
       {/* Info links */}
       <div>
-        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+        <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-white pb-2 mb-3">
           Info
         </h3>
         <ul class="space-y-2">
           {infoLinks.map((link) => (
             <li>
-              <a href={link.href} class="text-sm text-gray-700 hover:text-black hover:underline decoration-accent-gold decoration-2 underline-offset-2">
+              <a href={link.href} class="text-sm text-white hover:underline decoration-accent-gold decoration-2 underline-offset-2">
                 {link.label}
               </a>
             </li>
@@ -87,15 +93,15 @@ const socialLinks = [
       {/* Social */}
       {socialLinks.length > 0 && (
         <div>
-          <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-black pb-2 mb-3">
+          <h3 class="font-extrabold uppercase text-sm tracking-wide border-b-2 border-white pb-2 mb-3">
             Social
           </h3>
-          <div class="flex gap-3 mt-3">
+          <div class="flex flex-wrap gap-3 mt-3">
             {socialLinks.map((link) => (
               <a
                 href={link.href}
                 aria-label={link.label}
-                class="flex items-center justify-center size-10 border-2 border-black bg-white shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all motion-reduce:transition-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                class="flex items-center justify-center size-10 border-2 border-black bg-white text-black shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all motion-reduce:transition-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -109,9 +115,9 @@ const socialLinks = [
       )}
     </div>
 
-    <div class="mt-10 border-t-2 border-black pt-6 text-center">
-      <p class="text-sm text-gray-600">
-        &copy; {new Date().getFullYear()} Greek House in Rotterdam. {t(lang, "footer.rights")}
+    <div class="mt-10 border-t-2 border-white pt-6 text-center">
+      <p class="text-sm text-primary-content">
+        &copy; {new Date().getFullYear()} Het Griekse Huis in Rotterdam. {t(lang, "footer.rights")}
       </p>
     </div>
   </div>

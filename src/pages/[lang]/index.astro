@@ -28,6 +28,12 @@ const [ttEvents, overlays] = await Promise.all([
 ]);
 const { upcoming } = splitEvents(toListEvents(ttEvents, overlays, lang), new Date());
 const events = nextEvents(upcoming, 3);
+
+// The first 3 activities in the order editors set (the `order` field).
+const activities = (await getVisible("activities"))
+  .filter((a) => a.data.lang === lang)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
 ---
 
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
@@ -44,8 +50,8 @@ const events = nextEvents(upcoming, 3);
         {t(lang, "home.hero.welcome")}
       </p>
       <div class="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-        <BrutButton href={`/${lang}/become-a-member`} class="bg-accent-gold text-black text-lg">
-          {t(lang, "nav.become-a-member")}
+        <BrutButton href={`/${lang}/about`} class="bg-accent-gold text-black text-lg">
+          {t(lang, "nav.about")}
         </BrutButton>
         <BrutButton href={`/${lang}/contact`} class="bg-white text-black text-lg">
           {t(lang, "nav.contact")}
@@ -90,6 +96,32 @@ const events = nextEvents(upcoming, 3);
       <div class="mt-8">
         <BrutButton href={`/${lang}/events`} size="sm" class="bg-white text-black hover:bg-accent-gold">
           {t(lang, "events.all")} →
+        </BrutButton>
+      </div>
+    </div>
+  </section>
+  )}
+
+  {/* Activities: the first 3, then a link to all (hidden while there are none) */}
+  {activities.length > 0 && (
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-4">
+      <h2 class="text-3xl font-extrabold text-black">{t(lang, "activities.title")}</h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {activities.map((activity) => (
+          <BrutCard href={entryPath("activities", activity)} class="p-6 bg-white">
+            {activity.data.emoji && <span class="text-4xl">{activity.data.emoji}</span>}
+            <h3 class="mt-4 text-xl font-extrabold">{activity.data.title}</h3>
+            <p class="mt-2 text-sm text-gray-700 line-clamp-3">{descriptionOrExcerpt(activity.data.description, activity.body)}</p>
+            {activity.data.schedule && (
+              <p class="mt-3 text-xs font-bold text-primary">{activity.data.schedule}</p>
+            )}
+          </BrutCard>
+        ))}
+      </div>
+      <div class="mt-8">
+        <BrutButton href={`/${lang}/activities`} size="sm" class="bg-white text-black hover:bg-accent-gold">
+          {t(lang, "activities.all")} →
         </BrutButton>
       </div>
     </div>

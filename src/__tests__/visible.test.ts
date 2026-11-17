@@ -5,6 +5,7 @@ import { EDITABLE_COLLECTIONS, isVisible } from "../lib/visible";
 
 const ROOT = join(__dirname, "../..");
 const PAGES = join(ROOT, "src/pages");
+const COMPONENTS = join(ROOT, "src/components");
 
 function files(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
@@ -22,13 +23,26 @@ describe("isVisible", () => {
   });
 });
 
-// "Hide from site" only works if no page reads these collections around the
-// filter. A new page must use getVisible() from src/lib/visible.ts.
-describe("pages read the editable collections through getVisible()", () => {
+// "Hide from site" only works if no page or component reads these collections
+// around the filter. New code must use getVisible() from src/lib/visible.ts.
+describe("pages and components read the editable collections through getVisible()", () => {
   const direct = new RegExp(`getCollection\\(\\s*["'](${EDITABLE_COLLECTIONS.join("|")})["']`);
-  for (const file of files(PAGES)) {
+  for (const file of [...files(PAGES), ...files(COMPONENTS)]) {
     it(`${relative(ROOT, file)} doesn't bypass "Hide from site"`, () => {
       expect(readFileSync(file, "utf-8")).not.toMatch(direct);
+    });
+  }
+});
+
+// The menus link "News" only while there are posts (hasNews), so visitors
+// never land on an empty News page (agreed with the managers, 2026-11-17).
+describe("menus link News only through hasNews()", () => {
+  for (const name of ["Header.astro", "Footer.astro"]) {
+    it(`${name} links News only when there are posts`, () => {
+      const lines = readFileSync(join(COMPONENTS, name), "utf-8").split("\n");
+      const newsLinks = lines.filter((line) => line.includes('"nav.news"'));
+      expect(newsLinks.length).toBeGreaterThan(0);
+      for (const line of newsLinks) expect(line).toContain("hasNews(lang)");
     });
   }
 });

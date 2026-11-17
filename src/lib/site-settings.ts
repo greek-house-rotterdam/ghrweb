@@ -51,6 +51,9 @@ export const contactSchema = z.object({
   house_email: email,
   instagram_url: httpsUrl,
   facebook_url: httpsUrl,
+  tickettailor_url: httpsUrl,
+  spotify_url: httpsUrl,
+  youtube_url: httpsUrl,
 });
 
 export const formsSchema = z.object({
