@@ -235,7 +235,7 @@ Preview builds don't stop when Ticket Tailor can't be reached: they warn in the 
 
 ### Changes in Ticket Tailor reach the site within a day
 
-New, sold-out or cancelled events show up with the next build: the nightly rebuild (03:17 UTC) or any merge. GitHub pauses scheduled workflows after 60 days without repository activity; "Run workflow" on the Nightly rebuild page restarts it.
+New, sold-out or cancelled events show up with the next build: the nightly rebuild (03:17 UTC) or any merge. Ticket Tailor's event webhooks also call the deploy hook (set up 2026-11-12), which should make it a few minutes, but no rebuild started by them has been seen yet. So `/admin` and the editor guide say "a few minutes, by the next morning at the latest". To confirm: Ticket Tailor → Settings → API → Webhooks → History, or a "deploy hook" build in Cloudflare's build list at any time other than 03:17 UTC (the nightly rebuild uses the same hook). GitHub pauses scheduled workflows after 60 days without repository activity; "Run workflow" on the Nightly rebuild page restarts it.
 
 ### The event dropdown in /admin shows the last build's events
 
