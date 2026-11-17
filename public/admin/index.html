@@ -31,8 +31,10 @@
       and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview,
       including the badges on the Workflow board cards (workflow-badges.js
       depends on how Decap draws them), reopening a translated draft (it
-      must show the Greek: open-own-language.js depends on Decap internals)
-      and the event dropdown in a new «Εκδηλώσεις» entry.
+      must show the Greek: open-own-language.js depends on Decap internals),
+      the event dropdown in a new «Εκδηλώσεις» entry, and the «Οδηγός / Guide»
+      link in the top bar of Contents, Workflow and an open entry, not in the
+      bottom-right corner (guide-link.js depends on Decap's layout).
     -->
     <!-- Decap starts in open-own-language.js, after it has been patched (#126). -->
     <script>window.CMS_MANUAL_INIT = true;</script>
@@ -45,5 +47,7 @@
     <script src="/admin/open-own-language.js"></script>
     <!-- Preview link, translation and checks on each Workflow board card. -->
     <script type="module" src="/admin/workflow-badges.js"></script>
+    <!-- A link to the editor guide in the top bar, on every page. -->
+    <script type="module" src="/admin/guide-link.js"></script>
   </body>
 </html>

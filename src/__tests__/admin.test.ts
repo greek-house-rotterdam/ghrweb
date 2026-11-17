@@ -465,6 +465,10 @@ describe("Decap CMS admin page — pinned script", () => {
       '<script type="module" src="/admin/workflow-badges.js">',
     );
   });
+
+  it("loads the editor guide link as a module", () => {
+    expect(tags).toContainEqual('<script type="module" src="/admin/guide-link.js">');
+  });
 });
 
 // One interface language rule (#106): everything an editor reads in /admin
