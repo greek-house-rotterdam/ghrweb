@@ -102,6 +102,14 @@ From the `content-tests` job (#95). A test that reads the real content failed on
 
 Should no longer appear: the `tidy` job deletes the bot's own held runs within about 2 minutes (#94). If one remains, ignore or delete it. Never approve runs from forks.
 
+### A pull request's `verify` fails at "Check events"
+
+An event text isn't linked to one real event (#105). The status comment's «Εκδήλωση / Event» section says which problem:
+
+- **Not a Ticket Tailor event:** usually an entry made outside `/admin` with a wrong ID, or an event that isn't on the live site yet. In the second case, re-run the job once the live site has rebuilt. It also happens when someone changes an entry whose event has since left Ticket Tailor (the dropdown shows it as "not found"). That entry no longer shows on the site, so discard the change.
+- **Already has Greek text:** move the text into the existing entry and discard the draft («Delete changes» on its Workflow card).
+- **The event was changed after the entry was created:** discard the change and create a new entry for the other event.
+
 ### A pull request's `verify` fails with "has no Greek source"
 
 A Dutch or English file exists without its Greek file, usually after something was deleted straight on `main` (as in #99/#100). Remove the leftover translations in a pull request.
@@ -109,9 +117,27 @@ A Dutch or English file exists without its Greek file, usually after something w
 ## Events (Ticket Tailor)
 
 - Loaded at build time (`src/lib/ticket-tailor.ts`). Ticket Tailor webhooks call the Cloudflare deploy hook (secret `CF_DEPLOY_HOOK_URL`), and the nightly rebuild is the safety net.
+- Every page of events is read. Ticket Tailor sends at most 100 per request; the loader asks again with `starting_after=<last ID>` while the answer has `links.next` (safety stop at 50 pages). A page that fails after three tries fails the whole load, so the site never shows half a list.
 - Lists: upcoming events soonest first, then past events most recent first, judged at build time (`src/lib/event-list.ts`). The home page shows the 3 soonest.
 - Test events must stay unpublished in Ticket Tailor; published ones appear on the site.
-- Event translations (`event-translations`) are keyed by the Ticket Tailor ID (`ev_…`).
+- Event translations (`event-translations`) are keyed by the Ticket Tailor ID (`ev_…`), which is also the file name.
+
+### Choosing the event in /admin (#105)
+
+Editors pick the event from a dropdown; they never type an ID.
+
+- The build writes two files from the events it loaded (`src/pages/admin/`, logic in `src/lib/admin-events.ts`, tests in `admin-events.test.ts`):
+  - `/admin/events.json`: the ID, name and start of every event, already public on the events pages. The Ticket Tailor key never leaves the build.
+  - `/admin/config-with-events.yml`: `public/admin/config.yml` with `tt_event_id` turned into a dropdown in all three event collections. Events with a Greek entry are marked; an entry whose event left Ticket Tailor keeps its ID as an extra "not found" option.
+- `public/admin/index.html` points Decap at the generated file (`<link rel="cms-config-url">`). **Edit `config.yml`, never the generated file.** `admin.test.ts` keeps checking `config.yml`.
+- Without events (no key, or Ticket Tailor unreachable: previews and local dev), the generated file equals `config.yml`, so the field is a text box with a hint to type the ID. `astro dev` always shows the text box. A production build has the dropdown, because it stops when Ticket Tailor fails.
+- The `verify` job's step "Check events" (`.github/scripts/check_event_ids.py`) checks each Greek event text the pull request adds or changes:
+  - an event is chosen;
+  - no other Greek entry is for the same event;
+  - the file name equals `tt_event_id`. Decap names the file when the entry is created and never renames it, so a changed event shows up here, and so does a second entry for one event (Decap names it `ev_…-1.md`);
+  - the ID is in the live site's `/admin/events.json`, so GitHub needs no Ticket Tailor key.
+
+  A problem blocks publishing and mentions the admins. The status comment's «Εκδήλωση / Event» section names the event, or says what is wrong (`pr_status.py events`). If the list can't be read, or is empty, it only warns. Entries the pull request doesn't touch aren't checked. So when an event leaves Ticket Tailor, its entry just stops showing on the site, and only a later change to that entry is blocked.
 
 ## Code rules that protect editors
 

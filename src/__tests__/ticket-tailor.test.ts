@@ -84,6 +84,60 @@ describe("events — Ticket Tailor answers", () => {
   });
 });
 
+describe("events — more than one page (#105)", () => {
+  // Ticket Tailor sends at most 100 events per page; `links.next` says there are more.
+  const page = (ids: string[], next: string | null) =>
+    new Response(
+      JSON.stringify({ data: ids.map((id) => ({ ...EVENT, id })), links: { next, previous: null } }),
+      { status: 200 },
+    );
+  const urlOf = (fetchImpl: ReturnType<typeof run>["fetchImpl"], call: number) =>
+    String((fetchImpl.mock.calls[call] as unknown[])[0]);
+
+  it("reads every page, each starting after the last event of the one before", async () => {
+    const { result, fetchImpl } = run(
+      PRODUCTION,
+      page(["ev_1", "ev_2"], "/v1/events?starting_after=ev_2"),
+      page(["ev_3"], null),
+    );
+    expect((await result).map((e) => e.id)).toEqual(["ev_1", "ev_2", "ev_3"]);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(urlOf(fetchImpl, 0)).not.toContain("starting_after");
+    expect(urlOf(fetchImpl, 1)).toContain("starting_after=ev_2");
+    // Still only published events, 100 at a time.
+    expect(urlOf(fetchImpl, 1)).toContain("status=published");
+    expect(urlOf(fetchImpl, 1)).toContain("limit=100");
+  });
+
+  it("stops at an empty page even if Ticket Tailor says there is a next one", async () => {
+    const { result, fetchImpl } = run(PRODUCTION, page(["ev_1"], "/next"), page([], "/next"));
+    expect(await result).toHaveLength(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries a later page on its own", async () => {
+    const { result, fetchImpl } = run(PRODUCTION, page(["ev_1"], "/next"), status(503), page(["ev_2"], null));
+    expect(await result).toHaveLength(2);
+    expect(urlOf(fetchImpl, 2)).toContain("starting_after=ev_1");
+  });
+
+  it("production: a later page that fails stops the build (no half list on the live site)", async () => {
+    const { result } = run(PRODUCTION, page(["ev_1"], "/next"), status(401));
+    await expect(result).rejects.toThrow(/HTTP 401/);
+  });
+
+  it("preview: a later page that fails means no events, not a half list", async () => {
+    const { result, warn } = run(PREVIEW, page(["ev_1"], "/next"), status(401));
+    expect(await result).toEqual([]);
+    expect(warn).toHaveBeenCalledOnce();
+  });
+
+  it("stops if Ticket Tailor sends the same page again", async () => {
+    const { result } = run(PRODUCTION, page(["ev_1"], "/next"), page(["ev_1"], "/next"));
+    await expect(result).rejects.toThrow(/same page twice/);
+  });
+});
+
 describe("events — Ticket Tailor can't be reached", () => {
   it("production: stops the build after three tries", async () => {
     const { result, fetchImpl } = run(PRODUCTION, status(500), status(502), status(503));

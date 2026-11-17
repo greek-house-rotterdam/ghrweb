@@ -316,6 +316,55 @@ class TestNextStep:
         gr, _ = next_step(views(review="warn"))
         assert gr.startswith("Έτοιμο") and "δεν εμποδίζει" in gr
 
+    def test_event_failure_tells_the_editor_what_to_do(self):
+        gr, en = next_step(views(events="fail"))
+        assert "Delete changes" in gr and "διαλέγοντας την εκδήλωση" in gr and "ενημερώθηκε" in gr
+        assert "choosing the event from the list" in en
+
+
+# The event check (#105): which event a Greek event text is for.
+EV_OK = {"state": "ok", "sha": HEAD, "run": 1, "problems": [], "found": [
+    {"file": "src/content/event-translations/gr/ev_1.md", "id": "ev_1", "name": "Πάσχα",
+     "start": "2027-04-25T19:00:00+02:00"},
+]}
+EV_FAIL = {"state": "fail", "sha": HEAD, "run": 1, "found": [], "problems": [
+    {"kind": "unknown", "file": "src/content/event-translations/gr/ev_9.md", "id": "ev_9"},
+    {"kind": "duplicate", "file": "src/content/event-translations/gr/ev_1-1.md", "id": "ev_1",
+     "other": "src/content/event-translations/gr/ev_1.md"},
+]}
+EV_WARN = {"state": "warn", "sha": HEAD, "run": 1, "found": [], "problems": []}
+
+
+class TestEvents:
+    def test_no_section_on_prs_without_event_text(self):
+        body = render(State(), HEAD)
+        assert "Εκδήλωση / Event" not in body
+        assert view_states(State(), HEAD)["events"] == "none"
+
+    def test_ok_names_the_event_and_its_date(self):
+        st = _state_with(events=EV_OK)
+        body = render(st, HEAD)
+        assert "### Εκδήλωση / Event" in body and "«Πάσχα» (25/04/2027)" in body
+        assert parse(body).sections["events"] == EV_OK
+        assert parse(body).alerts == set()
+
+    def test_failure_lists_each_problem_and_alerts_the_admins(self):
+        body = render(_state_with(events=EV_FAIL), HEAD, "@Admin")
+        assert "`ev_9` δεν είναι εκδήλωση του Ticket Tailor" in body
+        assert "is not a Ticket Tailor event" in body
+        assert "`src/content/event-translations/gr/ev_1.md`. Άλλαξε εκείνη την καταχώρηση" in body
+        assert parse(body).alerts == {"events"} and "cc @Admin" in body
+
+    def test_list_unavailable_is_a_warning_that_does_not_block(self):
+        body = render(_state_with(events=EV_WARN), HEAD, "@Admin")
+        assert "δεν εμποδίζει τη δημοσίευση" in body
+        assert parse(body).alerts == set() and "cc" not in body
+
+    def test_text_from_the_files_is_made_harmless(self):
+        bad = {**EV_FAIL, "problems": [{"kind": "unknown", "file": "<b>@x</b>.md", "id": "@someone"}]}
+        body = render(_state_with(events=bad), HEAD)
+        assert "@someone" not in body and "<b>" not in body
+
 
 class TestViews:
     def test_default_is_pending_except_review(self):
@@ -655,6 +704,26 @@ class TestCli:
         gh = FakeGitHub()
         pr_status.main(["kept", "--file", str(f)], gh)
         assert list(gh.state().sections["kept"]["items"]) == ["src/content/news/nl/x.md"]
+
+    def test_events_without_report_does_nothing(self, tmp_path):
+        gh = FakeGitHub()
+        assert pr_status.main(["events", "--report", str(tmp_path / "none")], gh) == 0
+        assert gh.comments == []
+
+    def test_events_report_becomes_the_section(self, tmp_path):
+        f = tmp_path / "e.json"
+        f.write_text(json.dumps({"state": "fail", "found": [], "problems": EV_FAIL["problems"]}))
+        gh = FakeGitHub()
+        pr_status.main(["events", "--sha", HEAD, "--report", str(f)], gh)
+        ev = gh.state().sections["events"]
+        assert (ev["state"], ev["problems"], ev["run"]) == ("fail", EV_FAIL["problems"], 42)
+
+    def test_events_report_with_an_unknown_state_counts_as_failed(self, tmp_path):
+        f = tmp_path / "e.json"
+        f.write_text(json.dumps({"state": "maybe"}))
+        gh = FakeGitHub()
+        pr_status.main(["events", "--report", str(f)], gh)
+        assert gh.state().sections["events"]["state"] == "fail"
 
     def test_images_failure_reads_problems(self, tmp_path):
         f = tmp_path / "p.md"

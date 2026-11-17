@@ -70,7 +70,7 @@ lang: "gr" | "nl" | "en"         # required
 
 Body: optional. Renders as rich text below the description on the event detail page.
 
-**Verifying `tt_event_id`:** The user must supply it. If they didn't, ask. You can sanity-check that it looks like `ev_<digits>` but you can't fully verify against the API without `TT_API_KEY`. If the user gave you the event name instead of an ID, ask for the ID — the events page in Ticket Tailor shows it in the URL.
+**Verifying `tt_event_id`:** The live site publishes every Ticket Tailor event's ID, name and start at `https://ghrweb.enosi-ellinon-ollandias.workers.dev/admin/events.json` (no key needed, #105). If the user gave the event's name, look its ID up there; if they gave an ID, check that it is listed. If the event isn't listed, it isn't published in Ticket Tailor yet, or the site hasn't rebuilt since: ask the user instead of guessing. Only one Greek entry per event: if `src/content/event-translations/gr/<id>.md` already exists, change that file. The PR's `verify` check blocks an ID that isn't in the list, a second entry for one event, and a file name that differs from `tt_event_id`.
 
 ---
 
