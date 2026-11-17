@@ -466,7 +466,7 @@ collections:
           - label: "Μέλη / Members"
             name: "members"
             widget: "list"
-            summary: "{{fields.role}} · {{fields.name}}"
+            summary: "{{fields.role}} · {{fields.name}} · {{fields.name_latin}}"
             hint: "Η σειρά εδώ είναι η σειρά στη σελίδα «Σχετικά». Η ονομασία του ρόλου μεταφράζεται αυτόματα στα ολλανδικά και στα αγγλικά. / The order here is the order on the About page. Role names are translated into Dutch and English automatically."
             fields:
               - label: "Ρόλος / Role"
@@ -479,7 +479,8 @@ collections:
                   - { label: "Ταμίας / Treasurer", value: "treasurer" }
                   - { label: "Μέλος Δ.Σ. / Board member", value: "member" }
                 default: "member"
-              - { label: "Ονοματεπώνυμο / Full name", name: "name", widget: "string", required: false, hint: "Αν μείνει κενό, η σελίδα δείχνει προσωρινά μόνο τον ρόλο. / If empty, the page shows only the role for now." }
+              - { label: "Ονοματεπώνυμο / Full name", name: "name", widget: "string", required: false, hint: "Με ελληνικούς χαρακτήρες, για τις ελληνικές σελίδες. Αν μείνει κενό, η σελίδα δείχνει προσωρινά μόνο τον ρόλο. / In Greek letters, for the Greek pages. If empty, the page shows only the role for now." }
+              - { label: "Ονοματεπώνυμο με λατινικούς χαρακτήρες / Full name in Latin letters", name: "name_latin", widget: "string", required: false, hint: "Για τις ολλανδικές και τις αγγλικές σελίδες, π.χ. Maria Papadopoulou. Γράψ' το όπως το γράφει το ίδιο το μέλος. Αν μείνει κενό, δείχνουν το ελληνικό. / For the Dutch and English pages, e.g. Maria Papadopoulou. Spell it the way the member does. If empty, they show the Greek name." }
 
       - name: contact
         label: "Στοιχεία επικοινωνίας / Contact details"

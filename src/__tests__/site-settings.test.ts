@@ -5,6 +5,7 @@ import { parse as parseYaml } from "yaml";
 import {
   BOARD_ROLES,
   SETTINGS_SCHEMAS,
+  boardName,
   contactFormUrl,
   getSiteSettings,
   mapUrls,
@@ -228,6 +229,35 @@ describe("board role names", () => {
       expect(t(lang, "contact.form.fallback")).toBeTruthy();
     });
   }
+});
+
+describe("board names per language", () => {
+  const both = { role: "president" as const, name: "Μαρία Παπαδοπούλου", name_latin: "Maria Papadopoulou" };
+
+  it("shows the Greek spelling on Greek pages", () => {
+    expect(boardName(both, "gr")).toBe("Μαρία Παπαδοπούλου");
+  });
+
+  it("shows the Latin spelling on Dutch and English pages", () => {
+    expect(boardName(both, "nl")).toBe("Maria Papadopoulou");
+    expect(boardName(both, "en")).toBe("Maria Papadopoulou");
+  });
+
+  it("falls back to the Greek spelling while no Latin one is set", () => {
+    const { name_latin: _, ...greekOnly } = both;
+    expect(boardName(greekOnly, "en")).toBe("Μαρία Παπαδοπούλου");
+  });
+
+  it("reads a Latin spelling from board.yml and leaves it out when empty", () => {
+    const files = {
+      ...valid(),
+      "../data/board.yml":
+        "members:\n  - role: president\n    name: Μαρία\n    name_latin: Maria\n  - role: member\n    name: Νίκος\n    name_latin: \"\"\n",
+    };
+    const [first, second] = parseSettings(files).board.members;
+    expect(first.name_latin).toBe("Maria");
+    expect(second.name_latin).toBeUndefined();
+  });
 });
 
 // ---------------------------------------------------------------------------

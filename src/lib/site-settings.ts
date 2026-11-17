@@ -39,6 +39,8 @@ export const boardSchema = z.object({
     z.object({
       role: z.enum(BOARD_ROLES),
       name: text,
+      // The same name in Latin letters, for the Dutch and English pages.
+      name_latin: text,
     }),
   ),
 });
@@ -119,6 +121,16 @@ export function getSiteSettings(): SiteSettings {
     }) as Record<string, string>,
   );
   return cached;
+}
+
+// A board member's name for one language: the Greek spelling on Greek pages,
+// the Latin spelling on Dutch and English pages (the Greek one while no Latin
+// spelling is set). Undefined while the member has no name.
+export function boardName(
+  member: Board["members"][number],
+  lang: string,
+): string | undefined {
+  return lang === "gr" ? member.name : (member.name_latin ?? member.name);
 }
 
 // The contact form's page, or null while no real form ID is set. "FORM_ID" is
