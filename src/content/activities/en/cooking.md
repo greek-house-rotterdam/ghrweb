@@ -2,10 +2,10 @@
 title: Cooking Workshops
 emoji: 🍲
 image: /images/activity-cooking.jpg
-order: 70
+order: 170
 lang: en
-source_hash: 'e158c2bf763b'
-translation_hash: 'fe88bc60ed64'
+source_hash: '37c6dceb0c9d'
+translation_hash: '69c4f37b8ef8'
 ---
 
-A creative, hands-on workshop that brings the rich flavours and aromas of Greek culinary tradition to the table. Participants dive into the techniques behind authentic recipes—from traditional handmade pies to slow-cooked classics—celebrating the richness and warmth of our home cuisine.
+A workshop where we learn and cook together, enjoying the flavours and aromas of Greek tradition. Together, we make authentic dishes—from traditional pies to beloved home-cooked classics—and discover the full richness of our cuisine. Come cook with us!

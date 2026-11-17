@@ -2,7 +2,7 @@
 title: Mode en Lekkernijen
 emoji: 👗
 image: /images/activity-fashion-and-treats.jpg
-order: 50
+order: 180
 lang: nl
 source_hash: 'f3944b3c2227'
 translation_hash: '093f344311a9'

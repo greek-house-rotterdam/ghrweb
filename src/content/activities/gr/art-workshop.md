@@ -1,6 +1,7 @@
 ---
 title: Workshop Εικαστικών
 emoji: "🎨"
+image: /images/activity-art-workshop.jpg
 order: 80
 lang: gr
 ---

@@ -2,10 +2,10 @@
 title: Kookworkshops
 emoji: 🍲
 image: /images/activity-cooking.jpg
-order: 70
+order: 170
 lang: nl
-source_hash: 'e158c2bf763b'
-translation_hash: 'f32c63314a0f'
+source_hash: '37c6dceb0c9d'
+translation_hash: '037450d54abc'
 ---
 
-Een creatieve en leerzame workshop waarin de geuren en smaken van de Griekse culinaire traditie centraal staan. Je leert de technieken achter authentieke gerechten — van traditionele pites tot smaakvolle stoofgerechten — en ontdekt zo de rijkdom van onze Griekse keuken.
+Een workshop waarin we samen leren en koken, omringd door de geuren en smaken van de Griekse traditie. We maken samen authentieke gerechten, van traditionele pites tot geliefde stoofschotels, en ontdekken de rijkdom van onze keuken. Kook gezellig met ons mee!
