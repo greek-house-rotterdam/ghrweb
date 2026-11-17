@@ -5,6 +5,7 @@ import {
   getLangFromSlug,
   getStaticLangPaths,
   formatDate,
+  htmlLang,
   type Lang,
 } from "../i18n/utils";
 import { t } from "../i18n/ui";
@@ -58,6 +59,19 @@ describe("i18n/utils", () => {
         { params: { lang: "nl" } },
         { params: { lang: "en" } },
       ]);
+    });
+  });
+
+  // `gr` is the site's own code; pages must declare the real code `el`, or
+  // browsers keep the accents on Greek capitals («ΔΡΆΣΕΙΣ»).
+  describe("htmlLang", () => {
+    it("writes Greek as el", () => {
+      expect(htmlLang("gr")).toBe("el");
+    });
+
+    it("keeps nl and en", () => {
+      expect(htmlLang("nl")).toBe("nl");
+      expect(htmlLang("en")).toBe("en");
     });
   });
 
