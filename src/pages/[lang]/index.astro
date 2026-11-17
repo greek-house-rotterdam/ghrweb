@@ -80,7 +80,7 @@ const activities = (await getVisible("activities"))
 
   {/* Latest News (hidden while there are no posts) */}
   {news.length > 0 && (
-  <section class="py-16">
+  <section class="border-b-4 border-black py-16">
     <div class="mx-auto max-w-7xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.latest-news")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -105,7 +105,7 @@ const activities = (await getVisible("activities"))
 
   {/* Upcoming Events (hidden while there are none) */}
   {events.length > 0 && (
-  <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
+  <section class="border-b-4 border-black bg-accent-gold-lighter py-16">
     <div class="mx-auto max-w-7xl px-4">
       <CardRow lang={lang}>
         <h2 slot="heading" class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
