@@ -25,7 +25,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261006.1",
     "@tailwindcss/typography": "^0.5.19",
-    "decap-server": "^3.5.0",
+    "decap-server": "3.11.3",
     "vitest": "^4.1.12",
     "wrangler": "^4.153.0",
     "yaml": "^2.8.3"
@@ -34,6 +34,7 @@
     "ws": "^8.21.0",
     "simple-git": "^4.0.2",
     "proxy-addr": "^2.0.8",
+    "@hapi/joi": "npm:joi@^17.13.9",
     "@tailwindcss/typography": {
       "postcss-selector-parser": "^7.1.6"
     }

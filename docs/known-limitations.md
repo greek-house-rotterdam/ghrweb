@@ -153,6 +153,23 @@ Each content PR has one status comment (`.github/scripts/pr_status.py`) with Tra
 - **What to do:** use `npm run dev:cms` as documented. Drop the pin once `decap-server` supports simple-git 4.
 - **Status:** both modes tested on 2026-10-07.
 
+### `decap-server` is held at 3.11.3, with joi swapped in
+
+`decap-server` runs only on your own computer (`npm run dev:cms`). Nothing on the live site uses it. Two more pins keep `npm audit` free of its warnings:
+
+- **`decap-server` is pinned to exactly 3.11.3.** `npm audit fix` offers 3.11.6, but that is not a fix. From 3.11.4 on, `decap-server` is a thin wrapper around `@decap/cli`, which still uses `@hapi/joi`. It also adds about 60 packages, including zod 3, which has its own high warning that only zod 4 fixes. Result: 4 high warnings instead of 3.
+- **`@hapi/joi` is replaced with `joi` 17.13.9 through `overrides`.** `@hapi/joi` is the old name of `joi`, is no longer maintained, and has two high advisories with no fix. `joi` 17.13.9 is the same library under its new name, with both fixed. `decap-server` uses joi to check every request it receives; those checks behave as before.
+- `body-parser`, which `decap-server` gets through Express, moved to 1.20.9 in `package-lock.json`. No pin is needed: Express already allows that version.
+
+- **What to do:** when you upgrade `decap-server`, run `npm audit` before and after, and check that `/admin` still works with the local backend. Drop the `@hapi/joi` override once `decap-server` no longer uses `@hapi/joi`.
+- **Status:** tested on 2026-11-17. `npm audit` showed 0 warnings. With `npx decap-server` and `astro dev`, `/admin/index.html` logged in through the local backend, opened an entry and saved a change to it. The API returned 200 for valid requests and 422 for invalid ones.
+
+### `npm install` warns that install scripts were skipped
+
+npm 11.21 (the version tested) skips install scripts unless `package.json` approves them (`allowScripts`). It lists `esbuild`, `fsevents` and `workerd`. None of them needs its script here. `esbuild` and `workerd` find their prebuilt program without it. `fsevents` ships already built. Tests, `astro build`, `esbuild` and `workerd --version` all work without the scripts. The GitHub Actions workflows use Node 22, whose npm still runs install scripts.
+
+- **What to do:** nothing. If a later version of one of these packages fails because its script didn't run, approve it with `npm install-scripts approve <package>`.
+
 ### Pushing straight to `main` skips every check
 
 All workflows run on pull requests only. Content pushed straight to `main` isn't translated and its translations go stale, with no alarm. To recover, open a small PR that saves the source file again.
