@@ -120,7 +120,7 @@ const activities = (await getVisible("activities"))
 
   {/* Activities: the first 3, then a link to all (hidden while there are none) */}
   {activities.length > 0 && (
-  <section class="py-16">
+  <section class="border-b-4 border-black py-16">
     <div class="mx-auto max-w-7xl px-4">
       <h2 class="text-3xl font-extrabold text-black">{t(lang, "activities.title")}</h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
