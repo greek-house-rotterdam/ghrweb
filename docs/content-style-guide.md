@@ -53,7 +53,9 @@ The automated review runs on every PR that changes content files (`src/content/*
 1. Reads changed/added `.md` files from the PR
 2. Sends frontmatter + body to Gemini Flash with the style guide as context
 3. Lists the findings per file, tagged with severity level, in the AI review section of the PR's status comment (folded, one block per file)
-4. Does **not** block the PR — findings are advisory
+4. Does **not** block the PR — findings are advisory, critical ones included
+5. Shows the result on the post's card in `/admin` → Workflow: an "AI review" badge coloured by the most serious finding (red critical, orange major, yellow minor, green none, grey when the review couldn't run), which opens the status comment (#135)
+6. Mentions the admins in the status comment when a finding is critical
 
 **What it does NOT do:**
 - It does not modify content (no auto-fixes, no commits)
