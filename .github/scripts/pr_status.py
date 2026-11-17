@@ -468,12 +468,13 @@ def render_review(data: dict | None, view: str) -> str:
     else:
         text = bi("⚠️ Ο έλεγχος AI δεν μπόρεσε να ελέγξει κάποιο αρχείο. Δεν εμποδίζει τη δημοσίευση· ο διαχειριστής ενημερώθηκε.",
                   "The AI review could not check some file. It doesn't block publishing; the site admin has been notified.")
+    # Shown open, never folded in <details>: editors missed folded remarks.
     for path in sorted(files):
         entry = files[path]
         sha = f" · <code>{short(entry.get('sha'))}</code>" if entry.get("sha") else ""
         if entry.get("error"):
-            text += (f"\n\n<details><summary>⚠️ <code>{clean(path, 200)}</code>{sha}</summary>\n\n"
-                     f"Error: `{clean(entry['error'], 300)}`\n\n</details>")
+            text += (f"\n\n⚠️ <code>{clean(path, 200)}</code>{sha}\n\n"
+                     f"Error: `{clean(entry['error'], 300)}`")
         elif entry.get("findings"):
             ordered = sorted(
                 entry["findings"],
@@ -484,8 +485,8 @@ def render_review(data: dict | None, view: str) -> str:
                 sev = f.get("severity", "minor")
                 lines.append(f"- {SEVERITY_EMOJI.get(sev, '⚪')} **{clean(sev, 20).upper()}** "
                              f"({clean(f.get('field', 'unknown'), 40)}): {clean(f.get('message', ''), 400)}")
-            text += (f"\n\n<details><summary>💬 <code>{clean(path, 200)}</code> "
-                     f"({len(ordered)}){sha}</summary>\n\n" + "\n".join(lines) + "\n\n</details>")
+            text += (f"\n\n📄 <code>{clean(path, 200)}</code> ({len(ordered)}){sha}\n\n"
+                     + "\n".join(lines))
     return f"{title}\n\n{text}"
 
 

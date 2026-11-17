@@ -169,7 +169,7 @@ class TestRender:
         apply_section(st, "preview", {**PREV, "url": "https://evil.example/x)"})
         assert "evil" not in render(st, HEAD)
 
-    def test_review_notes_are_folded_per_file_and_sorted(self):
+    def test_review_notes_are_shown_open_per_file_and_sorted(self):
         st = State()
         findings = [
             {"severity": "minor", "field": "body", "message": "m"},
@@ -177,11 +177,19 @@ class TestRender:
         ]
         apply_section(st, "review", review("src/content/news/gr/x.md", findings))
         body = render(st, HEAD)
-        assert "<details><summary>💬 <code>src/content/news/gr/x.md</code> (2)" in body
+        assert "📄 <code>src/content/news/gr/x.md</code> (2) · <code>aaaaaaa</code>" in body
         assert body.index("CRITICAL") < body.index("MINOR")
         assert "doesn't block publishing" in body
-        # HTML inside <summary>: markdown backticks would show literally
-        assert "(2) · <code>aaaaaaa</code></summary>" in body
+
+    def test_review_section_has_no_fold(self):
+        # Editors missed remarks hidden in a <details> fold: keep them visible.
+        st = State()
+        apply_section(st, "review", review("a.md", [{"severity": "major", "field": "body", "message": "m"}]))
+        apply_section(st, "review", review("b.md", error="Gemini API 503"))
+        body = render(st, HEAD)
+        section = body[body.index("### 4."):body.index("### 6.")]
+        assert "<details" not in section
+        assert "MAJOR" in section and "Gemini API 503" in section
 
     def test_review_without_remarks(self):
         assert "No remarks" in render(State(), HEAD)
