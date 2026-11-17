@@ -69,3 +69,15 @@ describe("home page activities", () => {
     expect(home).toMatch(/<CardRow lang=\{lang\}>[\s\S]*activities\.map[\s\S]*<\/CardRow>/);
   });
 });
+
+describe("home page upcoming events", () => {
+  const home = read("src/pages/[lang]/index.astro");
+
+  it("shows all upcoming events, not just the first few", () => {
+    expect(home).toContain("nextEvents(upcoming, upcoming.length)");
+  });
+
+  it("puts them in a CardRow", () => {
+    expect(home).toMatch(/<CardRow lang=\{lang\}>[\s\S]*events\.map\(\(event\) => <EventCard[\s\S]*?<\/CardRow>/);
+  });
+});

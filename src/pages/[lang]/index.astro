@@ -22,13 +22,14 @@ const news = allNews
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-// The 3 soonest upcoming events, soonest first like the events page.
+// All upcoming events, soonest first like the events page. They show in a row
+// that scrolls sideways (CardRow).
 const [ttEvents, overlays] = await Promise.all([
   getCollection("events"),
   getCollection("eventTranslations"),
 ]);
 const { upcoming } = splitEvents(toListEvents(ttEvents, overlays, lang), new Date());
-const events = nextEvents(upcoming, 3);
+const events = nextEvents(upcoming, upcoming.length);
 
 // All visible activities, in the order editors set (the `order` field). They
 // show in a row that scrolls sideways (CardRow).
@@ -106,10 +107,10 @@ const activities = (await getVisible("activities"))
   {events.length > 0 && (
   <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
-      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <CardRow lang={lang}>
+        <h2 slot="heading" class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
         {events.map((event) => <EventCard event={event} lang={lang} />)}
-      </div>
+      </CardRow>
       <div class="mt-8">
         <BrutButton href={`/${lang}/events`} size="sm" class="bg-white text-black hover:bg-accent-gold">
           {t(lang, "events.all")} →
