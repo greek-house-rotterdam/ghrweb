@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-11-16_
+_Last updated: 2026-11-17_
 
 ## Images
 
@@ -165,6 +165,12 @@ A news or activity entry can have a short address (`url_slug`). The address that
 
 - **What to do:** don't change a short address after it has been shared. The field's hint in `/admin` and the editor guide say so.
 - **Possible fix:** keep a list of earlier short addresses on the entry and serve a redirect for each.
+
+### Raw HTML links in a text keep their language
+
+Links in content texts lead to the reader's language: `/gr/contact` in a Dutch text becomes `/nl/contact` when the site is built (`src/lib/localize-links.ts`). This works only for Markdown links (`[text](/gr/contact)`). Astro's Markdown processor keeps raw HTML as text, so `<a href="/gr/contact">` in a Dutch text still leads to the Greek page.
+
+- **What to do:** write links in Markdown. `/admin` does this when an editor adds a link. No content uses raw HTML links today.
 
 ## Site settings
 
