@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GHR Admin</title>
+    <!--
+      Decap loads the configuration the build makes from config.yml, with the
+      Ticket Tailor events as a dropdown (#105, src/lib/admin-events.ts).
+    -->
+    <link href="/admin/config-with-events.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
     <script>
@@ -25,8 +30,9 @@
           | openssl dgst -sha384 -binary | openssl base64 -A
       and put it in integrity="sha384-<hash>". Smoke-test /admin/ on the preview,
       including the badges on the Workflow board cards (workflow-badges.js
-      depends on how Decap draws them) and reopening a translated draft (it
-      must show the Greek: open-own-language.js depends on Decap internals).
+      depends on how Decap draws them), reopening a translated draft (it
+      must show the Greek: open-own-language.js depends on Decap internals)
+      and the event dropdown in a new «Εκδηλώσεις» entry.
     -->
     <!-- Decap starts in open-own-language.js, after it has been patched (#126). -->
     <script>window.CMS_MANUAL_INIT = true;</script>

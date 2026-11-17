@@ -7,7 +7,9 @@ Each workflow reports its own part and this script rewrites only that part:
     translation  translate.yml (translate and verify jobs)
     kept         translate.yml: hand-corrected translations that were kept (A9)
     images       translate.yml (verify job)
-    preview      preview-status.yml: the Cloudflare preview link
+    events       translate.yml (verify job): which event a Greek event text is
+                 for, shown only on PRs that change one (#105)
+    preview     preview-status.yml: the Cloudflare preview link
     review       content-review.yml: the AI review, notes per file
     autopublish  auto-publish.yml: is the post set to go live by itself (C1)
 
@@ -77,7 +79,7 @@ BEGIN_RE = re.compile(r"<!-- pr-status:begin (\w+) ([A-Za-z0-9_=-]*) -->")
 ALERTS_RE = re.compile(r"<!-- pr-status:alerts ([a-z,]*) -->")
 URL_RE = re.compile(r"^https://[A-Za-z0-9.-]+/?$")
 
-SECTION_NAMES = ("translation", "kept", "images", "preview", "review", "autopublish")
+SECTION_NAMES = ("translation", "kept", "images", "events", "preview", "review", "autopublish")
 AUTOPUBLISH_STATES = ("on", "off", "unavailable")
 # src/data/ holds the site settings (board, contact, forms). A PR that only
 # changes those has nothing to translate but still gets the status comment.
@@ -280,6 +282,8 @@ def view_states(state: State, head: str | None) -> dict[str, str]:
     out = {
         "translation": s.get("translation", {}).get("state", "pending"),
         "images": s.get("images", {}).get("state", "pending"),
+        # Only PRs that change a Greek event text have this section.
+        "events": s.get("events", {}).get("state", "none"),
     }
     prev = s.get("preview")
     out["preview"] = (
@@ -302,7 +306,7 @@ def view_states(state: State, head: str | None) -> dict[str, str]:
 
 def compute_alerts(views: dict[str, str]) -> set[str]:
     """Problems admins are told about."""
-    alerts = {n for n in ("translation", "images") if views[n] == "fail"}
+    alerts = {n for n in ("translation", "images", "events") if views.get(n) == "fail"}
     if views["review"] == "warn":
         alerts.add("review")
     elif views["review"] == "critical":
@@ -439,6 +443,61 @@ def render_images(data: dict | None) -> str:
     return f"{title}{sha}\n\n{text}"
 
 
+# What check_event_ids.py found wrong, per problem (Greek, English).
+EVENT_PROBLEMS = {
+    "missing": ("Δεν έχει επιλεγεί εκδήλωση.", "No event is chosen."),
+    "duplicate": (
+        "Η εκδήλωση `{id}` έχει ήδη ελληνικό κείμενο: `{other}`. Άλλαξε εκείνη την καταχώρηση.",
+        "Event `{id}` already has Greek text: `{other}`. Change that entry instead.",
+    ),
+    "renamed": (
+        "Η εκδήλωση άλλαξε αφού φτιάχτηκε η καταχώρηση (τώρα: `{id}`). Μια καταχώρηση δεν μεταφέρεται σε άλλη εκδήλωση.",
+        "The event was changed after the entry was created (now: `{id}`). An entry can't move to another event.",
+    ),
+    "unknown": (
+        "Το `{id}` δεν είναι εκδήλωση του Ticket Tailor (δεν είναι ούτε στη σελίδα «Εκδηλώσεις»).",
+        "`{id}` is not a Ticket Tailor event (it isn't on the Events page either).",
+    ),
+}
+ISO_DATE_RE = re.compile(r"^(\d{4})-(\d{2})-(\d{2})")
+
+
+def event_date(iso: str | None) -> str:
+    """'2026-12-19T19:00:00+01:00' → '19/12/2026' (Ticket Tailor gives local times)."""
+    m = ISO_DATE_RE.match(iso or "")
+    return f"{m[3]}/{m[2]}/{m[1]}" if m else ""
+
+
+def render_events(data: dict | None) -> str:
+    if not data:
+        return ""  # this PR changes no Greek event text
+    title = "### Εκδήλωση / Event"
+    sha = f" · commit `{short(data.get('sha'))}`" if data.get("sha") else ""
+    if data.get("state") == "ok":
+        items = []
+        for f in data.get("found") or []:
+            when = event_date(f.get("start"))
+            items.append(f"«{clean(f.get('name') or f.get('id'), 120)}»" + (f" ({when})" if when else "")
+                         + f" · `{clean(f.get('file'), 200)}`")
+        text = bi("✅ Το κείμενο ανήκει σε αυτή την εκδήλωση:", "The text belongs to this event:")
+        return f"{title}{sha}\n\n{text}\n\n{bullets(items)}"
+    if data.get("state") == "warn":
+        text = bi(
+            "⚠️ Δεν ελέγχθηκε αν η εκδήλωση υπάρχει, γιατί η λίστα εκδηλώσεων της ιστοσελίδας δεν φόρτωσε. "
+            "Αυτό δεν εμποδίζει τη δημοσίευση.",
+            "Couldn't check that the event exists, because the site's event list didn't load. "
+            "This doesn't block publishing.",
+        )
+        return f"{title}{sha}\n\n{text}"
+    items = []
+    for p in data.get("problems") or []:
+        gr, en = EVENT_PROBLEMS.get(p.get("kind"), ("Άγνωστο πρόβλημα.", "Unknown problem."))
+        fields = {k: clean(p.get(k) or "", 200) for k in ("id", "other")}
+        items.append(f"`{clean(p.get('file'), 200)}`: {gr.format(**fields)} *{en.format(**fields)}*")
+    text = bi("❌ Το κείμενο δεν συνδέεται σωστά με μια εκδήλωση:", "The text isn't linked to an event correctly:")
+    return f"{title}{sha}\n\n{text}\n\n{bullets(items)}"
+
+
 def render_preview(data: dict | None, ok: bool) -> str:
     title = "### 3. Προεπισκόπηση / Preview"
     if ok and data and URL_RE.match(data.get("url", "")):
@@ -517,6 +576,11 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
     if views["images"] == "fail":
         problems_gr.append("Αντικατάστησε την εικόνα που δεν μπορεί να χρησιμοποιηθεί (JPEG, PNG ή WebP, έως 5 MB) και αποθήκευσε ξανά· ο διαχειριστής ενημερώθηκε και θα βοηθήσει αν το μήνυμα δεν φύγει.")
         problems_en.append("Replace the image that can't be used (JPEG, PNG or WebP, up to 5 MB) and save again; the site admin has been told and will help if this message doesn't go away.")
+    if views.get("events") == "fail":
+        problems_gr.append("Η καταχώρηση δεν συνδέεται σωστά με εκδήλωση (δες «Εκδήλωση»): στο /admin → Workflow, πάτα «Delete changes» "
+                           "στην κάρτα της και φτιάξ' την ξανά, διαλέγοντας την εκδήλωση από τη λίστα· ο διαχειριστής ενημερώθηκε και θα βοηθήσει.")
+        problems_en.append("The entry isn't linked to an event correctly (see \"Event\"): in /admin → Workflow, click \"Delete changes\" "
+                           "on its card and create it again, choosing the event from the list; the site admin has been told and will help.")
     if problems_gr:
         return " ".join(problems_gr), " ".join(problems_en)
 
@@ -567,6 +631,7 @@ def render(state: State, head: str | None, mentions: str = "", run_url: str = ""
     tr = render_translation(s.get("translation"))
     kept = render_kept(s.get("kept"))
     publish = render_autopublish(s.get("autopublish"))
+    events = render_events(s.get("events"))
     parts = [
         MARK,
         f"<!-- pr-status:alerts {','.join(sorted(alerts))} -->",
@@ -574,6 +639,7 @@ def render(state: State, head: str | None, mentions: str = "", run_url: str = ""
         block("translation", tr),
         block("kept", kept) if kept else "",
         block("images", render_images(s.get("images"))),
+        block("events", events) if events else "",
         block("preview", render_preview(prev, views["preview"] == "ok")),
         block("review", render_review(s.get("review"), views["review"])),
         block("autopublish", publish) if publish else "",
@@ -760,6 +826,11 @@ def build_data(args: argparse.Namespace) -> dict:
         else:
             data["problems"] = [l[2:] if l.startswith("- ") else l for l in read_lines(args.problems)]
         return data
+    if args.section == "events":
+        r = json.loads(Path(args.report).read_text(encoding="utf-8"))
+        state = r.get("state") if r.get("state") in ("ok", "warn", "fail") else "fail"
+        return {"state": state, "sha": sha, "run": run_stamp(),
+                "found": r.get("found") or [], "problems": r.get("problems") or []}
     if args.section == "autopublish":
         return {"state": args.state, "run": run_stamp()}
     if args.section == "preview":
@@ -796,6 +867,10 @@ def parser() -> argparse.ArgumentParser:
     i.add_argument("--count", type=int, default=0)
     i.add_argument("--problems", help="markdown list of problems")
 
+    e = sub.add_parser("events")
+    e.add_argument("--sha")
+    e.add_argument("--report", required=True, help="JSON written by check_event_ids.py")
+
     v = sub.add_parser("preview")
     v.add_argument("--sha", required=True)
     v.add_argument("--url", required=True)
@@ -814,6 +889,9 @@ def main(argv: list[str] | None = None, run: Runner = gh) -> int:
     args = parser().parse_args(sys.argv[1:] if argv is None else argv)
     if args.section == "kept" and not read_lines(args.file):
         print("No hand-corrected translations were kept.")
+        return 0
+    if args.section == "events" and not Path(args.report).is_file():
+        print("No Greek event texts were checked.")
         return 0
     data = build_data(args)
     api = Api(os.environ["REPO"], os.environ["PR_NUMBER"], run)

@@ -237,9 +237,11 @@ Preview builds don't stop when Ticket Tailor can't be reached: they warn in the 
 
 New, sold-out or cancelled events show up with the next build: the nightly rebuild (03:17 UTC) or any merge. GitHub pauses scheduled workflows after 60 days without repository activity; "Run workflow" on the Nightly rebuild page restarts it.
 
-### Only the first 100 published events are read
+### The event dropdown in /admin shows the last build's events
 
-The loader reads one page of up to 100 published events (Ticket Tailor's maximum per page) and doesn't follow further pages.
+The dropdown (#105) and the `verify` event check use the event list of the last live-site build. An event published in Ticket Tailor appears in both only after the next build, at the same moment it appears on the site. Events that are still drafts in Ticket Tailor are not listed, so an editor can't prepare Greek text before the event is published.
+
+On PR previews without events, and in `astro dev`, the field is a text box for the ID instead. A mistyped ID there is still caught by the check.
 
 ## Not yet verified in CI
 

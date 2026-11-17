@@ -307,6 +307,26 @@ jobs:
             echo "No images changed."
           fi
 
+      # Blocks publishing for a Greek event text that belongs to no event in
+      # the live site's list, to an event that already has Greek text, or
+      # whose event was changed after it was created (#105). Old entries the
+      # PR doesn't touch are not checked. If the list can't be read, it warns
+      # and lets the post through.
+      - name: Check events
+        id: events
+        if: ${{ !cancelled() }}
+        run: |
+          git fetch origin main
+          git config core.quotePath false
+          git diff --name-only --diff-filter=ACM origin/main...HEAD -- 'src/content/event-translations/gr/' > /tmp/changed_events.txt
+          cat /tmp/changed_events.txt
+          # A branch made before this check has no script: skip it there.
+          if [ -s /tmp/changed_events.txt ] && [ -f .github/scripts/check_event_ids.py ]; then
+            xargs -d '\n' python .github/scripts/check_event_ids.py --report /tmp/event_check.json < /tmp/changed_events.txt
+          else
+            echo "No Greek event texts changed."
+          fi
+
       - name: Report status on auto-commit
         if: ${{ needs.translate.outputs.new_sha != '' }}
         env:
@@ -377,6 +397,9 @@ jobs:
             COUNT=0
             if [ -f /tmp/changed_images.txt ]; then COUNT=$(grep -c . /tmp/changed_images.txt || true); fi
             python3 .github/scripts/pr_status.py images --state ok --sha "$SHA" --count "$COUNT"
+          fi
+          if [ -f /tmp/event_check.json ]; then
+            python3 .github/scripts/pr_status.py events --sha "$SHA" --report /tmp/event_check.json
           fi
 
   # The bot's commit should not start these workflows again: the verify job

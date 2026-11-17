@@ -107,6 +107,12 @@ collections:
 
   # ── Event translations (Ticket Tailor is the source of truth for dates,
   # ── location, prices, tickets — these collections only translate title/description/body.
+  #
+  # /admin doesn't load this file directly but /admin/config-with-events.yml,
+  # which the build makes from it: tt_event_id becomes a dropdown of the
+  # Ticket Tailor events (#105, src/lib/admin-events.ts). The text box and its
+  # hint below are what editors get when the build had no event list
+  # (previews without Ticket Tailor, local dev).
 
   - name: event-translations-gr
     label: "Εκδηλώσεις (Ελληνικά)"
@@ -124,7 +130,7 @@ collections:
     preview_path: "gr/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
+      - { label: "Εκδήλωση στο Ticket Tailor / Ticket Tailor event", name: "tt_event_id", widget: "string", hint: "Η λίστα με τις εκδηλώσεις δεν φόρτωσε εδώ, οπότε γράψε τον κωδικό της εκδήλωσης. Στο Ticket Tailor: Events → κλικ στην εκδήλωση → αντέγραψε τον κωδικό, π.χ. ev_8112397. / The list of events didn't load here, so type the event's ID. In the Ticket Tailor dashboard: Events → click the event → copy its ID, e.g. ev_8112397." }
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "gr" }
@@ -146,7 +152,7 @@ collections:
     preview_path: "nl/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Εκδήλωση στο Ticket Tailor / Ticket Tailor event", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "nl" }
@@ -168,7 +174,7 @@ collections:
     preview_path: "en/events/{{slug}}"
     editor: { preview: false }
     fields:
-      - { label: "Κωδικός εκδήλωσης στο Ticket Tailor / Ticket Tailor event ID", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
+      - { label: "Εκδήλωση στο Ticket Tailor / Ticket Tailor event", name: "tt_event_id", widget: "string", hint: "Αλλάζει στην ελληνική καταχώρηση· εδώ αντιγράφεται αυτόματα. / Change this on the Greek entry; it is copied here automatically." }
       - { label: "Τίτλος / Title", name: "title", widget: "string", pattern: ['^.{0,100}$', "Έως 100 χαρακτήρες / Max 100 characters"] }
       - { label: "Περιγραφή / Description", name: "description", widget: "string", required: false, hint: "Προαιρετικό. Αν το αφήσεις κενό, χρησιμοποιείται η αρχή του κειμένου. / Optional. If you leave it empty, the start of the text is used.", pattern: ['^.{0,200}$', "Έως 200 χαρακτήρες / Max 200 characters"] }
       - { label: "Language", name: "lang", widget: "hidden", default: "en" }

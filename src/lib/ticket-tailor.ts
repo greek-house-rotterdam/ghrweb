@@ -9,7 +9,15 @@
 //   the site is built without events, so editors can keep saving and
 //   publishing posts.
 
-const EVENTS_URL = "https://api.tickettailor.com/v1/events?status=published&limit=100";
+// Ticket Tailor sends at most 100 events per request (a "page"). Published
+// events include past ones, so there are soon more than 100: the loader asks
+// for the next page, starting after the last event it got, until Ticket Tailor
+// says there is none.
+const PAGE_SIZE = 100;
+const EVENTS_URL = `https://api.tickettailor.com/v1/events?status=published&limit=${PAGE_SIZE}`;
+// A safety stop in case Ticket Tailor kept saying "there is a next page":
+// 50 pages are 5,000 events, far more than the association will ever have.
+const MAX_PAGES = 50;
 const TIMEOUT_MS = 15_000;
 // Waits between attempts: three tries in all.
 const RETRY_DELAYS_MS = [2_000, 5_000];
@@ -111,11 +119,37 @@ async function fetchEvents(
 ): Promise<TTEvent[]> {
   // Ticket Tailor's docs: "Authorization: Basic Base64Encode(api_key)".
   const auth = "Basic " + Buffer.from(key).toString("base64");
+  const events: TTEvent[] = [];
+  let after: string | undefined;
+  for (let page = 0; page < MAX_PAGES; page++) {
+    const url = after ? `${EVENTS_URL}&starting_after=${encodeURIComponent(after)}` : EVENTS_URL;
+    const { data, hasNext } = await fetchPage(url, auth, fetchImpl, sleep);
+    events.push(...data);
+    const last = data.at(-1)?.id;
+    if (!hasNext || !last) return events;
+    if (last === after) throw new Error(`Ticket Tailor sent the same page twice (after ${last})`);
+    after = last;
+  }
+  throw new Error(`more than ${MAX_PAGES} pages of events; stopped reading`);
+}
+
+interface Page {
+  data: TTEvent[];
+  hasNext: boolean;
+}
+
+/** One page, with up to three tries. */
+async function fetchPage(
+  url: string,
+  auth: string,
+  fetchImpl: typeof fetch,
+  sleep: (ms: number) => Promise<void>,
+): Promise<Page> {
   let lastError: unknown;
   for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
     if (attempt > 0) await sleep(RETRY_DELAYS_MS[attempt - 1]);
     try {
-      return await fetchOnce(auth, fetchImpl);
+      return await fetchOnce(url, auth, fetchImpl);
     } catch (error) {
       lastError = error;
       if (!(error instanceof RetryableError)) break;
@@ -124,10 +158,10 @@ async function fetchEvents(
   throw lastError;
 }
 
-async function fetchOnce(auth: string, fetchImpl: typeof fetch): Promise<TTEvent[]> {
+async function fetchOnce(url: string, auth: string, fetchImpl: typeof fetch): Promise<Page> {
   let res: Response;
   try {
-    res = await fetchImpl(EVENTS_URL, {
+    res = await fetchImpl(url, {
       headers: { Authorization: auth, Accept: "application/json" },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
@@ -142,8 +176,9 @@ async function fetchOnce(auth: string, fetchImpl: typeof fetch): Promise<TTEvent
     if (res.status === 429 || res.status >= 500) throw new RetryableError(message);
     throw new Error(message);
   }
-  const json = (await res.json()) as { data?: TTEvent[] };
-  return Array.isArray(json.data) ? json.data : [];
+  // `links.next` is set while there are more events after this page.
+  const json = (await res.json()) as { data?: TTEvent[]; links?: { next?: string | null } };
+  return { data: Array.isArray(json.data) ? json.data : [], hasNext: Boolean(json.links?.next) };
 }
 
 // The HTML entities Ticket Tailor descriptions use. Others are left as they are.
