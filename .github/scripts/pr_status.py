@@ -287,7 +287,9 @@ def view_states(state: State, head: str | None) -> dict[str, str]:
         else "pending"
     )
     files = s.get("review", {}).get("files", {})
-    if any(e.get("error") for e in files.values()):
+    if any(f.get("severity") == "critical" for e in files.values() for f in e.get("findings") or []):
+        out["review"] = "critical"  # advice only, but the admins are told (#135)
+    elif any(e.get("error") for e in files.values()):
         out["review"] = "warn"
     elif any(e.get("findings") for e in files.values()):
         out["review"] = "remarks"
@@ -303,6 +305,8 @@ def compute_alerts(views: dict[str, str]) -> set[str]:
     alerts = {n for n in ("translation", "images") if views[n] == "fail"}
     if views["review"] == "warn":
         alerts.add("review")
+    elif views["review"] == "critical":
+        alerts.add("critical")
     # Editors have no Publish button, so without auto-publish only the admin can.
     if views.get("autopublish") == "unavailable":
         alerts.add("autopublish")
@@ -457,6 +461,9 @@ def render_review(data: dict | None, view: str) -> str:
     if view == "remarks":
         text = bi("💬 Παρατηρήσεις (συμβουλευτικές, δεν εμποδίζουν τη δημοσίευση):",
                   "Remarks (advice only, they don't block publishing):")
+    elif view == "critical":
+        text = bi("🔴 Κρίσιμη παρατήρηση: διάβασέ τη πριν δημοσιεύσεις. Δεν εμποδίζει τη δημοσίευση· ο διαχειριστής ενημερώθηκε.",
+                  "Critical remark: read it before publishing. It doesn't block publishing; the site admin has been notified.")
     else:
         text = bi("⚠️ Ο έλεγχος AI δεν μπόρεσε να ελέγξει κάποιο αρχείο. Δεν εμποδίζει τη δημοσίευση· ο διαχειριστής ενημερώθηκε.",
                   "The AI review could not check some file. It doesn't block publishing; the site admin has been notified.")
@@ -535,6 +542,9 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
     if views["review"] == "remarks":
         gr += " Δες πρώτα τις παρατηρήσεις του ελέγχου AI (προαιρετικό)."
         en += " Read the AI review remarks first (optional)."
+    elif views["review"] == "critical":
+        gr += " Πρώτα διάβασε την κρίσιμη παρατήρηση του ελέγχου AI (ενότητα 4) και διόρθωσε την ανάρτηση αν χρειάζεται."
+        en += " First read the AI review's critical remark (section 4) and correct the post if needed."
     elif views["review"] == "warn":
         gr += " Ο έλεγχος AI δεν έτρεξε, αλλά αυτό δεν εμποδίζει τη δημοσίευση."
         en += " The AI review did not run, but that doesn't block publishing."

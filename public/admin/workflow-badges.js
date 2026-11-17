@@ -1,5 +1,6 @@
-// Badges on the Workflow board: for each card, a link to its preview and the
-// state of its translation and checks, read from the card's pull request.
+// Badges on the Workflow board: for each card, a link to its preview, the
+// state of its translation and checks, and the AI review's result, read from
+// the card's pull request.
 //
 // Decap has no way to add things to its cards, so this script finds the cards
 // on the page and adds a row of badges to each. It depends on how Decap draws
@@ -83,6 +84,53 @@ export function checkState(check) {
   return ["PENDING", "EXPECTED"].includes(check.state) ? "pending" : "fail";
 }
 
+// The AI review's result, read from the status comment that pr_status.py keeps
+// on each pull request (#135). Its review section stores the result as
+// base64url JSON in a marker: <!-- pr-status:begin review <data> -->. The
+// comment keeps every file's latest result and drops files that left the PR.
+const STATUS_MARK = "<!-- pr-status -->";
+const REVIEW_RE = /<!-- pr-status:begin review ([A-Za-z0-9_=-]*) -->/;
+// GraphQL names the Actions bot "github-actions", REST "github-actions[bot]".
+const BOTS = ["github-actions", "github-actions[bot]"];
+export const SEVERITIES = ["critical", "major", "minor"];
+
+function decodeSection(text) {
+  const b64 = text.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = b64 + "=".repeat((4 - (b64.length % 4)) % 4);
+  const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+  return JSON.parse(new TextDecoder().decode(bytes)); // UTF-8: the remarks are in Greek
+}
+
+// What the AI review badge shows, from a pull request's comments (oldest
+// first): { state, count, url }, or null when nothing was reviewed yet.
+// state is the most serious remark ("critical", "major", "minor"), "ok" for
+// no remarks, or "error" when the review couldn't run; count is how many
+// remarks have that severity; url opens the status comment.
+export function reviewSummary(comments) {
+  const comment = [...comments]
+    .reverse()
+    .find((c) => BOTS.includes(c?.author?.login) && (c.body ?? "").includes(STATUS_MARK));
+  const match = comment && REVIEW_RE.exec(comment.body);
+  if (!match || !match[1]) return null;
+  let data;
+  try {
+    data = decodeSection(match[1]);
+  } catch {
+    return null;
+  }
+  const files = Object.values(data?.files ?? {}).filter((f) => f && typeof f === "object");
+  const findings = files.flatMap((f) => (Array.isArray(f.findings) ? f.findings : []));
+  // A remark without a known severity counts as minor, as in the comment.
+  const severity = (f) => (SEVERITIES.includes(f?.severity) ? f.severity : "minor");
+  const worstSeverity = SEVERITIES.find((s) => findings.some((f) => severity(f) === s));
+  const state = worstSeverity ?? (files.some((f) => f.error) ? "error" : "ok");
+  return {
+    state,
+    count: worstSeverity ? findings.filter((f) => severity(f) === worstSeverity).length : 0,
+    url: /^https:\/\/github\.com\//.test(comment.url ?? "") ? comment.url : null,
+  };
+}
+
 function worst(states) {
   if (states.includes("fail")) return "fail";
   if (states.includes("pending")) return "pending";
@@ -122,6 +170,8 @@ export function summarize(pr, required) {
     // Set when the editor moved the post to Ready: GitHub then publishes it
     // by itself once the required checks pass (see auto-publish.yml).
     autoMerge: Boolean(pr.autoMergeRequest),
+    // Advice only: never part of the Checks badge.
+    review: reviewSummary(pr.comments?.nodes ?? []),
   };
 }
 
@@ -133,6 +183,7 @@ const QUERY = `query ($owner: String!, $name: String!) {
         headRefName
         mergeStateStatus
         autoMergeRequest { enabledAt }
+        comments(last: 10) { nodes { url body author { login } } }
         commits(last: 1) { nodes { commit { statusCheckRollup { contexts(first: 50) { nodes {
           __typename
           ... on CheckRun { name status conclusion }
@@ -160,6 +211,14 @@ const TEXT = {
     fail: ["Checks ✗", "A check failed, so the post can't go live. Open Details."],
     conflict: ["Conflict ✗", "This edit conflicts with another change. Ask the web team."],
   },
+  // The AI review is advice only: none of these block publishing.
+  review: {
+    critical: ["critical", "The AI review found a critical problem. Read it before publishing and correct the post if needed. Click to open the remarks."],
+    major: ["major", "The AI review has important remarks. Read them before publishing. Click to open the remarks."],
+    minor: ["minor", "The AI review has small suggestions. Reading them is optional. Click to open the remarks."],
+    ok: ["AI review ✓", "The AI review has no remarks."],
+    error: ["AI review ?", "The AI review could not run. This doesn't block publishing."],
+  },
   auto: ["Goes live automatically", "This post is set to Ready. It goes live by itself as soon as all checks pass."],
   details: ["Details ↗", "Open the pull request on GitHub."],
 };
@@ -174,7 +233,10 @@ const STYLE = `
 a.ghr-badge:hover { text-decoration: underline; }
 .ghr-ok { background: #e3f4e8; color: #1d6b35; }
 .ghr-pending { background: #eceef3; color: #555b69; }
-.ghr-fail, .ghr-conflict { background: #fdece8; color: #b42318; }
+.ghr-fail, .ghr-conflict, .ghr-critical { background: #fdece8; color: #b42318; }
+.ghr-major { background: #fff0e0; color: #9a4a00; }
+.ghr-minor { background: #fdf6d3; color: #6f5300; }
+.ghr-error { background: #eceef3; color: #555b69; }
 .ghr-auto { background: #e6eefc; color: #1d4fbf; font-weight: 600; }
 .ghr-link { background: #e6eefc; color: #1d4fbf; }
 `;
@@ -190,6 +252,13 @@ function badge([text, title], kind, href) {
     el.rel = "noopener noreferrer";
   }
   return el;
+}
+
+// "AI review: 2 major", coloured by the most serious remark. It opens the
+// status comment, where the remarks are listed.
+export function reviewBadgeText(review) {
+  const [text, title] = TEXT.review[review.state];
+  return SEVERITIES.includes(review.state) ? [`AI review: ${review.count} ${text}`, title] : [text, title];
 }
 
 function renderRow(summary, card) {
@@ -208,6 +277,9 @@ function renderRow(summary, card) {
     badge(TEXT.preview[preview], preview, href),
     badge(TEXT.translation[summary.translation], summary.translation),
     badge(TEXT.checks[summary.checks], summary.checks),
+    ...(summary.review
+      ? [badge(reviewBadgeText(summary.review), summary.review.state, summary.review.url ?? summary.url)]
+      : []),
     ...(summary.autoMerge ? [badge(TEXT.auto, "auto")] : []),
     badge(TEXT.details, "link", summary.url),
   );

@@ -11,6 +11,8 @@ import {
   requiredChecks,
   checkState,
   summarize,
+  reviewSummary,
+  reviewBadgeText,
 } from "../../public/admin/workflow-badges.js";
 
 const ROOT = join(__dirname, "../..");
@@ -189,6 +191,7 @@ describe("workflow badges — what a card shows", () => {
       translation: "ok",
       checks: "ok",
       autoMerge: false,
+      review: null,
     });
   });
 
@@ -256,5 +259,106 @@ describe("workflow badges — what a card shows", () => {
   it("keeps the preview waiting until its status succeeds", () => {
     const building = [run("translate"), status("deploy/preview", "PENDING")];
     expect(summarize(pr(building), REQUIRED).preview).toEqual({ state: "pending", url: null });
+  });
+});
+
+// A review section exactly as pr_status.py writes it (urlsafe base64 with
+// padding): one Greek file with 2 major remarks and 1 minor, messages in Greek.
+const REAL_REVIEW_MARKER =
+  "<!-- pr-status:begin review eyJmaWxlcyI6eyJzcmMvY29udGVudC9uZXdzL2dyL8-AzqzPg8-HzrEubWQiOnsiZXJyb3IiOm51bGwsImZpbmRpbmdzIjpbeyJmaWVsZCI6InRpdGxlIiwibWVzc2FnZSI6Is6fIM-Ezq_PhM67zr_PgiDOtc6vzr3Osc65IM68zrXOs86szrvOv8-CIiwic2V2ZXJpdHkiOiJtYWpvciJ9LHsiZmllbGQiOiJib2R5IiwibWVzc2FnZSI6Is6czrnOus-Bzq4gz4DPgc-Mz4TOsc-DzrciLCJzZXZlcml0eSI6Im1pbm9yIn0seyJmaWVsZCI6ImJvZHkiLCJtZXNzYWdlIjoizpvOtc6vz4DOtc65IM63IM-Oz4HOsSIsInNldmVyaXR5IjoibWFqb3IifV0sInNoYSI6ImFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEifX0sInNoYSI6ImFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWEifQ== -->";
+const COMMENT_URL = "https://github.com/greek-house-rotterdam/ghrweb/pull/70#issuecomment-1";
+
+// The same encoding as pr_status.py: urlsafe base64 of the JSON.
+const marker = (data: object) =>
+  `<!-- pr-status:begin review ${Buffer.from(JSON.stringify(data)).toString("base64").replace(/\+/g, "-").replace(/\//g, "_")} -->`;
+const statusComment = (review: string, login = "github-actions", url = COMMENT_URL) => ({
+  url,
+  author: { login },
+  body: `<!-- pr-status -->\n\n## Κατάσταση της ανάρτησης / Post status\n\n${review}\nreview text\n<!-- pr-status:end review -->`,
+});
+const files = (...entries: object[]) => ({
+  files: Object.fromEntries(entries.map((e, i) => [`src/content/news/gr/${i}.md`, e])),
+  sha: "a",
+});
+const finding = (severity: string) => ({ severity, field: "body", message: "μήνυμα" });
+
+describe("workflow badges — AI review", () => {
+  it("reads a real status comment, Greek included", () => {
+    expect(reviewSummary([statusComment(REAL_REVIEW_MARKER)])).toEqual({
+      state: "major",
+      count: 2,
+      url: COMMENT_URL,
+    });
+  });
+
+  it("is coloured by the most serious remark and counts that kind", () => {
+    const review = (...severities: string[]) =>
+      reviewSummary([statusComment(marker(files({ error: null, findings: severities.map(finding) })))]);
+    expect(review("minor", "critical", "major", "critical")).toMatchObject({ state: "critical", count: 2 });
+    expect(review("minor", "major")).toMatchObject({ state: "major", count: 1 });
+    expect(review("minor", "minor")).toMatchObject({ state: "minor", count: 2 });
+    expect(review()).toMatchObject({ state: "ok", count: 0 });
+    // An unknown severity counts as minor, as in the status comment.
+    expect(review("odd")).toMatchObject({ state: "minor", count: 1 });
+  });
+
+  it("counts remarks across files", () => {
+    const data = files({ findings: [finding("major")] }, { findings: [finding("major"), finding("minor")] });
+    expect(reviewSummary([statusComment(marker(data))])).toMatchObject({ state: "major", count: 2 });
+  });
+
+  it("shows grey when the review couldn't run and found nothing", () => {
+    const data = files({ error: "Gemini 503", findings: [] });
+    expect(reviewSummary([statusComment(marker(data))])).toMatchObject({ state: "error" });
+    const mixed = files({ error: "Gemini 503", findings: [] }, { findings: [finding("minor")] });
+    expect(reviewSummary([statusComment(marker(mixed))])).toMatchObject({ state: "minor" });
+  });
+
+  it("shows no badge before the first review", () => {
+    expect(reviewSummary([])).toBeNull();
+    // The status comment exists but its review section is still empty.
+    expect(reviewSummary([statusComment("<!-- pr-status:begin review  -->")])).toBeNull();
+  });
+
+  it("reads only the bot's newest status comment", () => {
+    const old = statusComment(marker(files({ findings: [finding("critical")] })));
+    const now = statusComment(marker(files({ findings: [] })), "github-actions[bot]");
+    const human = statusComment(marker(files({ findings: [finding("critical")] })), "someone");
+    expect(reviewSummary([old, now, human])).toMatchObject({ state: "ok" });
+    expect(reviewSummary([human])).toBeNull();
+  });
+
+  it("shows no badge if the data can't be read", () => {
+    expect(reviewSummary([statusComment("<!-- pr-status:begin review not-json -->")])).toBeNull();
+  });
+
+  it("links only to GitHub", () => {
+    const evil = statusComment(marker(files({ findings: [] })), "github-actions", "https://evil.example/x");
+    expect(reviewSummary([evil])).toMatchObject({ url: null });
+  });
+
+  it("is part of what a card shows, and never changes the Checks badge", () => {
+    const withReview = {
+      ...pr(EDITOR_COMMIT),
+      comments: { nodes: [statusComment(marker(files({ findings: [finding("critical")] })))] },
+    };
+    const summary = summarize(withReview, REQUIRED);
+    expect(summary.review).toMatchObject({ state: "critical", count: 1 });
+    expect(summary.checks).toBe("ok");
+  });
+
+  it("says how many remarks of the most serious kind", () => {
+    expect(reviewBadgeText({ state: "major", count: 2, url: null })[0]).toBe("AI review: 2 major");
+    expect(reviewBadgeText({ state: "critical", count: 1, url: null })[0]).toBe("AI review: 1 critical");
+    expect(reviewBadgeText({ state: "ok", count: 0, url: null })[0]).toBe("AI review ✓");
+    expect(reviewBadgeText({ state: "error", count: 0, url: null })[0]).toBe("AI review ?");
+  });
+
+  it("asks GitHub for the comments and has a colour for every state", () => {
+    const source = readFileSync(join(ROOT, "public/admin/workflow-badges.js"), "utf-8");
+    expect(source).toContain("comments(last: 10) { nodes { url body author { login } } }");
+    for (const state of ["critical", "major", "minor", "ok", "error"]) {
+      expect(source).toMatch(new RegExp(`\\.ghr-${state}\\b[^{]*\\{`));
+    }
   });
 });

@@ -172,7 +172,7 @@ class TestRender:
         body = render(st, HEAD)
         assert "<details><summary>💬 <code>src/content/news/gr/x.md</code> (2)" in body
         assert body.index("CRITICAL") < body.index("MINOR")
-        assert "advice only" in body
+        assert "doesn't block publishing" in body
         # HTML inside <summary>: markdown backticks would show literally
         assert "(2) · <code>aaaaaaa</code></summary>" in body
 
@@ -315,6 +315,25 @@ class TestViews:
         }, "sha": HEAD})
         assert view_states(st, HEAD)["review"] == "warn"
         assert compute_alerts(view_states(st, HEAD)) == {"review"}
+
+    def test_a_critical_remark_tells_the_admins_but_does_not_block(self):
+        st = State()
+        apply_section(st, "review", review("src/content/news/gr/a.md", [
+            {"severity": "minor", "message": "m"}, {"severity": "critical", "message": "c"}]))
+        v = view_states(st, HEAD)
+        assert v["review"] == "critical"
+        assert compute_alerts(v) == {"critical"}
+        gr, en = next_step({**v, "translation": "ok", "images": "ok", "preview": "ok"})
+        assert gr.startswith("Έτοιμο") and "κρίσιμη παρατήρηση" in gr
+        assert "critical remark" in en
+        body = render(st, HEAD)
+        assert "Critical remark" in body and "doesn't block publishing" in body
+
+    def test_a_critical_remark_on_a_file_that_left_the_pr_is_dropped(self):
+        st = State()
+        apply_section(st, "review", review("src/content/news/gr/a.md", [{"severity": "critical"}]),
+                      pr_files=["src/content/news/gr/b.md"])
+        assert view_states(st, HEAD)["review"] == "ok"
 
 
 # ---------------------------------------------------------------------------
