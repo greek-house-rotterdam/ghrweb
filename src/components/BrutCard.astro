@@ -12,7 +12,7 @@
  */
 import type { HTMLAttributes } from "astro/types";
 
-type Props = HTMLAttributes<"div"> & {
+type Props = HTMLAttributes<"div"> & HTMLAttributes<"a"> & {
   href?: string;
   variant?: "rule" | "slab";
 };
