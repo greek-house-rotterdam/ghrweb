@@ -2,7 +2,7 @@
 title: Cooking Workshops
 emoji: 🍲
 image: /images/activity-cooking.jpg
-order: 70
+order: 170
 lang: en
 source_hash: 'e158c2bf763b'
 translation_hash: 'fe88bc60ed64'

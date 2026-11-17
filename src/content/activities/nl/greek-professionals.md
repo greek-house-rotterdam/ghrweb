@@ -2,7 +2,7 @@
 title: Greek Professionals Networking
 emoji: 🤝
 image: /images/activity-greek-professionals.jpg
-order: 90
+order: 150
 lang: nl
 source_hash: '89f2f0971214'
 translation_hash: '483ab1e604c2'

@@ -2,7 +2,7 @@
 title: Nederlandse les
 emoji: 🇳🇱
 image: /images/activity-dutch-classes.jpg
-order: 40
+order: 60
 lang: nl
 source_hash: '5531bdd87be0'
 translation_hash: 'e9f3e6771332'

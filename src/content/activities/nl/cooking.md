@@ -2,7 +2,7 @@
 title: Kookworkshops
 emoji: 🍲
 image: /images/activity-cooking.jpg
-order: 70
+order: 170
 lang: nl
 source_hash: 'e158c2bf763b'
 translation_hash: 'f32c63314a0f'
