@@ -105,7 +105,8 @@ A Dutch or English file exists without its Greek file, usually after something w
 ## Code rules that protect editors
 
 - Pages and components read `news`, `activities`, `resources` and `faq` through `getVisible()`, never `getCollection()` (a test enforces it).
-- The header and footer link News only while there is a post in that language (`hasNews()` in `src/lib/visible.ts`; `visible.test.ts` enforces it). Menu order and footer columns were agreed with the managers on 2026-11-17: no "Home" item on desktop (the logo leads home), FAQ in the top menu, gold header, blue footer.
+- The header and footer link News only while there is a post in that language (`hasNews()` in `src/lib/visible.ts`; `visible.test.ts` enforces it). Menu order and footer columns were agreed with the managers on 2026-11-17: no "Home" item on desktop (the logo leads home), FAQ in the top menu, white header, blue footer. (A gold header was tried the same day; the managers preferred white, and the yellow logo also disappeared on gold.)
+- The home page hero shows the association's logo (`vvgn-logo.png`) and "The cultural group of the Association of Greeks in the Netherlands" (`home.hero.union`), linking to About. The managers asked for it so the link between the Greek House and the association stays visible. The badge is transparent around its ring text, so it sits on a white disc.
 - Tests that read real content check its shape, never its current values (#88, #90 broke such tests).
 - `ui.ts` changes need all three languages.
 - **Raised = clickable, flat = read (#122).** Only links and buttons have the hard offset shadow and press in. `<BrutCard href=…>` is a link card; without `href` it is static: `variant="rule"` (default, cards in grids) or `variant="slab"` (one framed, tinted box with a thick left bar). Never wrap a card in your own `<a>`. `cards.test.ts` enforces this.

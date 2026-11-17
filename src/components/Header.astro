@@ -26,7 +26,7 @@ const navItems = [
 const mobileItems = [{ href: `/${lang}`, label: t(lang, "nav.home") }, ...navItems];
 ---
 
-<header class="sticky top-0 z-50 border-b-4 border-black bg-accent-gold">
+<header class="sticky top-0 z-50 border-b-4 border-black bg-white/95 backdrop-blur-sm">
   <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
     <a href={`/${lang}`} class="inline-block border-2 border-black">
       <img
@@ -42,7 +42,7 @@ const mobileItems = [{ href: `/${lang}`, label: t(lang, "nav.home") }, ...navIte
       {navItems.map((item) => (
         <a
           href={item.href}
-          class="px-3 py-2 text-sm font-bold uppercase tracking-wide text-black hover:bg-white transition-colors"
+          class="px-3 py-2 text-sm font-bold uppercase tracking-wide text-black hover:bg-accent-gold transition-colors"
         >
           {item.label}
         </a>
@@ -60,7 +60,7 @@ const mobileItems = [{ href: `/${lang}`, label: t(lang, "nav.home") }, ...navIte
 
       {/* Mobile menu — Starwind Sheet */}
       <Sheet class="lg:hidden">
-        <SheetTrigger class="border-2 border-black bg-white p-2 shadow-[3px_3px_0_0_#000] hover:bg-accent-gold-light hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all motion-reduce:transition-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary">
+        <SheetTrigger class="border-2 border-black p-2 shadow-[3px_3px_0_0_#000] hover:bg-accent-gold hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] active:shadow-none active:translate-x-[3px] active:translate-y-[3px] transition-all motion-reduce:transition-none focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-primary">
           <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
