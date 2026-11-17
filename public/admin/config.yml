@@ -177,7 +177,7 @@ collections:
   # ── Activities ────────────────────────────────────────────────────
 
   - name: activities-gr
-    label: "Δραστηριότητες (Ελληνικά)"
+    label: "Δράσεις (Ελληνικά)"
     # No Publish button: Ready is the only way to publish (auto-publish waits
     # for translations and checks). The admin account may skip the ruleset,
     # so its Publish could merge before the translations exist.

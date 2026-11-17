@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { parse as parseYaml } from "yaml";
+import { t, type UIKey } from "../i18n/ui";
 
 const ROOT = join(__dirname, "../..");
 const config = parseYaml(
@@ -532,4 +533,21 @@ describe("Decap CMS config — Greek / English labels and hints", () => {
       }
     }
   });
+});
+
+// Editors see these names in /admin (Collections, Workflow). They must match
+// the site's own page names, e.g. «Δράσεις», not «Δραστηριότητες».
+describe("Decap CMS config — Greek collection names match the site", () => {
+  const PAGE_NAME: Record<(typeof CONTENT_TYPES)[number], UIKey> = {
+    news: "nav.news",
+    "event-translations": "nav.events",
+    activities: "activities.title",
+    faq: "faq.title",
+    resources: "resources.title",
+  };
+  for (const type of CONTENT_TYPES) {
+    it(`${type}-gr is labelled with the site's page name`, () => {
+      expect(getCollection(type, "gr").label).toBe(`${t("gr", PAGE_NAME[type])} (Ελληνικά)`);
+    });
+  }
 });
