@@ -1,0 +1,93 @@
+---
+/**
+ * A row of cards that scrolls sideways, like the rows on a streaming site.
+ *
+ * - Phones: swipe. Each card is 80% wide, so part of the next one shows.
+ * - Larger screens: two arrow buttons next to the heading scroll by the cards
+ *   in view. They stay hidden until the script runs and the row is wider than
+ *   the screen, so nobody sees buttons that do nothing.
+ * - It never moves by itself. The cards are links, so Tab walks through them
+ *   and the browser scrolls each one into view. The thin scrollbar stays as a
+ *   fallback.
+ *
+ * Put the heading in the "heading" slot and the cards straight inside; each
+ * card becomes one stop. The math lives in src/lib/card-row.ts (tested).
+ */
+import BrutButton from "./BrutButton.astro";
+import { t } from "../i18n/ui";
+import type { Lang } from "../i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+// A disabled arrow is flat (raised = clickable, #122). aria-disabled, not
+// disabled, so keyboard focus stays on the button at the end of the row.
+const arrow =
+  "bg-white text-black hover:bg-accent-gold aria-disabled:pointer-events-none aria-disabled:opacity-40 aria-disabled:shadow-none";
+---
+
+<div data-card-row>
+  <div class="flex items-end justify-between gap-4">
+    <slot name="heading" />
+    <div data-arrows hidden class="hidden shrink-0 gap-3 sm:flex">
+      <BrutButton type="button" size="sm" data-prev aria-disabled="true" aria-label={t(lang, "row.scroll-left")} class={arrow}>←</BrutButton>
+      <BrutButton type="button" size="sm" data-next aria-label={t(lang, "row.scroll-right")} class={arrow}>→</BrutButton>
+    </div>
+  </div>
+  {/*
+    The inner space (p-2, pulled back with -m-2) keeps the cards' shadow,
+    hover press and focus outline from being cut off by the scrolling box.
+  */}
+  <div class="mt-8">
+    <div
+      data-track
+      class="-m-2 flex snap-x snap-mandatory scroll-px-2 gap-6 overflow-x-auto overscroll-x-contain p-2 pb-4 [scrollbar-width:thin] [&>*]:w-[80%] [&>*]:shrink-0 [&>*]:snap-start sm:[&>*]:w-[45%] lg:[&>*]:w-[30%]"
+    >
+      <slot />
+    </div>
+  </div>
+</div>
+
+<script>
+  import { arrowState, scrollStep } from "../lib/card-row";
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  for (const row of document.querySelectorAll<HTMLElement>("[data-card-row]")) {
+    const track = row.querySelector<HTMLElement>("[data-track]");
+    const arrows = row.querySelector<HTMLElement>("[data-arrows]");
+    const prev = row.querySelector<HTMLElement>("[data-prev]");
+    const next = row.querySelector<HTMLElement>("[data-next]");
+    if (!track || !arrows || !prev || !next) continue;
+
+    const update = () => {
+      const state = arrowState(track.scrollLeft, track.scrollWidth, track.clientWidth);
+      arrows.hidden = !state.show;
+      prev.setAttribute("aria-disabled", String(state.atStart));
+      next.setAttribute("aria-disabled", String(state.atEnd));
+    };
+
+    const scroll = (button: HTMLElement, direction: 1 | -1) => {
+      if (button.getAttribute("aria-disabled") === "true") return;
+      const card = track.firstElementChild as HTMLElement | null;
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      const step = scrollStep(track.clientWidth, card?.offsetWidth ?? track.clientWidth, gap);
+      track.scrollBy({ left: direction * step, behavior: reduceMotion.matches ? "auto" : "smooth" });
+    };
+
+    prev.addEventListener("click", () => scroll(prev, -1));
+    next.addEventListener("click", () => scroll(next, 1));
+    // Tab onto a card that is off to the side: bring it into view. Browsers
+    // don't all do this inside a row that stops on each card.
+    track.addEventListener("focusin", (event) => {
+      const card = [...track.children].find((child) => child.contains(event.target as Node));
+      card?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduceMotion.matches ? "auto" : "smooth" });
+    });
+    track.addEventListener("scroll", update, { passive: true });
+    new ResizeObserver(update).observe(track);
+    update();
+  }
+</script>

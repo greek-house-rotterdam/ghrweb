@@ -9,6 +9,7 @@ import { entryPath } from "../../lib/entry-path";
 import BrutButton from "../../components/BrutButton.astro";
 import { descriptionOrExcerpt } from "../../lib/excerpt";
 import EventCard from "../../components/EventCard.astro";
+import CardRow from "../../components/CardRow.astro";
 import { nextEvents, splitEvents, toListEvents } from "../../lib/event-list";
 
 export const getStaticPaths = getStaticLangPaths;
@@ -21,19 +22,20 @@ const news = allNews
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-// The 3 soonest upcoming events, soonest first like the events page.
+// All upcoming events, soonest first like the events page. They show in a row
+// that scrolls sideways (CardRow).
 const [ttEvents, overlays] = await Promise.all([
   getCollection("events"),
   getCollection("eventTranslations"),
 ]);
 const { upcoming } = splitEvents(toListEvents(ttEvents, overlays, lang), new Date());
-const events = nextEvents(upcoming, 3);
+const events = nextEvents(upcoming, upcoming.length);
 
-// The first 3 activities in the order editors set (the `order` field).
+// All visible activities, in the order editors set (the `order` field). They
+// show in a row that scrolls sideways (CardRow).
 const activities = (await getVisible("activities"))
   .filter((a) => a.data.lang === lang)
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <Layout title={t(lang, "home.hero.title")} lang={lang}>
@@ -105,10 +107,10 @@ const activities = (await getVisible("activities"))
   {events.length > 0 && (
   <section class="border-y-4 border-black bg-accent-gold-lighter py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h2 class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
-      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <CardRow lang={lang}>
+        <h2 slot="heading" class="text-3xl font-extrabold text-black">{t(lang, "home.upcoming-events")}</h2>
         {events.map((event) => <EventCard event={event} lang={lang} />)}
-      </div>
+      </CardRow>
       <div class="mt-8">
         <BrutButton href={`/${lang}/events`} size="sm" class="bg-white text-black hover:bg-accent-gold">
           {t(lang, "events.all")} →
@@ -118,12 +120,12 @@ const activities = (await getVisible("activities"))
   </section>
   )}
 
-  {/* Activities: the first 3, then a link to all (hidden while there are none) */}
+  {/* Activities: all of them in a sideways-scrolling row, then a link to the page (hidden while there are none) */}
   {activities.length > 0 && (
   <section class="border-b-4 border-black py-16">
     <div class="mx-auto max-w-7xl px-4">
-      <h2 class="text-3xl font-extrabold text-black">{t(lang, "activities.title")}</h2>
-      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <CardRow lang={lang}>
+        <h2 slot="heading" class="text-3xl font-extrabold text-black">{t(lang, "activities.title")}</h2>
         {activities.map((activity) => (
           <BrutCard href={entryPath("activities", activity)} class="p-6 bg-white">
             {activity.data.emoji && <span class="text-4xl">{activity.data.emoji}</span>}
@@ -134,7 +136,7 @@ const activities = (await getVisible("activities"))
             )}
           </BrutCard>
         ))}
-      </div>
+      </CardRow>
       <div class="mt-8">
         <BrutButton href={`/${lang}/activities`} size="sm" class="bg-white text-black hover:bg-accent-gold">
           {t(lang, "activities.all")} →
