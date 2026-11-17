@@ -44,6 +44,16 @@ Decision D9: the home welcome, the About mission, the membership categories and 
 
 If an existing translation uses an off-glossary name and the Greek didn't change, the bot won't redo it. Correct the file and recompute its `translation_hash` with `translate.compute_source_hash` (see #96), or delete the translation file in a pull request, and the bot writes it again.
 
+### Links inside content texts
+
+Write links to pages of the site in Greek, as editors do: `[επικοινωνήστε μαζί μας](/gr/contact)`. The bot copies links unchanged, so the Dutch and English files also say `/gr/contact`. That is fine: when the site is built, a step in Astro's Markdown processing (`src/lib/localize-links.ts`, set in `astro.config.mjs`) rewrites the language at the start of every internal link to the language of the file's folder. A Dutch page links to `/nl/contact`, an English page to `/en/contact`. This works because an entry has the same file name and `url_slug` in all three languages.
+
+- It rewrites only Markdown links that start with `/gr`, `/nl` or `/en`. External links, image paths (`/images/…`), anchors (`#…`) and raw HTML `<a>` tags stay as written.
+- Nothing changes in the content files, so `translation_hash` and hand-corrected translations are not affected.
+- To link to a page in another language on purpose, write the full address (`https://ghrweb.enosi-ellinon-ollandias.workers.dev/gr/contact`): full addresses are left alone.
+- Tests: `src/__tests__/localize-links.test.ts`, which renders through the processor set in `astro.config.mjs`.
+- `@astrojs/markdown-satteri` is a direct dependency only for this step. Keep it at exactly the version `astro` itself depends on, so only one copy is installed (`npm ls @astrojs/markdown-satteri`). Upgrade both together; the same test fails when they differ.
+
 ### A translation the bot keeps or flags
 
 - Hand-corrected translations (text ≠ `translation_hash`) are kept when the Greek changes, and flagged in the status comment.
