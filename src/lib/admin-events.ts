@@ -66,10 +66,10 @@ export const EVENT_FIELD = "tt_event_id";
 
 export const PICK_HINT =
   "Διάλεξε την εκδήλωση· γράψε μέρος του ονόματος για να τη βρεις. Αν δεν είναι στη λίστα, δεν είναι ακόμα ούτε " +
-  "στη σελίδα «Εκδηλώσεις»: δημοσίευσέ τη στο Ticket Tailor, περίμενε λίγα λεπτά και ξαναφόρτωσε το /admin. " +
+  "στη σελίδα «Εκδηλώσεις»: δημοσίευσέ τη στο Ticket Tailor, περίμενε λίγα λεπτά (το αργότερο ως το επόμενο πρωί) και ξαναφόρτωσε το /admin. " +
   "Η εκδήλωση δεν αλλάζει αργότερα: για άλλη εκδήλωση, φτιάξε νέα καταχώρηση. / " +
   "Pick the event; type part of its name to find it. If it isn't in the list, it isn't on the Events page yet " +
-  "either: publish it in Ticket Tailor, wait a few minutes and reload /admin. The event can't be changed later: " +
+  "either: publish it in Ticket Tailor, wait a few minutes (until the next morning at the latest) and reload /admin. The event can't be changed later: " +
   "for another event, create a new entry.";
 
 interface Field {
