@@ -2,7 +2,7 @@
 title: Theater Workshop – Improv
 emoji: 🤹
 image: /images/activity-theatre-improv.jpg
-order: 50
+order: 80
 lang: en
 source_hash: 'd9ee2e25293e'
 translation_hash: 'd56614d12020'

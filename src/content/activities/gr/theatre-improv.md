@@ -1,8 +1,8 @@
 ---
-title: "Θεατρικό Εργαστήρι – improv"
-emoji: "🤹"
+title: Θεατρικό Εργαστήρι – improv
+emoji: 🤹
 image: /images/activity-theatre-improv.jpg
-order: 50
+order: 80
 lang: gr
 ---
 
