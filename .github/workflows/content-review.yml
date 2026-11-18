@@ -3,12 +3,21 @@ name: Content Review
 # Runs on every save, drafts included. "opened" reviews all content in the PR;
 # each later push reviews only the files it changed (see below). Label changes
 # carry no push, so a "labeled" run had nothing to review.
+#
+# Two results:
+# - The `review` job: advice. It shows the remarks in the PR's status comment
+#   and fails when the review couldn't run, so an outage is never green. It is
+#   not a required check.
+# - The `ai-gate` commit status: required by the `main-protected` ruleset. It
+#   fails while a critical remark remains, so the post can't go live, even when
+#   it's set to Ready; it passes otherwise, also when the review couldn't run.
+#
+# Runs on every pull request, not only on content: `ai-gate` is required, so
+# a pull request that changes no content must still get one (it passes).
 on:
   pull_request:
     branches: [main]
     types: [opened, synchronize]
-    paths:
-      - "src/content/**/*.md"
 
 # One review per PR at a time: a newer save cancels the review still running
 # for the previous one. (Updates to the status comment don't depend on this:
@@ -20,6 +29,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: write
+  statuses: write  # the ai-gate status
 
 # Used by pr_status.py, which puts the review into the PR's one status comment
 # and @-mentions the admins when the review couldn't run.
@@ -31,7 +41,8 @@ env:
 
 jobs:
   review:
-    # Only run on PRs from the same repository
+    # Only run on PRs from the same repository. A fork's PR gets no ai-gate
+    # (its token can't post one), so it waits for the admin, who merges it.
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
@@ -39,16 +50,6 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Install dependencies
-        run: uv export --no-hashes | uv pip install --system -r -
 
       - name: Find changed content files
         id: changed
@@ -67,7 +68,8 @@ jobs:
             # A newer push cancels an in-progress review (see `concurrency`),
             # so also re-review the PR's human-authored files (no source_hash;
             # auto-translations carry one): the cancelled push's files are
-            # then not lost. Re-posting replaces the earlier comment per file.
+            # then not lost, and ai-gate always sees the current Greek text.
+            # Re-posting replaces the earlier comment per file.
             echo "New push: reviewing files in ${{ github.event.before }}..${{ github.event.after }} plus the PR's source files"
             {
               git diff --name-only --diff-filter=ACM ${{ github.event.before }}..${{ github.event.after }} -- 'src/content/' | grep '\.md$' || true
@@ -84,12 +86,43 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
+      # The reviewer, its guides and the gate come from main, not from the
+      # branch: Decap drafts are never rebased, so a draft made before a rule
+      # changed would otherwise keep the old rule, and a pull request can't
+      # change the rules it is reviewed by. If main's copy can't be read, the
+      # branch's copy is used.
+      - name: Take the reviewer and the gate from main
+        id: main
+        run: |
+          set -o pipefail
+          DIR="$RUNNER_TEMP/main"
+          mkdir -p "$DIR"
+          if git archive origin/main .github/scripts docs/content-style-guide.md docs/tone-and-voice-guidelines.md | tar -x -C "$DIR"; then
+            echo "scripts=$DIR/.github/scripts" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning title=Content Review::Could not read main's reviewer; using this branch's copy."
+          fi
+
+      - uses: actions/setup-python@v6
+        if: steps.changed.outputs.has_changes == 'true'
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        if: steps.changed.outputs.has_changes == 'true'
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install dependencies
+        if: steps.changed.outputs.has_changes == 'true'
+        run: uv export --no-hashes | uv pip install --system -r -
+
       - name: Run AI content review
         if: steps.changed.outputs.has_changes == 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           REVIEW_OUTPUT: /tmp/content-review.json
-        run: xargs -d '\n' python .github/scripts/content_review.py < /tmp/changed_content.txt
+          SCRIPTS: ${{ steps.main.outputs.scripts || '.github/scripts' }}
+        run: xargs -d '\n' python "$SCRIPTS/content_review.py" < /tmp/changed_content.txt
 
       # !cancelled(): the review step fails when a file couldn't be reviewed,
       # and that must still reach the status comment. A review cancelled by a
@@ -102,3 +135,51 @@ jobs:
         run: |
           python3 .github/scripts/pr_status.py review --sha "$(git rev-parse HEAD)" \
             --reviewed /tmp/changed_content.txt --results /tmp/content-review.json
+
+      # ai-gate, the required check: posted on this run's commit and, when the
+      # translation bot has already pushed on top of it, on the bot's commit
+      # too, because GitHub checks the PR's newest commit. In the other order
+      # (the bot pushes after this step), the verify job in translate.yml
+      # copies ai-gate to the bot's commit. !cancelled(): a review that failed
+      # still reports (it passes); a superseded run doesn't, the next one does.
+      - name: Hold the post on a critical remark (ai-gate)
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_SHA: ${{ github.event.pull_request.head.sha }}
+          SCRIPTS: ${{ steps.main.outputs.scripts }}
+        run: |
+          GATE=.github/scripts/ai_gate.py
+          if [ -n "$SCRIPTS" ] && [ -f "$SCRIPTS/ai_gate.py" ]; then GATE="$SCRIPTS/ai_gate.py"; fi
+          if [ -f "$GATE" ]; then
+            # A crash here lets the post through, like a review that couldn't run.
+            RESULT=$(python3 "$GATE" --reviewed /tmp/changed_content.txt --results /tmp/content-review.json) \
+              || { echo "::warning title=ai-gate::The gate script failed; the post isn't held."; RESULT=$(printf 'success\tThe AI gate failed, so the post is not held'); }
+          else
+            RESULT=$(printf 'success\tNo AI gate on this branch')
+          fi
+          IFS=$'\t' read -r STATE DESCRIPTION <<< "$RESULT"
+          echo "ai-gate: $STATE ($DESCRIPTION)"
+
+          post() {
+            for attempt in 1 2 3; do
+              if gh api "repos/$REPO/statuses/$1" -f state="$STATE" -f context=ai-gate \
+                   -f description="$DESCRIPTION" -f target_url="$RUN_URL" --silent; then
+                echo "Posted ai-gate=$STATE on $1"
+                return 0
+              fi
+              sleep $((attempt * 5))
+            done
+            return 1
+          }
+
+          post "$RUN_SHA"
+          HEAD_SHA=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq .head.sha || true)
+          if [ -n "$HEAD_SHA" ] && [ "$HEAD_SHA" != "$RUN_SHA" ]; then
+            # Only the bot's commit made on top of this one: a newer save has
+            # its own run.
+            ON_TOP=$(gh api "repos/$REPO/commits/$HEAD_SHA" --jq '"\(.parents[0].sha) \(.commit.author.name)"' || true)
+            if [ "$ON_TOP" = "$RUN_SHA github-actions[bot]" ]; then
+              post "$HEAD_SHA"
+            fi
+          fi

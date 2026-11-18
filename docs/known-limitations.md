@@ -110,9 +110,25 @@ Since 2026-11-15 the tests that read the real content (`src/__tests__/site-setti
 
 It isn't a required check, and the same test runs again after translation, in the `content-tests` job: that's the result that counts. To turn `test-python` green, push one more commit after the bot's, one that changes no existing Greek text: the run checks the whole pull request again. Editors' pull requests change no code, so they never hit this. First seen on #139.
 
+### The AI gate lets a post through when the review can't run
+
+`ai-gate` holds a post only for a critical finding the review actually reported. If Gemini is down, the key is wrong, or the review crashes, `ai-gate` passes, so an outage never stops every post. The `review` job goes red and the status comment mentions the admins, but a post set to Ready goes live unchecked.
+
+### A private phone number or address holds the post
+
+The rules count an individual's private phone number or home address as critical, so an event post with "call Maria at 06-…" is held until the number is removed or the admin publishes it. Whether posts may include organisers' contact details is an open question for the managers (#135). The association's own contacts, a venue's address and a business's public website are fine.
+
+### Pull requests without `ai-gate` wait
+
+GitHub requires `ai-gate` on a pull request's newest commit. A pull request that was already open when `ai-gate` became required, or one from a fork (its token can't post statuses), has none and waits ("Expected"). A new save starts a review that posts it; the admin can also merge it by hand.
+
+### The AI decides what's critical, and can be wrong both ways
+
+The gate is only as good as the review. A false alarm holds a post until the editor rephrases it or the admin publishes it; a missed problem goes live. The admin is mentioned on every critical finding.
+
 ### Translations aren't reviewed separately
 
-Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text.
+Content Review only reviews the files in the editor's own commits. The bot's commit gets the same result carried over ("translations not separately reviewed"), so the AI never reviews the generated Dutch and English text. The same goes for `ai-gate`: it reflects the Greek text, and a hand-corrected translation only in the save that changed it.
 
 ### Taking a post down: hide it, don't delete it
 
@@ -137,7 +153,8 @@ When an editor sets a post to Ready, the PR gets the label `decap-cms/pending_pu
 
 Each content PR has one status comment (`.github/scripts/pr_status.py`) with Translation, Images, Preview, AI review, Publishing (whether auto-publish is on) and a next step. PRs that change no content, no images and no site settings (`src/data/`) get none.
 
-- **The AI review badge on the Workflow card reads this comment** (#135). If the comment is missing, or more than 10 comments were added after it, the card shows no AI review badge. The badge is advice only, like the review: even a red one doesn't block publishing.
+- **The AI review badge on the Workflow card reads this comment** (#135). If the comment is missing, or more than 10 comments were added after it, the card shows no AI review badge. The badge shows the remarks; what holds a post is the `ai-gate` check, which the Checks badge shows as «Held ✗».
+- **A draft made before the AI gate shows the old texts in its status comment** ("doesn't block publishing") even while `ai-gate` holds it, because each branch runs its own copy of `pr_status.py`. The card's «Held ✗» and the `ai-gate` check are right; the comment's texts update only on a branch made after the change.
 - **A draft made before #135 shows the old texts and doesn't mention the admins on a critical finding** until its next save in `/admin`, because each branch runs its own copy of `pr_status.py`. Its badge still shows the right colour.
 
 - **Edits don't notify.** GitHub's docs don't say whether an @mention added by editing a comment notifies, so the pipeline never relies on it. When a failure appears that the admins haven't been told about, the comment is re-created (new one first, then the old one deleted) with a `cc @admins` line: a new comment notifies the mentioned admins and emails the PR author. While the failure persists, later updates edit the comment in place and don't notify again. If the failure goes away and comes back, it notifies again. The comment's link changes when this happens.

@@ -131,6 +131,10 @@ export function reviewSummary(comments) {
   };
 }
 
+// The required check that holds a post while the AI review has a critical
+// remark (content-review.yml, ai_gate.py).
+export const GATE = "ai-gate";
+
 function worst(states) {
   if (states.includes("fail")) return "fail";
   if (states.includes("pending")) return "pending";
@@ -157,6 +161,10 @@ export function summarize(pr, required) {
   // check may not have started yet, so we can't see it; GitHub's own merge
   // state can, and a blocked pull request is never shown as ready.
   let state = worst(others.map(checkState));
+  // When only ai-gate failed, the post is held by a critical AI remark: say
+  // so, instead of a plain failed check.
+  const failed = others.filter((c) => checkState(c) === "fail");
+  if (failed.length && failed.every((c) => checkName(c) === GATE)) state = "held";
   if (pr.mergeStateStatus === "DIRTY") state = "conflict";
   else if (state === "ok" && ["BLOCKED", "UNKNOWN"].includes(pr.mergeStateStatus)) state = "pending";
 
@@ -170,7 +178,8 @@ export function summarize(pr, required) {
     // Set when the editor moved the post to Ready: GitHub then publishes it
     // by itself once the required checks pass (see auto-publish.yml).
     autoMerge: Boolean(pr.autoMergeRequest),
-    // Advice only: never part of the Checks badge.
+    // The remarks themselves, from the status comment. A critical one also
+    // holds the post through ai-gate, which the Checks badge shows.
     review: reviewSummary(pr.comments?.nodes ?? []),
   };
 }
@@ -210,10 +219,12 @@ const TEXT = {
     pending: ["Checks …", "Checks are still running. The post can go live only after they pass."],
     fail: ["Checks ✗", "A check failed, so the post can't go live. Open Details."],
     conflict: ["Conflict ✗", "This edit conflicts with another change. Ask the web team."],
+    held: ["Held ✗", "The AI review found a critical problem, so the post can't go live until it's corrected. Read it under «AI review», correct the post and save."],
   },
-  // The AI review is advice only: none of these block publishing.
+  // Only a critical remark holds the post (the Checks badge says «Held»); the
+  // others are advice.
   review: {
-    critical: ["critical", "The AI review found a critical problem. Read it before publishing and correct the post if needed. Click to open the remarks."],
+    critical: ["critical", "The AI review found a critical problem. The post won't go live until it's corrected. Click to open the remarks."],
     major: ["major", "The AI review has important remarks. Read them before publishing. Click to open the remarks."],
     minor: ["minor", "The AI review has small suggestions. Reading them is optional. Click to open the remarks."],
     ok: ["AI review ✓", "The AI review has no remarks."],
@@ -233,7 +244,7 @@ const STYLE = `
 a.ghr-badge:hover { text-decoration: underline; }
 .ghr-ok { background: #e3f4e8; color: #1d6b35; }
 .ghr-pending { background: #eceef3; color: #555b69; }
-.ghr-fail, .ghr-conflict, .ghr-critical { background: #fdece8; color: #b42318; }
+.ghr-fail, .ghr-conflict, .ghr-held, .ghr-critical { background: #fdece8; color: #b42318; }
 .ghr-major { background: #fff0e0; color: #9a4a00; }
 .ghr-minor { background: #fdf6d3; color: #6f5300; }
 .ghr-error { background: #eceef3; color: #555b69; }
@@ -280,7 +291,8 @@ function renderRow(summary, card) {
     ...(summary.review
       ? [badge(reviewBadgeText(summary.review), summary.review.state, summary.review.url ?? summary.url)]
       : []),
-    ...(summary.autoMerge ? [badge(TEXT.auto, "auto")] : []),
+    // A held post doesn't go live by itself until it's corrected.
+    ...(summary.autoMerge && summary.checks !== "held" ? [badge(TEXT.auto, "auto")] : []),
     badge(TEXT.details, "link", summary.url),
   );
   return row;

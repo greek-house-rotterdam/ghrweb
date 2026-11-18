@@ -13,15 +13,29 @@ editor saves in /admin ─► pull request (cms/<collection>/<slug>)
                            ├─ translate.yml: deletions, translations, image shrinking, verify,
                            │                 content tests, tidy (deletes the bot's held runs),
                            │                 preview (waits for Cloudflare's build, posts the link)
-                           ├─ content-review.yml: advisory AI review
+                           ├─ content-review.yml: AI review (advice) and ai-gate (holds a
+                           │                      post with a critical remark)
                            └─ Cloudflare: preview build (required check "Workers Builds: ghrweb")
 editor sets Ready ─► auto-publish.yml turns on auto-merge ─► merged ─► Cloudflare deploys main
 ```
 
-- Required checks on `main` (ruleset `main-protected`): `translate`, `verify`, `Workers Builds: ghrweb`.
+- Required checks on `main` (ruleset `main-protected`): `translate`, `verify`, `Workers Builds: ghrweb`, `ai-gate`.
+- Only the admin (you) can bypass the ruleset: its bypass list has the organisation admins and the `admins` team. Keep it that way. Editors are in the `editors` team, with write access and no bypass.
 - Content pull requests need no approval. Code pull requests need the developer's approval (decision D6, CODEOWNERS).
 - Every pull request gets one status comment. Failures mention `ADMIN_MENTIONS` (repository variable, default `@PanoEvJ`).
+- **`ai-gate` holds a post with a critical AI remark** (see "The AI gate" below).
 - **Never commit content straight to `main`.** No workflow runs on a direct push: no translations, no checks. Deleting a published entry in Decap does exactly that, which is why `/admin` has no Delete button (see "Removing content" below).
+
+### The AI gate (`ai-gate`)
+
+A post the AI review finds a critical problem in can't go live, even when it's set to Ready. Critical means: harmful, hateful or discriminatory content, profanity, a private individual's phone number or home address, spam or scam links, investment advice, or content clearly unrelated to the association. Political and commercial content, and naming people, are not critical. The rules are the prompt in `.github/scripts/content_review.py` and the severity table in `docs/content-style-guide.md`; keep the two in line.
+
+- `content-review.yml` runs on every pull request. After the review, it posts the commit status `ai-gate`, decided by `.github/scripts/ai_gate.py`: failure while a critical finding remains, success otherwise. A pull request that changes no content gets success.
+- **It never blocks on an outage.** If the review can't run, `ai-gate` passes; the `review` job goes red and the status comment mentions the admins.
+- **main's rules, for every draft.** The workflow takes `content_review.py`, `ai_gate.py` and the two guides from `origin/main` (with `git archive`), not from the branch. Decap drafts are never rebased, so an old draft is still reviewed by today's rules, and a pull request can't change the rules it's reviewed by. The status comment still comes from the branch's `pr_status.py`.
+- **On the bot's commit too.** GitHub checks a pull request's newest commit, usually the translation bot's, where no review runs. The review job posts `ai-gate` on the bot's commit if it already exists; otherwise the `verify` job copies `ai-gate` from the editor's commit (after up to 60 seconds of waiting). One of the two always does it.
+- **The card and the comment.** The Workflow card's Checks badge says «Held ✗» when `ai-gate` is the only failed check, and drops «Goes live automatically». The status comment's next step says the post is held.
+- **Changing the rules** takes effect for every open draft at its next save, once merged to `main`.
 
 ## Content
 
@@ -98,6 +112,14 @@ From `nightly-rebuild.yml` (03:17 UTC). A production build didn't go live within
 
 From the `content-tests` job (#95). A test that reads the real content failed on a pull request. It doesn't block publishing. Usually a test expects today's values: make it check the content's shape instead. Close the issue when fixed.
 
+### A post is held by a critical AI remark
+
+The status comment mentions you, and the card shows «Held ✗». Nothing is live. Open the pull request and read the remark in section 4.
+
+- **The AI is right:** nothing to do. The editor corrects the post and saves; when the review passes, the post goes live by itself if it's set to Ready. Help the editor if they ask.
+- **The AI is wrong:** publish it yourself. First check that `translate`, `verify` and `Workers Builds: ghrweb` passed, because bypassing skips every check. Then, on the pull request, use "Merge without waiting for requirements to be met (bypass rules)". Only you can. If the same false alarm comes back, change the rules (see "The AI gate").
+- **A pull request that stays "Expected — waiting for ai-gate":** its newest commit has no `ai-gate`, for example a pull request that was open when `ai-gate` became required, or one from a fork. Save the post again (or push a commit) to start a new review, or merge it yourself.
+
 ### "Workflows awaiting approval" on a pull request
 
 Should no longer appear: the `tidy` job deletes the bot's own held runs within about 2 minutes (#94). If one remains, ignore or delete it. Never approve runs from forks.
@@ -155,7 +177,7 @@ Editors pick the event from a dropdown; they never type an ID.
 - Every label, hint and validation message in `/admin` is Greek, then ` / `, then English (`admin.test.ts` checks it). Decap's own buttons stay in English: its Greek translation is poor ("Saving…" becomes «Εξοικονόμηση…») and the editor guide names the English buttons.
 - The membership page has no application form, on purpose (#115): the managers send the form to people who get in touch. `membership.test.ts` fails if a Google Form link appears in the code or the site settings. Ask the managers before changing this.
 - Keep `/admin` without Delete and Publish buttons (`delete: false`, `publish: false`; tests enforce both). Your account may skip the ruleset, so either button would bypass the translations and checks. Publish with Ready, like editors; in an emergency, merge on GitHub.
-- The Workflow card badges come from `public/admin/workflow-badges.js` (tests in `src/__tests__/workflow-badges.test.ts`). The "AI review" badge (#135) reads the review section of the PR's status comment, the base64url JSON in `<!-- pr-status:begin review … -->`. If you change that section's format in `pr_status.py`, update `reviewSummary()` too. The AI review stays advice only: a critical finding mentions the admins but doesn't block publishing.
+- The Workflow card badges come from `public/admin/workflow-badges.js` (tests in `src/__tests__/workflow-badges.test.ts`). The "AI review" badge (#135) reads the review section of the PR's status comment, the base64url JSON in `<!-- pr-status:begin review … -->`. If you change that section's format in `pr_status.py`, update `reviewSummary()` too. Major and minor findings are advice only. A critical finding mentions the admins and holds the post through `ai-gate`; the card then shows «Held ✗» (`GATE` in the script must match the status name).
 - The «Οδηγός / Guide» link in `/admin`'s top bar, on every page, comes from `public/admin/guide-link.js` (tests in `src/__tests__/guide-link.test.ts`, which run in `happy-dom`, a browser imitation used only by tests). It depends on Decap's layout: after any Decap upgrade, check that it sits in the top bar of Contents, Workflow and an open entry. If it shows as a button in the bottom-right corner there, the script no longer finds the bar.
 - `/admin` shows only «Draft» and «Ready». `public/admin/hide-in-review.js` (tests in `src/__tests__/hide-in-review.test.ts`) hides Decap's «In Review» status, which nothing here uses: the middle column of the Workflow board, and «In review» in an entry's Status menu. Decap has no setting for its statuses, so the script finds them by their English text, and `config.yml` must keep Decap's interface in English. A post already labelled `decap-cms/pending_review` keeps its column, so it never vanishes from the board. After any Decap upgrade, check the Workflow board and an entry's Status menu: if «In Review» shows with nothing in it, the script no longer finds it.
 - `/admin` starts Decap by hand (`window.CMS_MANUAL_INIT`), after `public/admin/open-own-language.js` patches the GitHub backend. Without it, reopening a translated draft opens the English file, because Decap opens the alphabetically first `.md` file on the branch (#126). The patch depends on Decap internals: after any Decap upgrade, reopen a translated draft and check that the Greek shows.
