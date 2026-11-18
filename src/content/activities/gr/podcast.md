@@ -1,8 +1,8 @@
 ---
-title: "Podcast – Η Καντίνα μας"
-emoji: "🎙️"
+title: Podcast – Η Καντίνα μας
+emoji: 🎙️
 image: /images/activity-podcast.jpg
-order: 210
+order: 60
 lang: gr
 ---
 
