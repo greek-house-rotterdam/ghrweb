@@ -1,7 +1,7 @@
 ---
 title: Photography Classes
 emoji: 📷
-order: 190
+order: 220
 lang: en
 source_hash: 'cab9a3ecf167'
 translation_hash: 'f882d26a73ba'
