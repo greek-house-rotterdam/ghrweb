@@ -2,7 +2,7 @@
 title: Theatre Workshop – scripted
 emoji: 🎭
 image: /images/activity-theatre-workshop.jpg
-order: 40
+order: 70
 lang: en
 source_hash: '886febd18ce4'
 translation_hash: '680fa85e2d0d'
