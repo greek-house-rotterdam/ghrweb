@@ -3,7 +3,7 @@ title: Biz Bizé
 emoji: ☕
 image: /images/activity-biz-bize.jpg
 schedule: Every Saturday, 14:00 – 16:00
-order: 200
+order: 50
 lang: en
 source_hash: '187978039212'
 translation_hash: '99ce7f58a150'

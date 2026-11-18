@@ -1,9 +1,9 @@
 ---
 title: Μπιζ Μπιζέ
-emoji: "☕"
+emoji: ☕
+schedule: Κάθε Σάββατο, 14:00 – 16:00
 image: /images/activity-biz-bize.jpg
-schedule: "Κάθε Σάββατο, 14:00 – 16:00"
-order: 200
+order: 50
 lang: gr
 ---
 
