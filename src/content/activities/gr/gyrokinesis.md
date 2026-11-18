@@ -1,8 +1,8 @@
 ---
-title: "GYROKINESIS® movement method"
-emoji: "🤸"
+title: GYROKINESIS® movement method
+emoji: 🤸
 image: /images/activity-gyrokinesis.jpg
-order: 100
+order: 140
 hidden: true
 lang: gr
 ---
