@@ -4,10 +4,10 @@ emoji: 🎭
 image: /images/activity-theatre-workshop.jpg
 order: 40
 lang: nl
-source_hash: 'ed7a578f7ca7'
-translation_hash: 'aa05585e3b80'
+source_hash: '886febd18ce4'
+translation_hash: '225d05361436'
 ---
 
-Het eerste volledig Griekstalige podium van Nederland! Theatergroep «Παρακμή» werd opgericht in 2022. Een hechte groep die dromen omzet in rollen en je uitnodigt om je uit te drukken, te spelen en de acteur in jezelf te ontdekken.
+Het eerste volledig Griekstalige podium van Nederland! Theatergroep “Parakmi” werd opgericht in november 2021. Een hechte groep die dromen omzet in rollen en je uitnodigt om jezelf te uiten, te spelen en de acteur in jezelf te ontdekken.
 
-Het begint met een tekst en wordt theater. Kom ontdekken hoe een geschreven stuk verandert in een levendige voorstelling! Samen gaan we verdiepen, onderzoeken en creëren, en krijg je de kans om mee te doen aan professionele artistieke projecten.
+Het begint met een tekst en groeit uit tot theater. Kom je ontdekken hoe een geschreven stuk tot leven komt op de planken? Samen gaan we bestuderen, onderzoeken en creëren, en krijg je de kans om mee te doen aan professionele artistieke projecten.
