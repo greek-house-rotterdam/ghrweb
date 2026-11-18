@@ -259,3 +259,42 @@ def test_check_run_mode_skips_when_a_newer_save_moved_the_head():
     out = sync_from_check_run("o/r", "7", HEAD, gh_for_old_sha, wait_s=60, sleep=clock.sleep, clock=clock)
     assert out.startswith("skip: preview is for")
     assert gh.posts == []
+
+
+# ---------------------------------------------------------------------------
+# Keeping the admins' "cc" line
+# ---------------------------------------------------------------------------
+
+
+def test_the_link_update_keeps_the_admin_mention(monkeypatch):
+    """Every write re-renders the whole status comment: without the admins,
+    adding the preview link dropped the "cc @admins" line (seen on #176)."""
+    import preview_status
+    import pr_status
+
+    seen = {}
+
+    def fake_update(api, name, data, **kwargs):
+        seen.update(kwargs, name=name)
+        return "ok"
+
+    monkeypatch.setattr(pr_status, "update", fake_update)
+    monkeypatch.setattr(preview_status, "sync", lambda repo, pr, body, gh, show: show("a" * 40, "https://x"))
+    monkeypatch.setenv("REPO", "o/r")
+    monkeypatch.setenv("PR_NUMBER", "7")
+    monkeypatch.setenv("COMMENT_BODY", "")
+    monkeypatch.setenv("ADMIN_MENTIONS", "@admin")
+    assert preview_status.main([]) == 0
+    assert seen["name"] == "preview" and seen["mentions"] == "@admin"
+
+
+def test_every_workflow_that_writes_the_status_comment_names_the_admins():
+    from pathlib import Path
+
+    workflows = Path(__file__).resolve().parents[2] / "workflows"
+    writers = [w for w in sorted(workflows.glob("*.yml"))
+               if "pr_status.py" in w.read_text(encoding="utf-8")
+               or "preview_status.py" in w.read_text(encoding="utf-8")]
+    assert writers, "no workflow writes the status comment?"
+    for w in writers:
+        assert "ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}" in w.read_text(encoding="utf-8"), w.name
