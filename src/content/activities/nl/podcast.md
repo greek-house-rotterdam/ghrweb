@@ -2,7 +2,7 @@
 title: Podcast – Η Καντίνα μας
 emoji: 🎙️
 image: /images/activity-podcast.jpg
-order: 210
+order: 60
 lang: nl
 source_hash: '6eb8497ef36c'
 translation_hash: 'b2267efaca24'
