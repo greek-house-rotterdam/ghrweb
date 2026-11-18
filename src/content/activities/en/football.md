@@ -2,7 +2,7 @@
 title: Football in Rotterdam
 emoji: ⚽
 image: /images/activity-football.jpg
-order: 120
+order: 130
 lang: en
 source_hash: '7a9481453eff'
 translation_hash: '969d0a6131a6'

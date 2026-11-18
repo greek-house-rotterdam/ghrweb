@@ -1,8 +1,8 @@
 ---
 title: Ποδόσφαιρο στο Ρότερνταμ
-emoji: "⚽"
+emoji: ⚽
 image: /images/activity-football.jpg
-order: 120
+order: 130
 lang: gr
 ---
 
