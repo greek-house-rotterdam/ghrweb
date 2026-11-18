@@ -2,7 +2,7 @@
 title: Koor voor traditionele muziek
 emoji: 🎶
 image: /images/activity-choir.jpg
-order: 140
+order: 160
 lang: nl
 source_hash: '87b0411230cb'
 translation_hash: '805841d1e6fe'

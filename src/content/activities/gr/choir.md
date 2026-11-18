@@ -1,8 +1,8 @@
 ---
 title: Χορωδία παραδοσιακής μουσικής
-emoji: "🎶"
+emoji: 🎶
 image: /images/activity-choir.jpg
-order: 140
+order: 160
 lang: gr
 ---
 

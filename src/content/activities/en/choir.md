@@ -2,7 +2,7 @@
 title: Traditional Music Choir
 emoji: 🎶
 image: /images/activity-choir.jpg
-order: 140
+order: 160
 lang: en
 source_hash: '87b0411230cb'
 translation_hash: '0b2b031c2c80'
