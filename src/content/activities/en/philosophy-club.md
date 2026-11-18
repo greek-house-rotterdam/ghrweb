@@ -2,7 +2,7 @@
 title: Philosophy Club
 emoji: 💭
 image: /images/activity-philosophy-club.jpg
-order: 70
+order: 90
 lang: en
 source_hash: '5bb9c8afd652'
 translation_hash: 'afaeaac231bf'

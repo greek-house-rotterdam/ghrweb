@@ -1,8 +1,8 @@
 ---
 title: Λέσχη Φιλοσοφίας
-emoji: "💭"
+emoji: 💭
 image: /images/activity-philosophy-club.jpg
-order: 70
+order: 90
 lang: gr
 ---
 
