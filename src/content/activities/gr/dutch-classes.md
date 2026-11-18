@@ -1,8 +1,8 @@
 ---
 title: Μαθήματα Ολλανδικών
-emoji: "🇳🇱"
+emoji: 🇳🇱
 image: /images/activity-dutch-classes.jpg
-order: 60
+order: 40
 lang: gr
 ---
 
