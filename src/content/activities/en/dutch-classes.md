@@ -2,7 +2,7 @@
 title: Dutch Lessons
 emoji: 🇳🇱
 image: /images/activity-dutch-classes.jpg
-order: 60
+order: 40
 lang: en
 source_hash: '5531bdd87be0'
 translation_hash: '54ea811bb7e5'
