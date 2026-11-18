@@ -1,8 +1,8 @@
 ---
 title: Μόδα και Λιχουδιές
-emoji: "👗"
+emoji: 👗
 image: /images/activity-fashion-and-treats.jpg
-order: 180
+order: 210
 lang: gr
 ---
 
