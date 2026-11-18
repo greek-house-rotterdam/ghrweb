@@ -1,8 +1,8 @@
 ---
 title: Επιτραπέζια παιχνίδια
-emoji: "🎲"
+emoji: 🎲
 image: /images/activity-board-games.jpg
-order: 110
+order: 100
 lang: gr
 ---
 
