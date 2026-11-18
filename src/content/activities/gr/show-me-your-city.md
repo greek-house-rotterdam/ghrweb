@@ -1,8 +1,8 @@
 ---
 title: Δείξε μου την πόλη σου
-emoji: "🗺️"
+emoji: 🗺️
 image: /images/activity-show-me-your-city.jpg
-order: 160
+order: 170
 lang: gr
 ---
 
