@@ -10,7 +10,9 @@ Each workflow reports its own part and this script rewrites only that part:
     events       translate.yml (verify job): which event a Greek event text is
                  for, shown only on PRs that change one (#105)
     preview     preview-status.yml: the Cloudflare preview link
-    review       content-review.yml: the AI review, notes per file
+    review       content-review.yml: the AI review, notes per file. A critical
+                 note also holds the post: the workflow's ai-gate check
+                 (ai_gate.py) fails until it's corrected
     autopublish  auto-publish.yml: is the post set to go live by itself (C1)
 
 Once the translations exist, the translation section also links to GitHub's
@@ -292,7 +294,7 @@ def view_states(state: State, head: str | None) -> dict[str, str]:
     )
     files = s.get("review", {}).get("files", {})
     if any(f.get("severity") == "critical" for e in files.values() for f in e.get("findings") or []):
-        out["review"] = "critical"  # advice only, but the admins are told (#135)
+        out["review"] = "critical"  # holds the post (ai-gate), and the admins are told
     elif any(e.get("error") for e in files.values()):
         out["review"] = "warn"
     elif any(e.get("findings") for e in files.values()):
@@ -522,8 +524,8 @@ def render_review(data: dict | None, view: str) -> str:
         text = bi("💬 Παρατηρήσεις (συμβουλευτικές, δεν εμποδίζουν τη δημοσίευση):",
                   "Remarks (advice only, they don't block publishing):")
     elif view == "critical":
-        text = bi("🔴 Κρίσιμη παρατήρηση: διάβασέ τη πριν δημοσιεύσεις. Δεν εμποδίζει τη δημοσίευση· ο διαχειριστής ενημερώθηκε.",
-                  "Critical remark: read it before publishing. It doesn't block publishing; the site admin has been notified.")
+        text = bi("🔴 Κρίσιμη παρατήρηση: η ανάρτηση κρατιέται και δεν δημοσιεύεται μέχρι να διορθωθεί. Ο διαχειριστής ενημερώθηκε.",
+                  "Critical remark: the post is held and won't go live until it's corrected. The site admin has been notified.")
     else:
         text = bi("⚠️ Ο έλεγχος AI δεν μπόρεσε να ελέγξει κάποιο αρχείο. Δεν εμποδίζει τη δημοσίευση· ο διαχειριστής ενημερώθηκε.",
                   "The AI review could not check some file. It doesn't block publishing; the site admin has been notified.")
@@ -581,6 +583,14 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
                            "στην κάρτα της και φτιάξ' την ξανά, διαλέγοντας την εκδήλωση από τη λίστα· ο διαχειριστής ενημερώθηκε και θα βοηθήσει.")
         problems_en.append("The entry isn't linked to an event correctly (see \"Event\"): in /admin → Workflow, click \"Delete changes\" "
                            "on its card and create it again, choosing the event from the list; the site admin has been told and will help.")
+    if views["review"] == "critical":
+        # The ai-gate check holds the post, even when it's set to Ready.
+        problems_gr.append("🔴 Η ανάρτηση κρατιέται: ο έλεγχος AI βρήκε κρίσιμο πρόβλημα (ενότητα 4). Διόρθωσε την ανάρτηση στο /admin "
+                           "και πάτα «Save»· όταν ο έλεγχος περάσει, δημοσιεύεται μόνη της αν είναι στο Ready. "
+                           "Αν ο έλεγχος κάνει λάθος, ο διαχειριστής ενημερώθηκε και μπορεί να τη δημοσιεύσει.")
+        problems_en.append("The post is held: the AI review found a critical problem (section 4). Correct the post in /admin "
+                           "and click Save; once the review passes, it goes live by itself if it's set to Ready. "
+                           "If the AI is wrong, the site admin has been told and can publish it.")
     if problems_gr:
         return " ".join(problems_gr), " ".join(problems_en)
 
@@ -608,9 +618,6 @@ def next_step(views: dict[str, str]) -> tuple[str, str]:
     if views["review"] == "remarks":
         gr += " Δες πρώτα τις παρατηρήσεις του ελέγχου AI (προαιρετικό)."
         en += " Read the AI review remarks first (optional)."
-    elif views["review"] == "critical":
-        gr += " Πρώτα διάβασε την κρίσιμη παρατήρηση του ελέγχου AI (ενότητα 4) και διόρθωσε την ανάρτηση αν χρειάζεται."
-        en += " First read the AI review's critical remark (section 4) and correct the post if needed."
     elif views["review"] == "warn":
         gr += " Ο έλεγχος AI δεν έτρεξε, αλλά αυτό δεν εμποδίζει τη δημοσίευση."
         en += " The AI review did not run, but that doesn't block publishing."

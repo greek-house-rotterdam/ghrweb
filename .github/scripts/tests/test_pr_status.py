@@ -179,7 +179,7 @@ class TestRender:
         body = render(st, HEAD)
         assert "📄 <code>src/content/news/gr/x.md</code> (2) · <code>aaaaaaa</code>" in body
         assert body.index("CRITICAL") < body.index("MINOR")
-        assert "doesn't block publishing" in body
+        assert "the post is held" in body
 
     def test_review_section_has_no_fold(self):
         # Editors missed remarks hidden in a <details> fold: keep them visible.
@@ -380,18 +380,36 @@ class TestViews:
         assert view_states(st, HEAD)["review"] == "warn"
         assert compute_alerts(view_states(st, HEAD)) == {"review"}
 
-    def test_a_critical_remark_tells_the_admins_but_does_not_block(self):
+    def test_a_critical_remark_holds_the_post_and_tells_the_admins(self):
         st = State()
         apply_section(st, "review", review("src/content/news/gr/a.md", [
             {"severity": "minor", "message": "m"}, {"severity": "critical", "message": "c"}]))
         v = view_states(st, HEAD)
         assert v["review"] == "critical"
         assert compute_alerts(v) == {"critical"}
-        gr, en = next_step({**v, "translation": "ok", "images": "ok", "preview": "ok"})
-        assert gr.startswith("Έτοιμο") and "κρίσιμη παρατήρηση" in gr
-        assert "critical remark" in en
+        for auto in ("on", "off", "unknown"):
+            gr, en = next_step({**v, "translation": "ok", "images": "ok", "preview": "ok", "autopublish": auto})
+            assert gr.startswith("🔴 Η ανάρτηση κρατιέται") and "Έτοιμο" not in gr
+            assert en.startswith("The post is held") and "can publish it" in en
         body = render(st, HEAD)
-        assert "Critical remark" in body and "doesn't block publishing" in body
+        assert "Critical remark: the post is held" in body
+        assert "doesn't block publishing" not in body
+
+    def test_a_critical_remark_is_listed_with_other_problems(self):
+        st = State()
+        apply_section(st, "review", review("src/content/news/gr/a.md", [{"severity": "critical", "message": "c"}]))
+        v = {**view_states(st, HEAD), "translation": "ok", "images": "fail", "preview": "ok"}
+        gr, en = next_step(v)
+        assert "Αντικατάστησε την εικόνα" in gr and "κρατιέται" in gr
+        assert "Replace the image" in en and "The post is held" in en
+
+    def test_major_remarks_still_do_not_hold_the_post(self):
+        st = State()
+        apply_section(st, "review", review("src/content/news/gr/a.md", [{"severity": "major", "message": "m"}]))
+        v = {**view_states(st, HEAD), "translation": "ok", "images": "ok", "preview": "ok", "autopublish": "on"}
+        gr, en = next_step(v)
+        assert gr.startswith("Έτοιμο") and en.startswith("Ready")
+        assert "don't block publishing" in render(st, HEAD)
 
     def test_a_critical_remark_on_a_file_that_left_the_pr_is_dropped(self):
         st = State()

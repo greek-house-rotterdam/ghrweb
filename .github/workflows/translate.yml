@@ -262,7 +262,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read        # checkout
-      statuses: write       # translate/verify/review statuses on the bot commit
+      statuses: write       # translate/verify/review/ai-gate statuses on the bot commit
       pull-requests: write  # the status comment (pr_status.py)
     steps:
       - uses: actions/checkout@v5
@@ -347,6 +347,30 @@ jobs:
           # re-triggering on the bot's commit. Carry forward the conclusion from
           # the parent (human-authored) commit instead of synthesizing success.
           PARENT_SHA=$(gh api "repos/$REPO/commits/$NEW_SHA" --jq '.parents[0].sha')
+
+          # ai-gate, required: holds a post with a critical AI remark. Content
+          # Review posts it on the parent, and on this commit if it finishes
+          # after this one exists. If it finished first, copy it here. Poll
+          # briefly; if it's still running, it posts here itself.
+          GATE=""
+          for attempt in 1 2 3 4 5 6; do
+            GATE=$(gh api "repos/$REPO/commits/$PARENT_SHA/status" \
+              --jq '[.statuses[] | select(.context=="ai-gate")][0] // empty | "\(.state)\t\(.description)"' || true)
+            if [ -n "$GATE" ]; then
+              break
+            fi
+            echo "No ai-gate on $PARENT_SHA yet (attempt $attempt) — waiting 10s..."
+            sleep 10
+          done
+          if [ -n "$GATE" ]; then
+            IFS=$'\t' read -r GATE_STATE GATE_DESCRIPTION <<< "$GATE"
+            gh api "repos/$REPO/statuses/$NEW_SHA" \
+              -f state="$GATE_STATE" \
+              -f context=ai-gate \
+              -f description="$GATE_DESCRIPTION"
+          else
+            echo "No ai-gate on $PARENT_SHA yet: Content Review posts it on $NEW_SHA when it finishes."
+          fi
 
           # Content Review runs in parallel with this workflow — poll briefly.
           for attempt in 1 2 3 4 5 6; do

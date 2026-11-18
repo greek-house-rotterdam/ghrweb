@@ -247,6 +247,34 @@ describe("workflow badges — what a card shows", () => {
     expect(summarize(pr(checks, "UNSTABLE"), null).checks).toBe("fail");
   });
 
+  it("says the post is held when only ai-gate failed", () => {
+    const held = [...EDITOR_COMMIT, status("ai-gate", "FAILURE")];
+    expect(summarize(pr(held, "BLOCKED"), [...REQUIRED, "ai-gate"]).checks).toBe("held");
+    // On the translation bot's commit, where ai-gate is copied as a status.
+    expect(summarize(pr([...BOT_COMMIT, status("ai-gate", "FAILURE")], "BLOCKED"), [...REQUIRED, "ai-gate"]).checks).toBe("held");
+  });
+
+  it("says a check failed when another required check failed too", () => {
+    const checks = [...EDITOR_COMMIT.filter((c) => c.__typename !== "CheckRun" || c.name !== "verify"),
+      run("verify", "COMPLETED", "FAILURE"), status("ai-gate", "FAILURE")];
+    expect(summarize(pr(checks, "BLOCKED"), [...REQUIRED, "ai-gate"]).checks).toBe("fail");
+  });
+
+  it("waits for ai-gate like any required check", () => {
+    const checks = [...EDITOR_COMMIT, status("ai-gate", "PENDING")];
+    expect(summarize(pr(checks, "BLOCKED"), [...REQUIRED, "ai-gate"]).checks).toBe("pending");
+    expect(summarize(pr([...EDITOR_COMMIT, status("ai-gate")]), [...REQUIRED, "ai-gate"]).checks).toBe("ok");
+  });
+
+  it("names the gate as the required check does, and drops «Goes live automatically» while held", () => {
+    const source = readFileSync(join(ROOT, "public/admin/workflow-badges.js"), "utf-8");
+    expect(source).toContain('export const GATE = "ai-gate";');
+    expect(source).toContain('summary.autoMerge && summary.checks !== "held"');
+    expect(source).toMatch(/\.ghr-held\b[^{]*\{/);
+    const workflow = readFileSync(join(ROOT, ".github/workflows/content-review.yml"), "utf-8");
+    expect(workflow).toContain("context=ai-gate");
+  });
+
   it("shows a conflict", () => {
     expect(summarize(pr(EDITOR_COMMIT, "DIRTY"), REQUIRED).checks).toBe("conflict");
   });
@@ -337,7 +365,7 @@ describe("workflow badges — AI review", () => {
     expect(reviewSummary([evil])).toMatchObject({ url: null });
   });
 
-  it("is part of what a card shows, and never changes the Checks badge", () => {
+  it("is part of what a card shows; the hold comes from ai-gate, not from the comment", () => {
     const withReview = {
       ...pr(EDITOR_COMMIT),
       comments: { nodes: [statusComment(marker(files({ findings: [finding("critical")] })))] },

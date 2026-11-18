@@ -20,9 +20,14 @@ from _common import GeminiClient, parse_markdown
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-STYLE_GUIDE = Path("docs/content-style-guide.md").read_text(encoding="utf-8")
+# The guides next to this script, not in the current folder: the review
+# workflow runs main's copy of this script and its guides on every pull
+# request, so a draft made before a rule changed is reviewed by the new rules.
+ROOT = Path(__file__).resolve().parents[2]
 
-_TONE_PATH = Path("docs/tone-and-voice-guidelines.md")
+STYLE_GUIDE = (ROOT / "docs/content-style-guide.md").read_text(encoding="utf-8")
+
+_TONE_PATH = ROOT / "docs/tone-and-voice-guidelines.md"
 TONE_GUIDELINES = _TONE_PATH.read_text(encoding="utf-8") if _TONE_PATH.exists() else ""
 
 SYSTEM_PROMPT = f"""You are a content reviewer for the Greek House in Rotterdam website.
@@ -39,7 +44,21 @@ Important:
 - Be practical, not pedantic. Only flag real issues.
 - Do NOT flag grammar or spelling — that's handled by translators.
 - Do NOT flag content that is simply short — brevity is fine.
-- DO flag harmful, discriminatory, political, or commercial content (critical).
+- Critical means the post is HELD: it can't go live until it's corrected. Use it
+  only for content that must not appear on the site:
+  - harmful, hateful or discriminatory content, profanity or slurs;
+  - personal data of a private individual: a private phone number or home address;
+  - spam or scam: links to suspicious or unrelated sites, phishing, "click here to win";
+  - investment advice: tips to buy, sell or hold stocks, crypto or other investments;
+  - off-topic content, clearly unrelated to the association, its activities, Greek
+    culture or the Greek community (for example stock-market news).
+- Political statements and commercial promotion are major, not critical: they don't hold the post.
+- Naming people is fine. Community stories may name members, volunteers, artists,
+  speakers or Greek entrepreneurs in the Netherlands, and say what they do or have
+  achieved. Don't flag names. A story about a person or their business is on topic;
+  flag it (major) only when it reads as an advertisement.
+- Contact details of the association, of a venue, or a business's public website are
+  not personal data.
 - DO flag missing event details like date/time/location (major).
 - DO flag tone issues — overly formal, distant, exclusionary, or shouty language (minor).
 - The content may be in Greek, Dutch, or English. Apply the same rules regardless of language.
