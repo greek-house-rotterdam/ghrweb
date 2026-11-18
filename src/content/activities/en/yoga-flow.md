@@ -2,7 +2,7 @@
 title: Yoga Flow
 emoji: 🧘
 image: /images/activity-yoga-flow.jpg
-order: 130
+order: 150
 lang: en
 source_hash: '0f92c7595ff4'
 translation_hash: '2200159a65ad'

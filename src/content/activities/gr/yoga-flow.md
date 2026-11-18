@@ -1,8 +1,8 @@
 ---
 title: Yoga Flow
-emoji: "🧘"
+emoji: 🧘
 image: /images/activity-yoga-flow.jpg
-order: 130
+order: 150
 lang: gr
 ---
 
