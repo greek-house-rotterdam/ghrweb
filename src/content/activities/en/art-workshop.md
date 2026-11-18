@@ -1,7 +1,7 @@
 ---
 title: Visual Arts Workshop
 emoji: 🎨
-order: 80
+order: 180
 lang: en
 source_hash: 'f70c12f2eaf1'
 translation_hash: '7344e679d0e4'

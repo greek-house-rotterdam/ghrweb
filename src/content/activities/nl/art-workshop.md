@@ -1,7 +1,7 @@
 ---
 title: Workshop Beeldende Kunst
 emoji: 🎨
-order: 80
+order: 180
 lang: nl
 source_hash: 'f70c12f2eaf1'
 translation_hash: 'eec6aa413ee2'
