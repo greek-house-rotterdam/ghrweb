@@ -2,7 +2,7 @@
 title: Board Games
 emoji: 🎲
 image: /images/activity-board-games.jpg
-order: 110
+order: 100
 lang: en
 source_hash: 'be6d3d6cecb2'
 translation_hash: 'f93e3a60ea68'
