@@ -208,8 +208,11 @@ def main(argv: list[str] | None = None) -> int:
 
     def show_link(head: str, url: str) -> str:
         data = {"state": "ok", "sha": head, "url": url, "run": pr_status.run_stamp()}
+        # Pass the admins too: every write re-renders the whole comment, and
+        # without them it would drop the "cc" line another job put there.
         return pr_status.update(
             pr_status.Api(repo, pr, run_gh), "preview", data,
+            mentions=os.environ.get("ADMIN_MENTIONS", ""),
             run_url=os.environ.get("RUN_URL", ""),
         )
 

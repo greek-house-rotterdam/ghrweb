@@ -47,5 +47,7 @@ jobs:
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.issue.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          # Keeps the status comment's "cc @admins" line when it rewrites it.
+          ADMIN_MENTIONS: ${{ vars.ADMIN_MENTIONS || '@PanoEvJ' }}
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: python .github/scripts/preview_status.py
