@@ -2,7 +2,7 @@
 title: Voetbal in Rotterdam
 emoji: ⚽
 image: /images/activity-football.jpg
-order: 120
+order: 130
 lang: nl
 source_hash: '7a9481453eff'
 translation_hash: '7c4013fe4b29'
