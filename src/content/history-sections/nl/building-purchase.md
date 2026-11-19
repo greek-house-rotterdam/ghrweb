@@ -2,16 +2,22 @@
 order: 400
 title: 1961 — De aankoop van het pand aan de Van Vollenhovenstraat
 lang: nl
-source_hash: 'ac5ae734be75'
-translation_hash: '2db83397f258'
+source_hash: '7bc73799abed'
+translation_hash: '1f022e95539c'
 ---
 
-![Het gebouw van de Vereniging sinds 1961, aan de Van Vollenhovenstraat 18](/images/eeo-building-1961.jpg)
+![Het pand van de Vereniging sinds 1961, aan de Van Vollenhovenstraat 18](/images/timeline-1961.jpg)
 
-Op **20 september 1961** kocht de Vereniging het drielaagse pand aan de Van Vollenhovenstraat 18, vlak bij de kerk.
+*Het pand van de Vereniging sinds 1961, aan de Van Vollenhovenstraat 18.*
 
-Hier werden de kantoren gevestigd en tegelijkertijd diende het pand als woning voor de priester. De begane grond fungeert al tientallen jaren als ontmoetingsruimte voor de leden van de Vereniging en de parochianen.
+Op **20 september 1961** kocht de Vereniging het pand van drie verdiepingen aan de Van Vollenhovenstraat 18, vlak bij de kerk.
+
+Hier werden de kantoren gevestigd en tegelijkertijd diende het gebouw als woning voor de dienstdoende priester. De begane grond doet al tientallen jaren dienst als ontmoetingsruimte voor de leden van de Vereniging en de parochianen.
+
+![De ingang van het pand, met de Griekse vlag en het naambord van de Vereniging](/images/eeo-building-1961.jpg)
+
+*De ingang van het pand, met de Griekse vlag en het naambord van de Vereniging.*
 
 ## De school verhuist (1965–1971)
 
-De ontmoetingsruimte werd in de periode 1965–1971 omgetoverd tot school, met de komst van de eerste docent die op verzoek van het bestuur door de Griekse staat werd gedetacheerd.
+De ontmoetingsruimte werd in de periode 1965–1971 omgevormd tot school, met de komst van de eerste leerkracht die op verzoek van het bestuur door de Griekse staat werd uitgezonden.

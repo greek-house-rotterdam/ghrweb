@@ -2,9 +2,13 @@
 order: 200
 title: 1957 — De bouw van de Heilige Nicolaaskerk
 lang: nl
-source_hash: '3d6b0a2af50e'
-translation_hash: '346f943f17af'
+source_hash: 'e314fe4616f6'
+translation_hash: '95ad700ec5eb'
 ---
+
+![De Heilige Nicolaaskerk](/images/timeline-1957.jpg)
+
+*De Heilige Nicolaaskerk.*
 
 De kerk, gebouwd in Byzantijnse basilicastijl en gewijd aan de beschermheilige van alle zeelieden, werd ingewijd op **29 juni 1957**.
 

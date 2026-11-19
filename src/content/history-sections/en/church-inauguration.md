@@ -1,12 +1,16 @@
 ---
 order: 200
-title: 1957 — The Construction of Saint Nicholas Church
+title: 1957 — The Construction of the Church of Saint Nicholas
 lang: en
-source_hash: '3d6b0a2af50e'
-translation_hash: '5aab524883e9'
+source_hash: 'e314fe4616f6'
+translation_hash: '247f6d174aeb'
 ---
 
-Built in a Byzantine basilica style and dedicated to the patron saint of seafarers, the church was inaugurated on **29 June 1957**.
+![The Church of Saint Nicholas](/images/timeline-1957.jpg)
+
+*The Church of Saint Nicholas.*
+
+Built in the Byzantine basilica style and dedicated to the patron saint of seafarers, the church was inaugurated on **29 Ιουνίου 1957**.
 
 That year, 41 Greeks were registered in the Consulate's records.
 
