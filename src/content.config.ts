@@ -149,14 +149,13 @@ const aboutSections = defineCollection({
 //
 // When `linkedSection` is set to a `history-sections` slug (filename without
 // .md), the card on /history becomes a link to /<lang>/history/<slug>.
+// Cards have no photo (#200): a photo goes in the page the card links to.
 const historyMilestones = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/history-milestones" }),
   schema: z.object({
     year: z.string(),
     title: z.string().max(140),
     linkedSection: z.string().optional(),
-    // Optional photo shown on the timeline card, e.g. "/images/timeline-1957.jpg".
-    image: z.string().optional(),
     lang: langEnum,
     ...translationMeta,
   }),

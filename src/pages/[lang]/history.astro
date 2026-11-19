@@ -85,7 +85,7 @@ const chronicleTranslation = t(lang, "history.chronicle.translation");
         </div>
       </BrutCard>
 
-      <div class="mt-12 relative">
+      <div id="timeline" class="mt-12 relative">
         {/* Timeline line */}
         <div class="absolute left-6 top-0 bottom-0 w-1 bg-black sm:left-1/2 sm:-translate-x-0.5"></div>
 
@@ -94,19 +94,9 @@ const chronicleTranslation = t(lang, "history.chronicle.translation");
             const link = item.linkedSection && sectionSlugs.has(item.linkedSection)
               ? `/${lang}/history/${item.linkedSection}`
               : null;
+            // No photo on the card (#200): photos are inside the linked page.
             const cardInner = (
               <>
-                {item.image && (
-                  // The wrapper is a block, so the photo follows the card's text alignment.
-                  <div class="mb-4">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      loading="lazy"
-                      class="inline-block max-h-72 w-auto max-w-full border-2 border-black"
-                    />
-                  </div>
-                )}
                 <span class="inline-block border-2 border-black bg-primary px-3 py-1 text-sm font-extrabold text-white">
                   {item.year}
                 </span>

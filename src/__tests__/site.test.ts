@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { execSync } from "child_process";
-import { readFileSync, readdirSync } from "fs";
-import { join } from "path";
+import { existsSync, readFileSync, readdirSync } from "fs";
+import { basename, join } from "path";
 
 const ROOT = join(__dirname, "../..");
 const CONTENT = join(ROOT, "src/content");
@@ -99,6 +99,39 @@ describe("build smoke test", () => {
     expect(html).toContain('<html lang="el"');
     expect(html).toContain('<li lang="el"');
     expect(html).not.toMatch(/lang="gr"/);
+  });
+
+  // History (#200): timeline cards have no photo. Each card links to its page
+  // once that page exists in the card's language, and the page shows the photos.
+  const timeline = (lang: string) => {
+    const html = readFileSync(join(ROOT, `dist/${lang}/history/index.html`), "utf-8");
+    const start = html.indexOf('id="timeline"');
+    expect(start).toBeGreaterThan(-1);
+    return html.slice(start, html.indexOf("</section>", start));
+  };
+
+  it.each(["gr", "nl", "en"])("the %s timeline cards draw no photo", (lang) => {
+    expect(timeline(lang)).not.toContain("<img");
+  });
+
+  it.each(["gr", "nl", "en"])("the %s timeline cards link to their pages", (lang) => {
+    const cards = timeline(lang);
+    for (const file of getMarkdownFiles(join(CONTENT, "history-milestones", lang))) {
+      const slug = parseFrontmatter(file).linkedSection;
+      if (typeof slug !== "string") continue;
+      const hasPage = existsSync(join(CONTENT, "history-sections", lang, `${slug}.md`));
+      expect(cards.includes(`href="/${lang}/history/${slug}"`), file).toBe(hasPage);
+    }
+  });
+
+  it.each(["gr", "nl", "en"])("the %s history pages show their photos", (lang) => {
+    for (const file of getMarkdownFiles(join(CONTENT, "history-sections", lang))) {
+      const slug = basename(file, ".md");
+      const html = readFileSync(join(ROOT, `dist/${lang}/history/${slug}/index.html`), "utf-8");
+      for (const [, src] of readFileSync(file, "utf-8").matchAll(/!\[[^\]]*\]\((\/images\/[^)\s]+)\)/g)) {
+        expect(html, `${file}: ${src}`).toContain(`src="${src}"`);
+      }
+    }
   });
 }, 90_000);
 

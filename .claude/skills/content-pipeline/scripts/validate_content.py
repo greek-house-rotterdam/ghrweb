@@ -80,7 +80,7 @@ COLLECTION_RULES: dict[str, dict] = {
     "history-milestones": {
         "required": {"year", "title", "lang"},
         "max_lengths": {"title": 140},
-        "allows_image": True,
+        "allows_image": False,  # no photo on timeline cards (#200)
         "optional_known": {"linkedSection"},
     },
 }
