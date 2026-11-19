@@ -17,9 +17,10 @@ never what it currently says: no entry has to exist, have a description, etc.
 (a test that required a description broke when #90 removed the last one).
 """
 
+import re
 from pathlib import Path
 
-from translate import compute_source_hash, parse_markdown
+from translate import compute_source_hash, is_hand_edited, parse_markdown
 
 CONTENT = Path(__file__).resolve().parents[3] / "src" / "content"
 
@@ -55,6 +56,31 @@ def test_source_hash_matches_the_greek_source():
         expected = compute_source_hash(gfm, gbody)
         if str(fm["source_hash"]) != expected:
             problems.append(f"{_rel(path)}: source_hash {fm['source_hash']} != {expected}")
+    assert problems == []
+
+
+IMAGE = re.compile(r"!\[[^\]]*\]\((/images/[^)\s]+)\)")
+
+
+def test_translations_keep_the_greek_photos():
+    """A bot translation shows every photo of its Greek source (#200).
+
+    History pages carry their photos in the body, so the bot must copy each
+    image path as is. Only translations that are up to date and the bot's own
+    are checked: before the bot's run the hash differs, and a hand fix is the
+    editor's choice.
+    """
+    problems = []
+    for path in _translations():
+        fm, body = _read(path)
+        if "source_hash" not in fm or fm.get("translation_locked") or is_hand_edited(fm, body):
+            continue
+        gfm, gbody = _read(CONTENT / path.parts[-3] / "gr" / path.name)
+        if str(fm["source_hash"]) != compute_source_hash(gfm, gbody):
+            continue  # not translated yet; the test above reports it
+        missing = set(IMAGE.findall(gbody)) - set(IMAGE.findall(body))
+        if missing:
+            problems.append(f"{_rel(path)}: missing {sorted(missing)}")
     assert problems == []
 
 
