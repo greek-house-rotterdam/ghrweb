@@ -4,7 +4,7 @@ Limitations of the publishing pipeline (Decap CMS → pull request → GitHub Ac
 
 Update this file when a limitation is fixed or a new one is found.
 
-_Last updated: 2026-11-17_
+_Last updated: 2026-11-20_
 
 ## Images
 
@@ -192,6 +192,13 @@ npm 11.21 (the version tested) skips install scripts unless `package.json` appro
 All workflows run on pull requests only. Content pushed straight to `main` isn't translated and its translations go stale, with no alarm. To recover, open a small PR that saves the source file again.
 
 ## Page addresses
+
+### The old site at vvgn.eu stays up, outside our control
+
+Nobody can reach `vvgn.eu`'s registration (TransIP) or Bluehost, where its DNS, the old site and the `@vvgn.eu` email live. So the old site keeps running as long as someone pays Bluehost, with outdated information. Its old links, such as the chronicle PDF, don't lead to the new site.
+
+- **What to do:** share only the site's own address (today `workers.dev`, later the new domain, #205). We can't change the old site or the `@vvgn.eu` email.
+- **Possible fix:** if the domain is ever recovered through the registrar or the `.eu` registry, redirect it to the new domain (#205, "What happens to vvgn.eu").
 
 ### Changing a short address breaks the old short link
 

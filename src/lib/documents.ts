@@ -7,8 +7,8 @@
 export const DOCUMENTS = {
   /**
    * «Χρονικό της Ενώσεως Ελλήνων Ολλανδίας 1946–1996» by Theodoros I.
-   * Theodoridis: a scanned book, in Greek. It was only on vvgn.eu, which
-   * closes when this site moves to that address (#114).
+   * Theodoridis: a scanned book, in Greek. It was only on the old site at
+   * vvgn.eu, which the association can no longer reach (#205).
    */
   chronicle: "/documents/chroniko-eeo-1946-1996.pdf",
 } as const;
