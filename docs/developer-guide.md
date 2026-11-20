@@ -165,6 +165,7 @@ Editors pick the event from a dropdown; they never type an ID.
 
 - Pages and components read `news`, `activities`, `resources` and `faq` through `getVisible()`, never `getCollection()` (a test enforces it).
 - The header and footer link News only while there is a post in that language (`hasNews()` in `src/lib/visible.ts`; `visible.test.ts` enforces it). Menu order and footer columns were agreed with the managers on 2026-11-17: no "Home" item on desktop (the logo leads home), FAQ in the top menu, white header, blue footer. (A gold header was tried the same day; the managers preferred white, and the yellow logo also disappeared on gold.)
+- The Greek House logo (`public/images/logo.jpg`) is the managers' «Logo_blue_yellow_01», scaled down to 320 × 320 pixels. It shows at 64 pixels in the header and the phone menu, and 96 in the footer: the managers asked for a larger logo on 2026-11-18 (#197). Scale a new one down the same way: every page loads it.
 - The home page hero shows the association's logo (`vvgn-logo.png`) and "The cultural group of the Association of Greeks in the Netherlands" (`home.hero.union`), linking to About. The managers asked for it so the link between the Greek House and the association stays visible. The badge is transparent around its ring text, so it sits on a white disc.
 - Tests that read real content check its shape, never its current values (#88, #90 broke such tests).
 - `ui.ts` changes need all three languages.
