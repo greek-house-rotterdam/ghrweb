@@ -184,6 +184,12 @@ Editors pick the event from a dropdown; they never type an ID.
 - `/admin` shows only «Draft» and «Ready». `public/admin/hide-in-review.js` (tests in `src/__tests__/hide-in-review.test.ts`) hides Decap's «In Review» status, which nothing here uses: the middle column of the Workflow board, and «In review» in an entry's Status menu. Decap has no setting for its statuses, so the script finds them by their English text, and `config.yml` must keep Decap's interface in English. A post already labelled `decap-cms/pending_review` keeps its column, so it never vanishes from the board. After any Decap upgrade, check the Workflow board and an entry's Status menu: if «In Review» shows with nothing in it, the script no longer finds it.
 - `/admin` starts Decap by hand (`window.CMS_MANUAL_INIT`), after `public/admin/open-own-language.js` patches the GitHub backend. Without it, reopening a translated draft opens the English file, because Decap opens the alphabetically first `.md` file on the branch (#126). The patch depends on Decap internals: after any Decap upgrade, reopen a translated draft and check that the Greek shows.
 
+## Domain
+
+The site is at `ghrweb.enosi-ellinon-ollandias.workers.dev` until it moves to a new domain of its own (#205). It won't move to the association's old domain, `vvgn.eu`: on 2026-11-20 the managers decided to leave it, because nobody can reach its registration (TransIP) or Bluehost (its DNS, the old site and the `@vvgn.eu` email). Don't plan work on `vvgn.eu`.
+
+When #205 is done, this section records where the new domain is registered, where its DNS is, when it renews, and who has access (roles, never passwords). The association holds the domain, in an account it owns with two board members, so it can't be lost the way `vvgn.eu` was.
+
 ## Planned work: GitHub issues
 
 The backlog is the open [GitHub issues](https://github.com/greek-house-rotterdam/ghrweb/issues) labelled `enhancement`.
