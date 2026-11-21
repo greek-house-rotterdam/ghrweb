@@ -94,6 +94,42 @@ describe("i18n/utils", () => {
       const parts = formatDate(date, "en").split(/[\/\-\.\s]/).filter(Boolean);
       expect(parts[0]).not.toBe("01");
     });
+
+    // Events near midnight must show the day they happen in Rotterdam, also
+    // when the build runs in UTC (#175).
+    describe("in Netherlands time", () => {
+      const dayOf = (iso: string) => formatDate(new Date(iso), "en").split(/[\/\-\.\s]/).filter(Boolean).join("/");
+
+      // Runs `check` with the process in another time zone, as a build machine might be.
+      function inTimeZone(tz: string, check: () => void) {
+        const before = process.env.TZ;
+        process.env.TZ = tz;
+        try {
+          check();
+        } finally {
+          if (before === undefined) delete process.env.TZ;
+          else process.env.TZ = before;
+        }
+      }
+
+      it.each(["UTC", "America/New_York", "Asia/Tokyo"])("shows the Rotterdam day when the build runs in %s", (tz) => {
+        inTimeZone(tz, () => {
+          // 00:30 on 12 December in Rotterdam (winter time, UTC+1).
+          expect(dayOf("2026-12-12T00:30:00+01:00")).toBe("12/12/2026");
+          // 23:30 on 12 December in Rotterdam.
+          expect(dayOf("2026-12-12T23:30:00+01:00")).toBe("12/12/2026");
+          // 00:30 on 1 July in Rotterdam (summer time, UTC+2).
+          expect(dayOf("2027-07-01T00:30:00+02:00")).toBe("01/07/2027");
+          // 23:30 on 30 June in Rotterdam.
+          expect(dayOf("2027-06-30T23:30:00+02:00")).toBe("30/06/2027");
+        });
+      });
+
+      it("shows a date without a time on that same day", () => {
+        // A news date written as 2026-01-07 is read as midnight UTC.
+        inTimeZone("UTC", () => expect(dayOf("2026-01-07")).toBe("07/01/2026"));
+      });
+    });
   });
 });
 

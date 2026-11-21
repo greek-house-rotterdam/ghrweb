@@ -39,10 +39,16 @@ const DATE_LOCALES: Record<Lang, string> = {
   en: "en-GB",
 };
 
+// Dates are shown as they fall in the Netherlands, whatever time zone the build
+// runs in. Without it, a build in UTC shows an event at 00:30 in Rotterdam on
+// the day before (#175).
+export const SITE_TIME_ZONE = "Europe/Amsterdam";
+
 export function formatDate(date: Date, lang: Lang): string {
   return date.toLocaleDateString(DATE_LOCALES[lang], {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: SITE_TIME_ZONE,
   });
 }
