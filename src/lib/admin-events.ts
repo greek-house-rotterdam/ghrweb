@@ -18,6 +18,7 @@
 
 import { stringify } from "yaml";
 import { splitEvents, toListEvents, type EventEntry } from "./event-list";
+import { SITE_TIME_ZONE } from "../i18n/utils";
 
 /** One event in /admin/events.json, in the dropdown's order. */
 export interface PickerEvent {
@@ -44,7 +45,7 @@ const DATE = new Intl.DateTimeFormat("el-GR", {
   day: "numeric",
   month: "short",
   year: "numeric",
-  timeZone: "Europe/Amsterdam",
+  timeZone: SITE_TIME_ZONE,
 });
 
 export const PAST_MARK = "(έγινε / past)";
