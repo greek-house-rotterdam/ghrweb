@@ -1,7 +1,9 @@
 name: Nightly rebuild
 
-# Rebuilds the live site once a day, so changes in Ticket Tailor (new, sold-out
-# or cancelled events) reach the site within a day without anyone merging.
+# Rebuilds the live site once a day, the safety net for changes in Ticket Tailor
+# (new, sold-out or cancelled events). Ticket Tailor's event webhooks call the
+# same deploy hook and usually bring a change within minutes (#162); this run
+# catches any change whose webhook call failed.
 # It calls a Cloudflare deploy hook, which builds and deploys `main`.
 #
 # Then it checks that the live site really updated, by reading /build.json

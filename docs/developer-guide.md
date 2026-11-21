@@ -138,7 +138,7 @@ A Dutch or English file exists without its Greek file, usually after something w
 
 ## Events (Ticket Tailor)
 
-- Loaded at build time (`src/lib/ticket-tailor.ts`). Ticket Tailor webhooks call the Cloudflare deploy hook (secret `CF_DEPLOY_HOOK_URL`), and the nightly rebuild is the safety net.
+- Loaded at build time (`src/lib/ticket-tailor.ts`). Ticket Tailor webhooks call the Cloudflare deploy hook (secret `CF_DEPLOY_HOOK_URL`), so a change usually shows within minutes (confirmed 2026-11-20, #162). The nightly rebuild is the safety net.
 - Every page of events is read. Ticket Tailor sends at most 100 per request; the loader asks again with `starting_after=<last ID>` while the answer has `links.next` (safety stop at 50 pages). A page that fails after three tries fails the whole load, so the site never shows half a list.
 - Lists: upcoming events soonest first, then past events most recent first, judged at build time (`src/lib/event-list.ts`). The home page shows the 3 soonest.
 - Test events must stay unpublished in Ticket Tailor; published ones appear on the site.
