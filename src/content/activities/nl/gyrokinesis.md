@@ -3,7 +3,7 @@ title: GYROKINESIS® movement method
 emoji: 🤸
 image: /images/activity-gyrokinesis.jpg
 order: 140
-hidden: true
+hidden: false
 lang: nl
 source_hash: '9c19553e9ec7'
 translation_hash: 'b930374b3987'
